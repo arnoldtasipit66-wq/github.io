@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Photo Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .placeholder-bg {
+            background-color: #374151;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234b5563' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-5xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600">AI Photo Studio</h1>
+            <p class="text-gray-400 mt-2 text-lg">Gawing propesyonal na studio portrait ang iyong larawan sa isang click.</p>
+        </header>
+
+        <main class="bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8">
+            <!-- Image Upload Section -->
+            <div id="upload-section" class="text-center">
+                <label for="image-upload" class="cursor-pointer inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 shadow-lg">
+                    Mag-upload ng Larawan
+                </label>
+                <input id="image-upload" type="file" class="hidden" accept="image/*">
+                <p id="file-name" class="text-gray-500 mt-3 text-sm">Pumili ng larawan para magsimula (PNG, JPG).</p>
+            </div>
+
+            <!-- Image Comparison Section -->
+            <div id="comparison-section" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 items-center">
+                <!-- Original Image -->
+                <div>
+                    <h2 class="text-xl font-semibold text-center mb-4 text-gray-300">Orihinal</h2>
+                    <div id="original-image-container" class="placeholder-bg w-full aspect-[3/4] rounded-xl flex items-center justify-center overflow-hidden border-2 border-gray-700">
+                        <p class="text-gray-500">Preview ng Orihinal</p>
+                    </div>
+                </div>
+
+                <!-- Generated Image -->
+                <div>
+                    <h2 class="text-xl font-semibold text-center mb-4 text-gray-300">Resulta</h2>
+                    <div id="generated-image-container" class="placeholder-bg w-full aspect-[3/4] rounded-xl flex items-center justify-center overflow-hidden border-2 border-gray-700 relative">
+                        <div id="loader" class="hidden flex-col items-center justify-center">
+                            <div class="loader"></div>
+                            <p class="text-gray-400 mt-3">Pinoproseso... maaaring tumagal ito.</p>
+                        </div>
+                        <p id="generated-placeholder" class="text-gray-500">Dito lalabas ang resulta</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div id="action-button-container" class="text-center mt-8">
+                <button id="generate-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition-transform transform hover:scale-105 shadow-lg disabled:bg-gray-600 disabled:cursor-not-allowed disabled:transform-none" disabled>
+                    Gawing Studio Portrait
+                </button>
+                 <p id="error-message" class="text-red-400 mt-4 text-sm hidden"></p>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-8 text-gray-600 text-sm">
+            <p>Pinapagana ng Gemini AI. Ang mga resulta ay maaaring mag-iba.</p>
+        </footer>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('image-upload');
+        const fileNameDisplay = document.getElementById('file-name');
+        const originalImageContainer = document.getElementById('original-image-container');
+        const generatedImageContainer = document.getElementById('generated-image-container');
+        const comparisonSection = document.getElementById('comparison-section');
+        const generateBtn = document.getElementById('generate-btn');
+        const loader = document.getElementById('loader');
+        const generatedPlaceholder = document.getElementById('generated-placeholder');
+        const errorMessage = document.getElementById('error-message');
+        
+        let uploadedImageBase64 = null;
+        let uploadedImageType = 'image/png';
+
+        // Event listener para sa pag-upload ng file
+        imageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                fileNameDisplay.textContent = file.name;
+                generateBtn.disabled = false;
+                errorMessage.classList.add('hidden');
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImageBase64 = e.target.result.split(',')[1];
+                    uploadedImageType = file.type;
+                    
+                    originalImageContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    generatedImageContainer.innerHTML = `<div id="loader" class="hidden flex-col items-center justify-center">
+                            <div class="loader"></div>
+                            <p class="text-gray-400 mt-3">Pinoproseso... maaaring tumagal ito.</p>
+                        </div>
+                        <p id="generated-placeholder" class="text-gray-500">Dito lalabas ang resulta</p>`;
+                    comparisonSection.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Event listener para sa generate button
+        generateBtn.addEventListener('click', generateImage);
+        
+        // Function para i-convert ang JSON prompt sa natural na lenggwahe
+        function createPromptFromConfig() {
+            // This is a simplified natural language translation of the provided JSON config.
+            return `Task: Image Edit. Edit the provided photo into a professional studio portrait, emulating a Canon EOS R5 with a 50mm f/1.8 lens for an ultra-sharp, micro-contrasted, natural color look. Frame it as a three-quarter body shot, keeping both arms visible and do not crop the face or hands. Crucially, preserve the subject's identity, facial features, original expression, and pose. Perform professional retouching: create smooth, radiant skin while retaining natural texture, reduce flyaway hairs, and naturally enhance eyes and teeth. Upgrade the clothing's fabric quality while keeping the style and color the same. The lighting must be bright, soft, and even, from the front. The background must be a solid navy blue (#0f2a4a) with a very subtle vignette, creating a professional studio environment. The overall color and tone should be natural with moderate contrast and saturation. Apply edge-aware sharpening. Do not change the face, pose, or clothing style. Avoid a plastic skin look, harsh shadows, and over-whitened eyes/teeth.`;
+        }
+
+        // Function para tawagin ang Gemini API at i-generate ang image
+        async function generateImage() {
+            if (!uploadedImageBase64) {
+                showError("Mangyaring mag-upload muna ng larawan.");
+                return;
+            }
+
+            // Show loader and disable button
+            const loaderElement = generatedImageContainer.querySelector('#loader');
+            const placeholderElement = generatedImageContainer.querySelector('#generated-placeholder');
+            if(loaderElement) loaderElement.classList.remove('hidden');
+            if(placeholderElement) placeholderElement.classList.add('hidden');
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Pinoproseso...';
+            errorMessage.classList.add('hidden');
+
+            const userPrompt = createPromptFromConfig();
+            
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: userPrompt },
+                        {
+                            inlineData: {
+                                mimeType: uploadedImageType,
+                                data: uploadedImageBase64
+                            }
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    responseModalities: ['IMAGE']
+                },
+            };
+            
+            // NOTE: API Key is handled by the execution environment.
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                
+                if (base64Data) {
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+                    generatedImageContainer.innerHTML = `<img src="${imageUrl}" class="w-full h-full object-cover">`;
+                } else {
+                    let reason = "Hindi nakatanggap ng image data mula sa AI.";
+                    if (result.candidates && result.candidates[0].finishReason === 'SAFETY') {
+                        reason = "Hindi ma-generate ang imahe dahil sa mga patakaran sa kaligtasan.";
+                    }
+                    throw new Error(reason);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Nagkaroon ng error: ${error.message}`);
+                generatedImageContainer.innerHTML = `<p id="generated-placeholder" class="text-gray-500 p-4 text-center">Nabigo ang pag-generate. Subukang muli.</p>`;
+            } finally {
+                // Hide loader and re-enable button
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Gawing Studio Portrait Muli';
+            }
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>
