@@ -12,7 +12,7 @@
         }
         .placeholder-bg {
             background-color: #374151;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234b5563' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234b5563' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         .loader {
             border: 4px solid #f3f3f3;
@@ -97,7 +97,6 @@
         let uploadedImageBase64 = null;
         let uploadedImageType = 'image/png';
 
-        // Event listener para sa pag-upload ng file
         imageUpload.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -122,23 +121,21 @@
             }
         });
 
-        // Event listener para sa generate button
         generateBtn.addEventListener('click', generateImage);
         
-        // Function para i-convert ang JSON prompt sa natural na lenggwahe
         function createPromptFromConfig() {
-            // This is a simplified natural language translation of the provided JSON config.
             return `Task: Image Edit. Edit the provided photo into a professional studio portrait, emulating a Canon EOS R5 with a 50mm f/1.8 lens for an ultra-sharp, micro-contrasted, natural color look. Frame it as a three-quarter body shot, keeping both arms visible and do not crop the face or hands. Crucially, preserve the subject's identity, facial features, original expression, and pose. Perform professional retouching: create smooth, radiant skin while retaining natural texture, reduce flyaway hairs, and naturally enhance eyes and teeth. Upgrade the clothing's fabric quality while keeping the style and color the same. The lighting must be bright, soft, and even, from the front. The background must be a solid navy blue (#0f2a4a) with a very subtle vignette, creating a professional studio environment. The overall color and tone should be natural with moderate contrast and saturation. Apply edge-aware sharpening. Do not change the face, pose, or clothing style. Avoid a plastic skin look, harsh shadows, and over-whitened eyes/teeth.`;
         }
 
-        // Function para tawagin ang Gemini API at i-generate ang image
         async function generateImage() {
+            // --- Heto na ang iyong API Key ---
+            const apiKey = "AIzaSyCNOpOfrJ3SY5pjtC3yHrDOYH1Unaa5nkE"; 
+            
             if (!uploadedImageBase64) {
                 showError("Mangyaring mag-upload muna ng larawan.");
                 return;
             }
 
-            // Show loader and disable button
             const loaderElement = generatedImageContainer.querySelector('#loader');
             const placeholderElement = generatedImageContainer.querySelector('#generated-placeholder');
             if(loaderElement) loaderElement.classList.remove('hidden');
@@ -166,8 +163,6 @@
                 },
             };
             
-            // NOTE: API Key is handled by the execution environment.
-            const apiKey = ""; 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
 
             try {
@@ -201,7 +196,6 @@
                 showError(`Nagkaroon ng error: ${error.message}`);
                 generatedImageContainer.innerHTML = `<p id="generated-placeholder" class="text-gray-500 p-4 text-center">Nabigo ang pag-generate. Subukang muli.</p>`;
             } finally {
-                // Hide loader and re-enable button
                 generateBtn.disabled = false;
                 generateBtn.textContent = 'Gawing Studio Portrait Muli';
             }
