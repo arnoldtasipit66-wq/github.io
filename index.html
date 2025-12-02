@@ -6095,58 +6095,40 @@ createPlayerDocument();
     }
 
     // --- BAGO AT MAS MALINIS NA LOGIC ---
-    if (isReturningPlayer) { // Gagamitin na natin yung variable galing sa init()
-        // Kung returning player
-        startPromptText.style.display = 'block'; // Show "Click anywhere" prompt
-        startNameInputArea.style.display = 'none'; // Hide the name input area
+    // --- UPDATED LOGIC (Preloader Compatible) ---
+    if (isReturningPlayer) { 
+        // KUNG MAY PANGALAN NA: Deretso na agad sa Lobby!
+        // Hindi na kailangan mag-click ulit dahil nag-click ka na sa Preloader.
+        proceedToLobby(localPlayerName);
 
-        console.log("Attaching CLICK listener to startOverlay for returning player...");
-        // Add listener for returning player to click anywhere
-        startOverlay.addEventListener('click', () => {
-             console.log("Start overlay CLICKED (returning player)!");
-             if (startOverlay.classList.contains('show')) {
-                 console.log("Overlay is shown, proceeding to lobby...");
-                 proceedToLobby(localPlayerName); // Gagamitin na yung na-load na pangalan
-             } else {
-                  console.log("Overlay not shown, click ignored.");
-             }
-        }, { once: true }); // Listener runs only once
+    } else {
+        // KUNG NEW PLAYER: Ipakita ang Input Box para humingi ng pangalan
+        startOverlay.classList.add('show'); // Ipakita ang overlay
+        startPromptText.style.display = 'none'; // Tago ang "Click anywhere" text
+        startNameInputArea.style.display = 'block'; // Pakita ang input box
 
-    } else {
-        // Kung new player
-        startPromptText.style.display = 'none'; // Hide "Click anywhere" prompt
-        startNameInputArea.style.display = 'block'; // Show the name input area
-        console.log("Attaching listeners for NEW player name input...");
+        // Function to handle name submission
+        const handleNameSubmit = () => {
+            playButtonSound(); // Sound effect
+            const name = startNameInput.value.trim();
+            if (name) { 
+                localStorage.setItem('pinoyPoolPlayerName', name); 
+                localStorage.removeItem('pinoyPoolPlayerNameWasSet'); 
+                proceedToLobby(name); 
+            } else { 
+                showMessage("Please enter your name!", 2000);
+                startNameInput.focus(); 
+            }
+        };
 
-        // Function to handle name submission
-        const handleNameSubmit = () => {
-            console.log("handleNameSubmit function CALLED!");
-            const name = startNameInput.value.trim();
-            if (name) { // If name is not empty
-                console.log("Name entered:", name);
-                localStorage.setItem('pinoyPoolPlayerName', name); // Save name permanently
-                localStorage.removeItem('pinoyPoolPlayerNameWasSet'); // Reset welcome message flag
-                proceedToLobby(name); // Proceed to lobby
-            } else { // If name is empty
-                console.log("Name input was empty.");
-                showMessage("Please enter your name!", 2000);
-                startNameInput.focus(); // Focus back on input
-            }
-        };
+        // Siguraduhing tanggalin muna ang lumang listener para iwas doble
+        startNameSubmitBtn.onclick = handleNameSubmit; 
 
-        // Add listener to the Continue button
-        console.log("Attaching CLICK listener to Continue button...");
-        startNameSubmitBtn.addEventListener('click', handleNameSubmit);
-
-        // Add listener for Enter key in the input field
-        console.log("Attaching KEYUP listener to name input field...");
-        startNameInput.addEventListener('keyup', (event) => {
-            if (event.key === 'Enter') {
-                console.log("Enter key pressed in name input.");
-                handleNameSubmit(); // Submit name on Enter key
-            }
-        });
-    }
+        // Listener sa Enter Key
+        startNameInput.onkeyup = (event) => {
+            if (event.key === 'Enter') handleNameSubmit();
+        };
+    }
     // --- END NG BAGO AT MAS MALINIS NA LOGIC ---
     // --- End of Start Overlay Logic ---
     // --- Basic UI Listeners ---
