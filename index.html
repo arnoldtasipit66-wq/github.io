@@ -76,13 +76,11 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         z-index: 100;
         pointer-events: all;
-        
-        /* Scrollable sa maliliit na screen */
+                
         max-width: 95vw;
         overflow-x: auto;
     }
-
-    /* 2. PREMIUM BUTTONS STYLE (Unified) */
+    
     .menu-button, .lobby-button {
         font-family: 'Nunito', sans-serif;
         font-weight: 800;
@@ -90,18 +88,15 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         text-transform: uppercase;
         letter-spacing: 1px;
         color: white;
-        
-        /* Alisin ang lumang borders */
+                
         border: none;
-        
-        /* New Shape */
+             
         border-radius: 14px;
         padding: 12px 20px;
         min-width: 100px;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        
-        /* Default Gradient */
+               
         background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         
@@ -113,7 +108,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         margin: 5px; /* Default spacing for menu buttons */
     }
 
-    /* Specific fix para sa Lobby Buttons (walang margin, width auto) */
     #lobby-buttons-container .lobby-button {
         margin: 0;
         width: auto;
@@ -121,20 +115,17 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         white-space: nowrap;
     }
 
-    /* Button Hover Effects */
     .menu-button:hover, .lobby-button:hover {
         transform: translateY(-4px) scale(1.05);
         box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         filter: brightness(1.2);
     }
-
-    /* Button Active Effects */
+    
     .menu-button:active, .lobby-button:active {
         transform: translateY(1px) scale(0.98);
         box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
-
-    /* Specific Button Colors (Gradients) */
+    
     #vs-ai-button { background-image: linear-gradient(to right, #0ba360 0%, #3cba92 100%); box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4); }
     #online-button { background-image: linear-gradient(to right, #0061ff 0%, #60efff 100%); box-shadow: 0 5px 15px rgba(0, 198, 255, 0.4); }
     #leaderboard-button { background-image: linear-gradient(to right, #FF8008 0%, #FFC837 100%); box-shadow: 0 5px 15px rgba(255, 200, 55, 0.4); }
@@ -145,8 +136,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     #find-match-button { background-image: linear-gradient(to right, #00c6ff 0%, #0072ff 100%); }
     #create-game-button { background-image: linear-gradient(to right, #1D976C 0%, #93F9B9 100%); }
     #join-game-button { background-image: linear-gradient(to right, #EB3349 0%, #F45C43 100%); }
-
-    /* Disabled State Override */
+    
     .menu-button:disabled, .lobby-button.claimed, .shop-buy-button.equipped, .shop-buy-button.disabled {
         background-image: none !important;
         background-color: #444 !important;
@@ -155,8 +145,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         box-shadow: none !important;
         transform: none !important;
     }
-
-    /* 3. MODERN GLASS MODALS */
+    
     .modal-overlay .content, .instruction-modal .content, #leaderboard-modal .content, #shop-modal .content, #friends-modal .content, #invite-popup-modal .content {
         background: rgba(25, 25, 35, 0.9);
         backdrop-filter: blur(20px);
@@ -184,8 +173,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         filter: drop-shadow(0 4px 0 rgba(0,0,0,0.3));
         letter-spacing: 2px;
     }
-
-    /* Modern Inputs */
+    
     input[type="text"] {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -285,8 +273,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         gap: 5px;
         flex-shrink: 0;
     }
-    
-    /* Small button overrides for friend actions */
+        
     .friend-actions .menu-button, .friend-actions .lobby-button {
         padding: 5px 10px;
         font-size: 0.8em;
@@ -299,15 +286,13 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         padding: 10px;
         text-align: center;
     }
-
-    /* Specific button colors for friends (Updated to gradients above, keeping generic classes just in case) */
+   
     .invite-btn { background-color: #007bff !important; }
     .accept-btn { background-color: #28a745 !important; }
     .decline-btn { background-color: #dc3545 !important; }
 
     #credits-container { display: none; }
-
-    /* === VERSUS SCREEN STYLES === */
+    
     #vs-screen-modal.show { animation: vsFadeOut 0.5s ease-out 3.5s forwards; }
 
     #vs-content-box {
@@ -368,15 +353,13 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         opacity: 0;
         animation: vsFadeIn 1s ease-out 1.2s forwards;
     }
-
-    /* KEYFRAME ANIMATIONS */
+    
     @keyframes vsFadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
     @keyframes vsPopIn { from { transform: scale(0); } to { transform: scale(1); } }
     @keyframes vsSlideInLeft { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes vsSlideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes vsFadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    /* === XP BAR === */
+    
     #xp-container {
         position: absolute;
         bottom: 0px;
@@ -411,8 +394,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         font-size: 10px; font-weight: bold; color: white;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.8); z-index: 2;
     }
-
-    /* === SHOP ITEMS CONTAINER === */
+    
     #shop-items-container {
         display: flex;
         flex-direction: column;
@@ -428,8 +410,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         width: 100%;
         box-sizing: border-box;
     }
-
-    /* SHOP STATS */
+    
     .shop-item-stats {
         width: 100%;
         padding: 5px 0;
@@ -470,8 +451,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.7)); 
     }
     .shop-item-name { font-weight: bold; font-size: 0.9em; margin-bottom: 10px; }
-
-    /* SHOP BUY BUTTON (Updated to inherit modern style but kept classes for logic) */
+   
     .shop-buy-button {
         font-family: 'Nunito', sans-serif;
         text-transform: uppercase;
@@ -490,8 +470,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     .shop-buy-button.equip { background-image: linear-gradient(to right, #007bff, #0069d9); }
     .shop-buy-button.equipped { background-color: #6c757d; cursor: not-allowed; opacity: 0.7; background-image: none; }
     .shop-buy-button.disabled { background-color: #dc3545; cursor: not-allowed; opacity: 0.7; background-image: none; }
-
-    /* === GAME ELEMENTS === */
+    
     #cue-stick-element {
         display: none; position: absolute; pointer-events: none; z-index: 30;
         transform-origin: 100% 50%; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));
@@ -504,7 +483,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     width: 100%;
     height: 100%;
     
-    /* Siguraduhin na naka-center ang laman nito (ang mesa) */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -515,14 +493,11 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
 
     #table-frame {
     padding: 25px;
-    
-    /* ▼▼▼ ANG BAGO MONG POLISHED BURL TEXTURE ▼▼▼ */
+        
     background-image: url('https://i.imgur.com/T9ft7vz.jpeg');
     
     background-repeat: repeat;
     
-    /* Ginawa kong 600px para makita yung ganda ng "swirls" o bukol ng kahoy */
-    /* Kung gusto mo mas pino, ibaba mo sa 400px */
     background-size: 600px; 
 
     background-color: #5D4037; /* Fallback (Dark Brown) */
@@ -537,7 +512,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     /* Palitan ang lumang color nito (dating #C59D5F o Green) */
     background-color: #C89646; /* Honey Gold */
     
-    /* ... (hayaan lang ang ibang settings sa baba) ... */
     cursor: crosshair;
     width: 100%; height: 100%;
     transform: translateZ(0);
@@ -554,11 +528,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     opacity: 0.3; 
     z-index: 50; 
     pointer-events: none;
-    
-    /* ▼▼▼ PALITAN MO ANG LINYANG ITO ▼▼▼ */
-    /* Dati: transform: translate(-25px, -15px); */
-    
-    /* Ngayon: Gawing percentage para automatic na gumitna */
+        
     transform: translate(-50%, -50%); 
     
     filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4));
@@ -586,9 +556,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         border: 1px solid rgba(255, 255, 255, 0.1); display: inline-block;
     }
 
-   /* ========================================= */
-/* === COMPACT COIN DISPLAY (Small Pill) === */
-/* ========================================= */
 
 #currency-display {
     /* Posisyon (Mas dikit sa gilid) */
@@ -601,12 +568,11 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 215, 0, 0.3) !important;
     
-    /* Shape & Size (PINALIIT) */
     border-radius: 12px !important; /* Mas maliit na kurba */
     padding: 3px 10px !important;   /* Manipis na ang taba */
     min-width: 40px;                /* Mas maiksi */
     
-    /* Text & Layout */
+    
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -616,7 +582,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     font-family: 'Nunito', sans-serif !important;
     font-weight: 800 !important;
     
-    /* Font Size (PINALIIT) */
     font-size: 0.75em !important; /* Mula 1em naging 0.75em */
     
     /* Shadow */
@@ -729,8 +694,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     .arrow-button:active { transform: scale(0.95); background-color: rgba(0,0,0,0.6); }
     #left-arrow { right: 50%; transform: translateX(-120px); }
     #right-arrow { left: 50%; transform: translateX(120px); }
-
-    /* MODAL OVERLAY BASE */
+    
     .modal-overlay {
         display: flex; position: fixed; top: 0; left: 0;
         width: 100%; height: 100%;
@@ -747,15 +711,9 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
 
     .back-button { background-color: rgba(108, 117, 125, 0.5); margin-top: 20px; }
     .back-button:hover { background-color: rgba(108, 117, 125, 0.8); }
-
-    /* 1. Transparent Background (Para kita ang Mesa) */
+    
 #winner-modal {
-    /* rgba(0, 0, 0, 0.3) 
-       Ang huling numero (0.3) ang "Darkness".
-       0.0 = Walang kulay (Invisible)
-       0.9 = Halos Solid Black
-       Ginawa kong 0.3 para dim lang ng konti.
-    */
+    
     background-color: rgba(0, 0, 0, 0.3) !important; 
     
     /* TANGGALIN ang Blur para malinaw ang laro sa likod */
@@ -983,20 +941,12 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         flex-grow: 1; overflow-y: auto; min-height: 100px; padding-top: 10px;
     }
 
-/* ================================================== */
-/* === MOBILE FIXES (I-paste sa dulo ng style) === */
-/* ================================================== */
-
-/* 1. AYUSIN ANG NAGPAPATONG NA BUTTONS */
 #lobby-buttons-container .lobby-button {
     flex-shrink: 0 !important; /* Ito ang pipigil sa pag-squish */
     white-space: nowrap !important; /* Bawal maputol ang text */
     margin: 0 4px !important; /* Space sa pagitan */
 }
 
-/* Gawing scrollable (swipe left/right) ang menu pag hindi kasya */
-#lobby-buttons-container {
-    overflow-x: auto !important; /* Scroll bar pag sumobra */
     justify-content: flex-start !important; /* Start sa kaliwa */
     max-width: 90vw !important; /* Hanggang 90% lang ng screen width */
     
