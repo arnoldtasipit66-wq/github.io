@@ -8572,61 +8572,106 @@ function openShop() {
 }
 
 
-/**
- * Naglo-load ng leaderboard.
- * (ITO YUNG MAY AYOS NA PARA SA ERROR KANINA)
- */
 async function showLeaderboard() {
-    leaderboardBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">Loading...</td></tr>';
-    gameModeSelect.classList.remove('show');
-    leaderboardModal.classList.add('show');
+    playButtonSound(); // Tunog ng button
+
+    // 1. Ipakita ang Modal at Loading Text
+    const modal = document.getElementById('leaderboard-modal');
+    const tbody = document.getElementById('leaderboard-body');
+    
+    // Tago muna ang ibang modal
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+    
+    modal.classList.add('show');
     history.pushState({ modal: 'leaderboardModal' }, 'Leaderboard', '#leaderboard');
 
-    // ▼▼▼ ITO YUNG AYOS: Iche-check muna kung ready na ang 'db' ▼▼▼
-    if (!firebaseInitialized || !db) {
-        console.error("Firebase is not ready yet. (showLeaderboard)");
-        leaderboardBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">Connecting to server... Please wait.</td></tr>';
-        // Mag-try ulit after 1 segundo
-        setTimeout(showLeaderboard, 1000);
-        return; 
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; font-style: italic; color: #aaa;">Fetching Top Players...</td></tr>';
+
+    // Check kung ready na ang Firebase
+    if (!db) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Database not connected.</td></tr>';
+        return;
     }
-    // ▲▲▲ DULO NG AYOS ▲▲▲
 
     try {
+        // 2. QUERY: Kunin ang Top 50 players base sa 'wins' (Descending)
         const playersRef = collection(db, "players");
-        const q = query(playersRef, orderBy("wins", "desc"), limit(100));
+        const q = query(playersRef, orderBy("wins", "desc"), limit(50));
+
         const querySnapshot = await getDocs(q);
-        leaderboardBody.innerHTML = '';
+
+        // 3. Kung Walang Laman
         if (querySnapshot.empty) {
-            leaderboardBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">No players yet. Be the first!</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">No records yet. Be the first!</td></tr>';
             return;
         }
+
+        // 4. I-render ang Listahan
+        tbody.innerHTML = ''; // Linisin ang loading text
         let rank = 1;
+
         querySnapshot.forEach((doc) => {
-            const playerData = doc.data();
+            const data = doc.data();
             const row = document.createElement('tr');
+            
+            // Special Colors para sa Top 3
+            let rankDisplay = `#${rank}`;
+            let rowColor = "inherit"; // Default text color
+            let bgColor = "transparent";
+
+            if (rank === 1) {
+                rankDisplay = "🥇";
+                rowColor = "#FFD700"; // Gold
+                bgColor = "rgba(255, 215, 0, 0.1)";
+            } else if (rank === 2) {
+                rankDisplay = "🥈";
+                rowColor = "#C0C0C0"; // Silver
+                bgColor = "rgba(192, 192, 192, 0.1)";
+            } else if (rank === 3) {
+                rankDisplay = "🥉";
+                rowColor = "#CD7F32"; // Bronze
+                bgColor = "rgba(205, 127, 50, 0.1)";
+            }
+
+            // Highlight kung IKAW 'to
+            if (doc.id === localPlayerUid) {
+                bgColor = "rgba(0, 255, 0, 0.2)"; // Green highlight pag ikaw
+                rowColor = "#00FF00";
+            }
+
             row.innerHTML = `
-                <td style="padding: 8px;">#${rank}</td>
-                <td style="padding: 8px;">${playerData.displayName}</td>
-                <td style="padding: 8px;">${playerData.wins}</td>
+                <td style="padding: 12px; font-weight: bold; font-size: 1.2em;">${rankDisplay}</td>
+                <td style="padding: 12px;">
+                    <div style="font-weight: bold; font-size: 1.1em;">${data.displayName || "Unknown"}</div>
+                    <div style="font-size: 0.8em; opacity: 0.7;">Lv. ${data.level || 1}</div>
+                </td>
+                <td style="padding: 12px; font-weight: bold; color: #33FF57;">${data.wins || 0} Wins</td>
             `;
-            leaderboardBody.appendChild(row);
+            
+            // Apply styles
+            row.style.color = rowColor;
+            row.style.backgroundColor = bgColor;
+            row.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
+
+            tbody.appendChild(row);
             rank++;
         });
+
     } catch (error) {
-        console.error("Error fetching leaderboard: ", error);
-        leaderboardBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">Could not load leaderboard. Check console for errors.</td></tr>';
+        console.error("Leaderboard Error:", error);
         
+        // 5. IMPORTANTE: Index Error Handling
         if (error.code === 'failed-precondition') {
-             showMessage("Error: Database needs an index. Check the console (F12) for a link!", 5000);
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: orange; padding: 20px;">Setup Required:<br>Open Console (F12) and click the Firebase link to create an Index.</td></tr>';
+            
+            // Ipakita ang message na ito sa player para alam mong may kailangan ayusin sa Firebase Console
+            showMessage("Database Index Required! Check Console.", 5000);
+        } else {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Error loading data.</td></tr>';
         }
     }
 }
 
-/**
- * Ito ang function na kukuha ng data at ipapakita ang VS Screen.
- * player1 at player2 ay objects na may { name, rankInfo: { name, color } }
- */
 function showVsScreen(player1, player2, gameType) {
     const modal = document.getElementById('vs-screen-modal');
     if (!modal) return; // Safety check
