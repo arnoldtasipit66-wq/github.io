@@ -6608,9 +6608,6 @@ function toggleMusic() { const isMuted = backgroundPlaylist[0].muted; background
     const tableFrame = document.getElementById('table-frame');
     let frameWidth, frameHeight;
 
-    // ▼▼▼ ITO YUNG SOLUSYON SA SHADOW ▼▼▼
-    // Mag-iwan tayo ng espasyo para sa shadow.
-    // 0.95 = 95% ng screen (mag-iiwan ng 2.5% sa bawat gilid)
     const paddingPercentage = 0.90; 
 
     if (screenAspectRatio > TABLE_ASPECT_RATIO) {
@@ -6620,29 +6617,21 @@ function toggleMusic() { const isMuted = backgroundPlaylist[0].muted; background
         frameWidth = containerWidth * paddingPercentage; // <-- NILAGYAN NG PADDING
         frameHeight = frameWidth / TABLE_ASPECT_RATIO;
     }
-    // ▲▲▲ HANGGANG DITO ANG SOLUSYON SA SHADOW ▲▲▲
-
-    // Ito ang nagse-set ng CSS size (para mag-stretch)
+    
     tableFrame.style.width = `${frameWidth}px`;
     tableFrame.style.height = `${frameHeight}px`;
 
-    // Ito ang nagse-set ng ACTUAL resolution ng canvas
-    // Gagawin nating fixed (ito ang magic)
     canvas.width = VIRTUAL_WIDTH;
     canvas.height = VIRTUAL_HEIGHT;
 
-    // I-set din ang sukat ng ating "tago" na canvas para pareho sila
+    
     backgroundCanvas.width = VIRTUAL_WIDTH;
     backgroundCanvas.height = VIRTUAL_HEIGHT;
 
     table.width = VIRTUAL_WIDTH;
     table.height = VIRTUAL_HEIGHT;
-    
-    // Ang 'scale' ay HINDI na natin babaguhin. Mananatili itong '1' (galing sa global).
-
-    setupHoles(); // Tatawagin nito ang setupHoles na gagamit na ng scale=1
-
-    if (isBreakShot || !chipRatios) {
+   
+    setupHoles();     if (isBreakShot || !chipRatios) {
         setupChips(); // Gagamit na rin ng scale=1
     } else if (chipRatios) {
         chips.forEach((chip, i) => {
@@ -6652,13 +6641,12 @@ function toggleMusic() { const isMuted = backgroundPlaylist[0].muted; background
                 chip.x = chipRatios[i].x * VIRTUAL_WIDTH;
                 chip.y = chipRatios[i].y * VIRTUAL_HEIGHT;
             }
-            // ▼▼▼ ITO YUNG LINYA NA MAY TYPO KANINA, TAMA NA NGAYON ▼▼▼
-            chip.radius = radiusConstant; // HINDI NA KAILANGAN i-multiply sa scale
+            
+            chip.radius = radiusConstant; 
         });
     }
 
-    // I-drawing ang static na mesa sa "tago" na canvas
-    // Gawin ito PAGKATAPOS ng setupHoles() at setupChips()
+    
     drawBackgroundLayer();
 }
         function setupHoles() { const hr = HOLE_RADIUS * scale; holes = [ { x: 0, y: 0, radius: hr }, { x: canvas.width, y: 0, radius: hr }, { x: 0, y: canvas.height, radius: hr }, { x: canvas.width, y: canvas.height, radius: hr } ]; }
