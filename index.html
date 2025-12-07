@@ -8488,26 +8488,7 @@ async function cancelMatchmaking() {
                 }
                 isMyTurnOnline = (data.currentTurnUid === localPlayerUid);
                 setCueForCurrentTurn();
-                // SA LOOB NG syncGameState FUNCTION:
-
-/* --- BURAHIN MO ITO MULA DITO --- */
-/* if (!isMyTurnOnline && data.liveAimData && data.liveAimData.sender !== localPlayerUid) {
-    cueStick.visible = true;
-    if (cueStickElement) cueStickElement.style.display = 'block';
-    const liveAim = data.liveAimData;
-    const cueChip = chips.find(c => c.id === 0);
-    if (data.canMoveCueBall && cueChip) {
-        cueChip.x = liveAim.cueBallX * canvas.width;
-        cueChip.y = liveAim.cueBallY * canvas.height;
-    }
-    cueStick.angle = liveAim.angle;
-    cueStick.pullback = liveAim.pullback || 0;
-    pektusOffset.x = liveAim.pektusX || 0;
-    pektusOffset.y = liveAim.pektusY || 0;
-    updatePektusUI();
-}
-*/
-/* --- HANGGANG DITO --- */
+             
                 if (data.turnId > lastProcessedTurnId) {
                     lastProcessedTurnId = data.turnId;
                     
