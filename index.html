@@ -33,15 +33,10 @@
     background-color: #2c2c2c; 
     
     
-background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
-
-    
+background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');    
     background-repeat: repeat; 
     
-    
-    background-size: 500px; 
-    
-    
+    background-size: 500px;  
     background-attachment: fixed; 
 
     /* Standard settings */
@@ -54,9 +49,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     -ms-user-select: none;
     user-select: none;
 }
-
-    
-  
+ 
     #lobby-buttons-container {
         position: absolute;
         bottom: 25px;
@@ -487,10 +480,8 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     justify-content: center;
     align-items: center;
     
-    z-index: 1; /* Mababa lang para nasa ilalim ng modals */
+    z-index: 1; 
 }
-
-
     #table-frame {
     padding: 25px;
         
@@ -500,9 +491,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     
     background-size: 600px; 
 
-    background-color: #5D4037; /* Fallback (Dark Brown) */
-    
-    /* === Shadows & Borders (Wag galawin) === */
+    background-color: #5D4037; 
     border-radius: 10px;
     box-sizing: border-box; 
     box-shadow: 0 15px 30px 5px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,0,0,0.7), inset 2px 2px 5px rgba(255, 255, 255, 0.2), inset -2px -2px 5px rgba(0, 0, 0, 0.4);
@@ -664,23 +653,53 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         border-radius: 10px; height: 0%;
     }
 
-    #pektus-control {
-        bottom: 70px; left: 10px; top: auto; right: auto; transform: none;
-        width: 30px; height: 30px; background: var(--gold-accent);
-        border-radius: 50%; cursor: pointer;
-        box-shadow: inset 0 0 8px rgba(0,0,0,0.6); border: 2px solid rgba(0,0,0,0.3);
+        #pektus-control {
+        bottom: 70px; 
+        left: 5px; 
+        top: auto; 
+        right: auto; 
+        transform: none;
+        
+        width: 40px; /* Yung pinaikling size */
+        height: 12px; 
+        
+        /* BINAGO: Kulay Gold (#FFD700) na ang background */
+        background: #FFD700;
+        /* Naglagay ako ng konting gradient para mas maganda tignan */
+        background: linear-gradient(to bottom, #FFD700 0%, #E6C200 100%);
+        
+        border-radius: 4px; 
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+        border: 1px solid #B8860B; /* Darker gold na border */
     }
 
     #pektus-dot {
-        position: absolute; width: 10px; height: 10px;
-        background-color: transparent; border-radius: 50%;
-        top: 50%; left: 50%; transform: translate(-50%, -50%);
-        pointer-events: none; border: 1px solid #D32F2F; box-sizing: border-box;
+        position: absolute; 
+        width: 8px; 
+        height: 8px; 
+        
+        /* BINAGO: Ibinalik sa Red ang Dot */
+        background-color: red; 
+        
+        border-radius: 50%;
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%);
+        pointer-events: none; 
+        
+        /* White border para lutang na lutang sa Gold background */
+        border: 1px solid white; 
+        box-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
-    #pektus-dot::before, #pektus-dot::after { content: ''; position: absolute; background-color: #D32F2F; }
+    /* Crosshair sa loob (gawing puti para malinis) */
+    #pektus-dot::before, #pektus-dot::after { 
+        content: ''; 
+        position: absolute; 
+        background-color: white; 
+    }
     #pektus-dot::before { top: 50%; left: 2px; right: 2px; height: 1px; transform: translateY(-50%); }
     #pektus-dot::after { left: 50%; top: 2px; bottom: 2px; width: 1px; transform: translateX(-50%); }
-
     .arrow-button {
         position: absolute; bottom: 0px;
         width: 70px; height: 33px;
@@ -846,7 +865,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     transition: opacity 0.2s;
     text-shadow: 0 0 5px rgba(0,0,0,0.5); 
     
-    /* ▼▼▼ ITO ANG SOLUSYON PARA LUMUTANG ▼▼▼ */
+    
     z-index: 9999 !important; 
     pointer-events: auto !important;
 }
@@ -928,7 +947,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     #mute-button svg { display: block; }
     #mute-button { font-size: 1em !important; }
 
-    /* === LANDSCAPE MOBILE FIXES === */
+    
     @media (max-height: 550px) {
         .modal-overlay h2 { font-size: 1.8em !important; margin-bottom: 8px !important; }
         .modal-overlay .content { padding-top: 15px !important; padding-bottom: 15px !important; }
@@ -942,64 +961,59 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 
 #lobby-buttons-container .lobby-button {
-    flex-shrink: 0 !important; /* Ito ang pipigil sa pag-squish */
-    white-space: nowrap !important; /* Bawal maputol ang text */
-    margin: 0 4px !important; /* Space sa pagitan */
-}
-
-    justify-content: flex-start !important; /* Start sa kaliwa */
-    max-width: 90vw !important; /* Hanggang 90% lang ng screen width */
-    
-    /* Tago scrollbar pero scrollable pa rin */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE 10+ */
+    flex-shrink: 0 !important; 
+    white-space: nowrap !important; 
+    margin: 0 4px !important; 
+    justify-content: flex-start !important; 
+    max-width: 90vw !important;   
+    scrollbar-width: none; 
+    -ms-overflow-style: none;  
 }
 #lobby-buttons-container::-webkit-scrollbar { 
     display: none; /* Chrome/Safari */
 }
 
 
-/* 3. PALIITIN ANG BUTTONS SA LANDSCAPE (Para mas malinis) */
+
 @media (max-height: 500px) {
     .menu-button, .lobby-button {
-        font-size: 0.7em !important; /* Paliitin ang text */
-        padding: 8px 12px !important; /* Bawasan ang taba ng button */
+        font-size: 0.7em !important; 
+        padding: 8px 12px !important; 
         min-width: auto !important;
-        height: 35px !important; /* Fixed height para pantay */
+        height: 35px !important; 
     }
     
     #lobby-buttons-container {
-        bottom: 15px !important; /* Ibaba konti */
+        bottom: 15px !important;
         padding: 5px 10px !important;
     }
     
-    /* Ayusin ang font size ng coins */
+   
     .modal-coin-display {
         font-size: 0.9em !important;
         padding: 5px 10px !important;
     }
 }
 
-/* === XP BAR FIX (ANTI-OVERLAP) === */
+
 
 #xp-container {
-    /* Siguraduhing nasa baba-kaliwa at hindi natatakpan */
+    
     position: absolute !important;
     bottom: 0px !important; 
     left: 0px !important;
-    top: auto !important; /* Reset kung may lumang style */
+    top: auto !important; 
     
     background-color: rgba(0, 0, 0, 0.8) !important;
     padding: 5px 10px !important;
     border-radius: 15px !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     
-    /* Ayusin ang spacing ng elements sa loob */
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important; /* Ito ang maghihiwalay sa Lv. at sa Bar */
+    gap: 8px !important; 
     white-space: nowrap !important;
-    z-index: 20 !important; /* Siguraduhing nasa ibabaw */
+    z-index: 20 !important;
 }
 
 #xp-level {
@@ -1010,32 +1024,28 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
 }
 
 #xp-bar-wrapper {
-    width: 100px !important; /* Fixed width para hindi sumiksik */
-    height: 14px !important; /* Medyo kapalan para kita ang numbers */
+    width: 100px !important; 
+    height: 14px !important; 
     background-color: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
 #xp-text-display-new {
-    font-size: 9px !important; /* Liitan konti ang numbers sa loob */
-    line-height: 14px !important; /* I-center sa loob ng bar */
+    font-size: 9px !important; 
+    line-height: 14px !important;
 }
 
-/* ================================================= */
-/* === UI REPOSITIONING (XP Center, Exit Top-Right) === */
-/* ================================================= */
 
 #xp-container {
     position: absolute !important;
-    bottom: 5px !important; /* Dati 80px, ngayon 5px na lang para sagad */
+    bottom: 5px !important; 
     left: 50% !important;
     transform: translateX(-50%) !important;
     
-    /* Reset */
+    
     top: auto !important;
     right: auto !important;
     
-    /* Styling */
     background-color: rgba(20, 20, 35, 0.9) !important;
     padding: 4px 15px !important;
     border-radius: 15px !important;
@@ -1049,15 +1059,15 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     z-index: 20 !important;
 }
 
-/* 2. EXIT BUTTON -> KANANG TAAS */
+
 #exit-button {
     position: absolute !important;
-    top: 15px !important;          /* Margin sa taas */
-    right: 15px !important;        /* Margin sa kanan */
+    top: 15px !important;          
+    right: 15px !important;        
     
-    bottom: auto !important;       /* Reset bottom */
-    left: auto !important;         /* Reset left */
-    transform: none !important;    /* Alisin ang centering */
+    bottom: auto !important;       
+    left: auto !important;        
+    transform: none !important;    
     
     /* Styling */
     background-color: rgba(220, 53, 69, 0.8) !important;
@@ -1074,7 +1084,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     transform: scale(1.05) !important;
 }
 
-/* 3. MOBILE LANDSCAPE ADJUSTMENT */
+
 @media (max-height: 500px) {
     #xp-container {
         bottom: 15px !important; /* Ibaba konti pag landscape */
@@ -1087,40 +1097,37 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* === PWERSAHANG ISAGAD SA BABA === */
 
 #xp-container {
     position: absolute !important;
-    bottom: 0px !important;  /* Zero para sagad sa sahig */
-    top: auto !important;    /* Siguraduhing hindi naka-set ang top */
+    bottom: 0px !important;  
+    top: auto !important;    
     left: 50% !important;
     transform: translateX(-50%) !important;
-    margin-bottom: 2px !important; /* Konting allowance lang */
-    z-index: 999 !important; /* Siguraduhing nasa ibabaw */
+    margin-bottom: 2px !important; 
+    z-index: 999 !important; 
 }
 
-/* FIX PARA SA LANDSCAPE (KAPAG NAKA-HIGA ANG CP) */
+
 @media (max-height: 550px) {
     #xp-container {
-        bottom: 0px !important; /* Sagad din pag naka-landscape */
-        padding: 2px 10px !important; /* Paliitin konti para di harang */
+        bottom: 0px !important; 
+        padding: 2px 10px !important; 
     }
 }
 
-/* === LOBBY RANK CARD (CENTERED) === */
+
 #lobby-rank-card {
     position: absolute !important;
     
-    /* GITNA NG SCREEN */
-    top: 45% !important; /* Inangat ko nang konti sa 50% para balance */
+    top: 45% !important; 
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     
-    /* Reset sa lumang positioning */
+    
     right: auto !important;
     bottom: auto !important;
 
-    /* Mas "Solid" na Glass Style para bumagay sa gitna */
     background: rgba(20, 20, 35, 0.9) !important;
     backdrop-filter: blur(15px) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -1188,9 +1195,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     box-shadow: 0 0 10px rgba(150, 201, 61, 0.5); /* Glow sa bar */
 }
 
-/* === FINAL OPTION 1: CLASSY GLASS & GOLD THEME === */
-
-/* Unified Button Style */
 #lobby-buttons-container .lobby-button {
     /* Dark Glass Background */
     background: rgba(30, 30, 40, 0.8) !important;
@@ -1223,9 +1227,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     color: #FFD700 !important;
 }
 
-/* === FORCE GOLD LEADERBOARD BUTTON === */
-
-/* Gamitin ang ID ng container + ID ng button para mas "strong" ang command */
 #lobby-buttons-container #leaderboard-button {
     border: 2px solid #FFD700 !important; /* Ginawang 2px at Solid Gold */
     color: #FFD700 !important; /* Gold na Text */
@@ -1244,9 +1245,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     transform: translateY(-5px) scale(1.1) !important;
 }
 
-/* ================================================== */
-/* === ULTIMATE COLOR-CODED BUTTONS (Neon Borders) === */
-/* ================================================== */
 
 /* Reset muna natin ang base style para kumagat ang kulay */
 #lobby-buttons-container .lobby-button {
@@ -1313,11 +1311,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     box-shadow: 0 0 15px rgba(255, 61, 0, 0.4) !important;
 }
 
-/* ================================================== */
-/* === ULTIMATE COLOR-CODED BUTTONS (Neon Borders) === */
-/* ================================================== */
-
-/* Reset muna natin ang base style para kumagat ang kulay */
 #lobby-buttons-container .lobby-button {
     background-image: none !important;
     font-weight: 800 !important;
@@ -1382,9 +1375,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     box-shadow: 0 0 15px rgba(255, 61, 0, 0.4) !important;
 }
 
-/* ========================================================== */
-/* === SUPER STRONG COLOR OVERRIDE (FINAL FIX) === */
-/* ========================================================== */
 
 /* 1. VS AI (SILVER 🥈) */
 #lobby-buttons-container #vs-ai-button {
@@ -1479,11 +1469,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     100% { transform: translate(-50%, -100%) scale(1.5); opacity: 0; } 
 }
 
-/* ========================================= */
-/* === SUPER WIDE SHOP FIX (LANDSCAPE) === */
-/* ========================================= */
 
-/* 1. SAGAD NA WIDTH AT HEIGHT */
 #shop-modal .content {
     width: 98vw !important;        /* 98% ng lapad ng screen */
     height: 95vh !important;       /* 95% ng taas ng screen */
@@ -1537,11 +1523,11 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
 }
 
 .shop-buy-button {
-    padding: 4px 8px !important;   /* Mas maliit na button */
+    padding: 4px 8px !important;   
     font-size: 0.8em !important;
 }
 
-/* ▼▼▼ FIX SA BUTTONS (PARA HINDI MAGPATONG) ▼▼▼ */
+
 #utility-controls-container .ui-button {
     position: relative !important; /* Gawing relative para sumunod sa pila */
     top: auto !important;
@@ -1550,7 +1536,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     margin-bottom: 15px !important; /* Lagyan ng space sa pagitan nila */
 }
 
-/* Siguraduhin na naka-column (pababa) ang container */
+
 #utility-controls-container {
     display: flex !important;
     flex-direction: column !important;
@@ -1558,10 +1544,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     top: 50% !important;
     transform: translateY(-50%) !important;
 }
-
-/* ========================================= */
-/* === PRO LOBBY UI (DASHBOARD STYLE) === */
-/* ========================================= */
 
 #lobby-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -1571,7 +1553,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     font-family: 'Nunito', sans-serif;
 }
 
-/* --- TOP BAR --- */
+
 .lobby-header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 10px;
@@ -1675,9 +1657,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     .game-card { width: 90%; height: 140px; }
 }
 
-/* ========================================= */
-/* === LANDSCAPE LOBBY FIX (CORRECTED) === */
-/* ========================================= */
 
 @media (max-height: 600px) and (orientation: landscape) {
     
@@ -1748,16 +1727,11 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     .dock-label { font-size: 0.6em !important; }
 }
 
-/* ========================================= */
-/* === THINNER PRO HUD (28px Height) === */
-/* ========================================= */
-
 #player-info, #opponent-info {
     position: absolute;
     top: 0px !important;
     
-    /* ▼▼▼ STEP 1: PINANIPIS ANG BOX ▼▼▼ */
-    height: 28px !important; /* Dati 34px. Ngayon 28px na lang. */
+    height: 28px !important; 
     
     width: auto !important;
     min-width: auto !important;
@@ -1765,7 +1739,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     
     display: inline-flex !important;
     align-items: center !important;
-    gap: 6px !important; /* Binawasan ko gap para siksik */
+    gap: 6px !important; 
     
     background: rgba(20, 20, 35, 0.9) !important;
     backdrop-filter: blur(4px);
@@ -1781,35 +1755,35 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     cursor: pointer !important;
 }
 
-/* === PLAYER (KALIWA) === */
+
 #player-info {
     left: 100px !important;
     flex-direction: row !important;
     padding: 0 12px 0 3px !important; /* Adjusted padding para sa nipis */
 }
 
-/* === OPPONENT (KANAN) === */
+
 #opponent-info {
     right: 100px !important;
     flex-direction: row-reverse !important;
     padding: 0 3px 0 12px !important; /* Adjusted padding para sa nipis */
 }
 
-/* === TEXT ALIGNMENT & SPACING === */
+
 #player-info .hud-details, #opponent-info .hud-details {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    /* ▼▼▼ STEP 2: PINAGDIKIT ANG MGA LINYA NG TEXT ▼▼▼ */
+    
     line-height: 0.9 !important; /* Dikit-dikit na ang lines */
 }
 
 #player-info .hud-details { align-items: flex-start !important; }
 #opponent-info .hud-details { align-items: flex-end !important; text-align: right !important; }
 
-/* === COMMON STYLES (AVATAR & FONT SIZES) === */
+
 .hud-avatar {
-    /* ▼▼▼ STEP 3: PINALIIT ANG AVATAR ▼▼▼ */
+   
     width: 24px !important;  /* Dati 28px */
     height: 24px !important; /* Dati 28px */
     font-size: 14px !important; /* Dati 16px */
@@ -1822,7 +1796,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
 }
 
 .hud-name {
-    /* ▼▼▼ STEP 4: PINALIIT ANG PANGALAN ▼▼▼ */
+ 
     font-size: 10px !important; /* Dati 12px */
     
     font-weight: 800 !important;
@@ -1831,7 +1805,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
 }
 
 .hud-sub {
-    /* ▼▼▼ STEP 5: PINALIIT ANG SUBTEXT ▼▼▼ */
+
     font-size: 8px !important; /* Dati 9px */
     
     font-weight: 700 !important;
@@ -1840,16 +1814,11 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
 }
 
 
-
-/* LANDSCAPE MOBILE */
 @media (max-height: 500px) and (orientation: landscape) {
     #player-info { left: 130px !important; top: 0px !important; }
     #opponent-info { right: 130px !important; top: 0px !important; }
 }
 
-/* --- FLYING COINS & ANIMATIONS --- */
-
-/* 1. Ang Barya mismo */
 .flying-coin-particle {
     position: fixed;
     font-size: 24px; /* Laki ng coin */
@@ -1884,11 +1853,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     animation: coinShake 0.4s ease-in-out;
 }
 
-/* =============================================== */
-/* === FIXED WINNER MODAL (CLEAN STACK LAYOUT) === */
-/* =============================================== */
-
-/* 1. Background na medyo madilim */
 #winner-modal {
     background-color: rgba(0, 0, 0, 0.85) !important; /* Mas madilim para focused */
     backdrop-filter: blur(5px) !important;
@@ -2000,10 +1964,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     #opponent-hand-reveal { transform: scale(0.9); }
 }
 
-/* ================================================== */
-/* === ULTIMATE TRANSPARENCY FIX (Winner Modal) === */
-/* ================================================== */
-
 /* 1. Ang Outer Overlay (Ang tumatakip sa screen) */
 #winner-modal {
     /* Gawing halos invisible (0.1 lang ang dilim) */
@@ -2037,10 +1997,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     border: none !important;
     box-shadow: none !important;
 }
-
-/* ================================================== */
-/* === LANDSCAPE FIX: SPLIT SCREEN LAYOUT === */
-/* ================================================== */
 
 @media (max-height: 600px) and (orientation: landscape) {
     
@@ -2095,29 +2051,23 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === TRANSPARENT GAME MODES (See-through Table) === */
-/* ================================================== */
-
 #ai-menu, 
 #online-game-select, 
 #online-menu {
-    /* 1. Gawing semi-transparent na itim (0.5 opacity) */
-    /* Pwede mong baguhin: 0.3 (mas malinaw) hanggang 0.7 (mas madilim) */
+    
     background-color: rgba(0, 0, 0, 0.5) !important; 
     
-    /* 2. Tanggalin ang Blur effect para malinaw ang mesa */
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     
-    /* 3. Siguraduhin na naka-center ang laman */
+  
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
 }
 
-/* Dagdag: Lagyan ng shadow ang Title para mabasa kahit transparent */
+
 #ai-menu h2, 
 #online-game-select h2, 
 #online-menu h2 {
@@ -2125,45 +2075,38 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     filter: drop-shadow(0 0 10px rgba(0,0,0,0.8));
 }
 
-/* ================================================== */
-/* === MENU TITLES FIX (Gaya ng YOU WIN text) === */
-/* ================================================== */
 
 #ai-menu h2, 
 #online-game-select h2, 
 #online-menu h2,
 #invite-game-select h2 {
-    /* 1. Gamitin ang font ng Winner Modal */
+    
     font-family: 'Luckiest Guy', cursive !important;
     
     /* 2. Palakihin at kulayan ng Gold */
     font-size: 3.5em !important;
     color: #FFD700 !important; 
     
-    /* 3. ITO ANG SIKRETO: Makapal na Itim na Outline + Glow */
+    
     text-shadow: 4px 4px 0 #000, 0 0 20px rgba(255, 215, 0, 0.5) !important;
     
-    /* 4. Spacing at Layout */
+    
     margin-bottom: 20px !important;
     text-transform: uppercase !important;
     letter-spacing: 2px !important;
     line-height: 1 !important;
 }
 
-/* FIX SA LANDSCAPE (Para hindi sumakop ng space) */
+
 @media (max-height: 500px) {
     #ai-menu h2, 
     #online-game-select h2, 
     #online-menu h2,
     #invite-game-select h2 {
-        font-size: 2.2em !important; /* Paliitin pag nakahiga ang CP */
+        font-size: 2.2em !important; 
         margin-bottom: 10px !important;
     }
 }
-
-/* ================================================== */
-/* === PREMIUM SHOP UI (Black & Gold Theme) === */
-/* ================================================== */
 
 /* 1. Shop Modal Overlay */
 #shop-modal {
@@ -2242,9 +2185,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     border: 1px solid rgba(255,255,255,0.1) !important;
 }
 
-/* ================================================== */
-/* === SHOP ITEM FIX (Para lumabas ang laman) === */
-/* ================================================== */
 
 /* 1. I-force ang Grid Layout sa Container para hindi dikit-dikit */
 #shop-items-container {
@@ -2303,11 +2243,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     height: auto !important;
 }
 
-/* ================================================== */
-/* === SHOP BUTTON VISIBILITY FIX === */
-/* ================================================== */
-
-/* 1. Pahabain ang Card (Para magkasya ang Stats + Button) */
 .shop-item {
     /* Tinaasan ko from 220px to 270px */
     min-height: 270px !important; 
@@ -2339,11 +2274,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     align-self: center !important;
 }
 
-/* ================================================== */
-/* === ULTIMATE CARD FIX (Auto-Adjust) === */
-/* ================================================== */
 
-/* 1. Container: Flex Column na may Auto Height */
 .shop-item {
     display: flex !important;
     flex-direction: column !important;
@@ -2394,11 +2325,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     flex-shrink: 0 !important;
 }
 
-/* ================================================== */
-/* === CUE BUTTON RESCUE FIX (Anti-Hide) === */
-/* ================================================== */
-
-/* 1. Card Container: Hayaang humaba nang kusa */
 .shop-item {
     height: auto !important;       /* Hayaang mag-adjust base sa laman */
     min-height: 240px !important;  /* Tinaasan ko ang minimum height para safe */
@@ -2431,10 +2357,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     height: 70px !important;
 }
 
-/* ================================================== */
-/* === LANDSCAPE SHOP FIX: SPLIT VIEW LAYOUT === */
-/* ================================================== */
-
 @media (max-height: 600px) and (orientation: landscape) {
     
     /* 1. Baguhin ang Main Container: Gawing Grid (2 Columns) */
@@ -2452,11 +2374,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         align-items: start !important; /* Start from top */
     }
 
-    /* ----------------------------- */
-    /* --- SIDEBAR (Left Column) --- */
-    /* ----------------------------- */
-
-    /* Title "SHOP" */
+  
     #shop-modal h2 {
         grid-column: 1 !important;
         grid-row: 1 !important;
@@ -2486,11 +2404,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         width: 90% !important;
     }
 
-    /* ----------------------------- */
-    /* --- MAIN AREA (Right Column) --- */
-    /* ----------------------------- */
-
-    /* Tabs (Cues, Frames, Tables) - Ilagay sa taas ng kanan */
+    
     #shop-tabs-container {
         grid-column: 2 !important;
         grid-row: 1 !important; /* Nasa taas ng right side */
@@ -2525,11 +2439,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === TRANSPARENT CARD PICK MODAL === */
-/* ================================================== */
 
-/* 1. Transparent Background */
 #poker-foul-card-pick-modal {
     /* Semi-transparent black (0.6 opacity) */
     background-color: rgba(0, 0, 0, 0.6) !important;
@@ -2598,11 +2508,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === BIGGER & CLOSER CARDS FIX (Poker Foul) === */
-/* ================================================== */
-
-/* 1. Container: Paglapitin ang mga cards */
 #poker-foul-cards {
     display: flex !important;
     justify-content: center !important;
@@ -2650,11 +2555,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === TINTED BLACK ONLINE MENUS (Pustahan) === */
-/* ================================================== */
-
-/* Targetin ang Online Menu, Game Select, at Invite Select */
 #online-menu, 
 #online-game-select, 
 #invite-game-select {
@@ -2680,10 +2580,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     border: 1px solid rgba(255, 215, 0, 0.2);
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
-
-/* ================================================== */
-/* === BIGGER GAME BUTTONS WITH ICONS === */
-/* ================================================== */
 
 /* 1. Targetin ang mga buttons sa AI, Online Select, at Invite Select */
 #ai-menu .menu-button,
@@ -2751,9 +2647,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
 }
 
-/* ------------------------------------------- */
-/* --- LANDSCAPE FIX (Para magkasya sa screen) --- */
-/* ------------------------------------------- */
 @media (max-height: 500px) {
     #ai-menu .menu-button,
     #online-game-select .menu-button,
@@ -2765,11 +2658,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === PRO THEME BUTTONS (Dark & Gold Fix) === */
-/* ================================================== */
-
-/* Targetin ang buttons sa AI, Online, at Invite menus */
 #ai-menu .menu-button,
 #online-game-select .menu-button,
 #invite-game-select .menu-button {
@@ -2838,10 +2726,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         max-width: 300px !important;  /* Mas maiksi pa */
     }
 }
-
-/* ================================================== */
-/* === FLOATING ICON & FITTED BUTTONS FIX === */
-/* ================================================== */
 
 /* 1. Ang Button Box (Ang lalagyan ng Text) */
 #ai-menu .menu-button,
@@ -2925,11 +2809,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === PREMIUM MATCHMAKING & WAITING UI === */
-/* ================================================== */
-
-/* 1. Transparent Dark Background */
 #matchmaking-wait-modal,
 #waiting-room,
 #invite-wait-modal {
@@ -3014,10 +2893,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     #game-id-display { font-size: 2em !important; padding: 10px 20px !important; }
     .loader { width: 40px !important; height: 40px !important; border-width: 4px !important; }
 }
-
-/* ================================================== */
-/* === VIP LOUNGE LOBBY UI (Ultimate Upgrade) === */
-/* ================================================== */
 
 /* 1. Background: Exclusive Club Vibe */
 #lobby-screen {
@@ -3141,11 +3016,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
 }
 
-/* ================================================== */
-/* === ONLINE ICON UPDATE (Connected World) === */
-/* ================================================== */
 
-/* 1. Itago ang lumang Earth Emoji (🌍) */
 #online-button .card-icon {
     color: transparent !important; /* Gawing invisible ang lumang text */
     position: relative !important;
@@ -3190,11 +3061,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === SIMPLE EARTH ICON FIX (🌍) === */
-/* ================================================== */
-
-/* Palitan ang icon sa loob ng Online Button */
 #online-button .card-icon::after {
     content: '🌍' !important; /* Simpleng Earth Emoji */
     
@@ -3207,18 +3073,13 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     /* Siguraduhing tama ang laki */
     font-size: 1em !important; 
     
-    /* Panatilihin ang Neon Blue Glow para sosyal pa rin */
     text-shadow: 0 0 20px rgba(0, 229, 255, 0.8);
     
     /* Pulse Animation (Huminga effect) */
     animation: networkPulse 2s infinite alternate ease-in-out;
 }
 
-/* ================================================== */
-/* === ALIVE ROBOT ANIMATION (Blink & Wiggle) === */
-/* ================================================== */
 
-/* Targetin ang Robot Icon sa Practice Mode */
 #vs-ai-button .card-icon {
     display: inline-block !important; /* Importante para gumalaw */
     transform-origin: bottom center;  /* Sa leeg ang pivot point */
@@ -3251,11 +3112,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     100% { transform: rotate(0deg); }
 }
 
-/* ================================================== */
-/* === TINTED RULES MODAL (Instructions) === */
-/* ================================================== */
 
-/* 1. Ang Outer Overlay (Background) */
 #straight-ball-instructions,
 #poker-instructions,
 #61-ball-instructions {
@@ -3314,11 +3171,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
 }
 
-/* ================================================== */
-/* === PLAY BUTTON & RULES MODAL FIX === */
-/* ================================================== */
-
-/* 1. Gawing See-Through ang Background (Mas malinaw) */
 #straight-ball-instructions,
 #poker-instructions,
 #61-ball-instructions {
@@ -3367,11 +3219,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     width: 100% !important;
 }
 
-/* ================================================== */
-/* === AESTHETIC GREEN PLAY BUTTON === */
-/* ================================================== */
-
-/* Targetin ang Play Button sa loob ng Instructions */
 .instruction-modal .menu-button {
     /* Aesthetic Gradient (Lush Green) */
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
@@ -3402,10 +3249,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%) !important;
     box-shadow: 0 0 30px rgba(56, 239, 125, 0.8) !important;
 }
-
-/* ================================================== */
-/* === LANDSCAPE RULES FIX (No Scroll) === */
-/* ================================================== */
 
 @media (max-height: 500px) and (orientation: landscape) {
     
@@ -3473,10 +3316,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === ROYAL PLAY BUTTON FIX (Navy Blue & Gold) === */
-/* ================================================== */
-
 .instruction-modal .menu-button {
     /* 1. SIZE: Mas Maiksi / Compact */
     width: auto !important;
@@ -3510,11 +3349,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     filter: brightness(1.2);
 }
 
-/* ================================================== */
-/* === NAVY RULES & GREEN/GOLD BUTTON FIX === */
-/* ================================================== */
-
-/* 1. BACKGROUND: Ang Rules Box mismo ay Navy Blue */
 .instruction-modal .content {
     /* Navy Blue Gradient (Para hindi flat tignan) */
     background: linear-gradient(145deg, #001f3f, #001020) !important;
@@ -3560,10 +3394,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.6) !important; /* Gold Glow pag hover */
 }
 
-/* ================================================== */
-/* === PLAY BUTTON TEXT ALIGNMENT FIX === */
-/* ================================================== */
-
 .instruction-modal .menu-button {
     /* 1. Gamitin ang Flexbox para PERFECT CENTER */
     display: flex !important;
@@ -3586,9 +3416,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     margin: 15px auto !important;
 }
 
-/* ================================================== */
-/* === SPLIT VIEW FRIENDS MODAL (Left/Right) === */
-/* ================================================== */
 
 @media (max-height: 600px) and (orientation: landscape) {
     
@@ -3656,9 +3483,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         max-height: 150px !important; /* Fixed height para scrollable */
     }
 
-    /* --- RIGHT SIDE (My Friends) --- */
-
-    /* A. My Friends Header */
     .friends-lists-wrapper > h3:nth-of-type(2) {
         grid-column: 2 !important;
         grid-row: 2 !important; /* Kapantay ng Search Bar */
@@ -3669,21 +3493,16 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         padding-bottom: 10px !important;
     }
 
-    /* B. My Friends List (Sakop ang natitirang space pababa) */
+    
     #friends-list-accepted {
         grid-column: 2 !important;
-        grid-row: 3 / span 3 !important; /* Hatak pababa hanggang dulo */
+        grid-row: 3 / span 3 !important; 
         height: 100% !important;
         max-height: 65vh !important; /* Sagad */
         background: rgba(0,0,0,0.3) !important; /* Darker background para focus */
     }
 }
 
-/* ================================================== */
-/* === MESSAGE BUTTON (Social Media Style) === */
-/* ================================================== */
-
-/* Blue Gradient (Gaya ng FB Messenger) */
 .message-btn {
     background-image: linear-gradient(to right, #00c6ff 0%, #0072ff 100%) !important;
     box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4) !important;
@@ -3697,7 +3516,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     transform: translateY(-2px) scale(1.05) !important;
 }
 
-/* Landscape Adjustment (Para magkasya tatlong buttons) */
+
 @media (max-height: 500px) {
     .friend-actions {
         gap: 3px !important; /* Padikitin ang buttons */
@@ -3709,9 +3528,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === PRIVATE CHAT UI (Messenger Style) === */
-/* ================================================== */
 
 /* 1. Chat Bubbles */
 .chat-bubble {
@@ -3756,9 +3572,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     to { transform: scale(1); opacity: 1; }
 }
 
-/* ================================================== */
-/* === CHAT MODAL Z-INDEX FIX (Para lumutang) === */
-/* ================================================== */
+
 
 #private-chat-modal {
     /* Tinaasan ko ang Z-Index para lumutang sa ibabaw ng Friends List */
@@ -3770,13 +3584,10 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     z-index: 301 !important;
 }
 
-/* ================================================== */
-/* === CHAT NOTIFICATION BADGE (Red Dot) === */
-/* ================================================== */
 
 .message-btn {
-    position: relative !important; /* Para ma-anchor ang dot */
-    overflow: visible !important; /* Para lumabas ang dot */
+    position: relative !important; 
+    overflow: visible !important; 
 }
 
 .chat-badge {
@@ -3800,9 +3611,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     100% { transform: scale(1); }
 }
 
-/* ================================================== */
-/* === INVITE FRIEND LANDSCAPE FIX (Split Layout) === */
-/* ================================================== */
 
 @media (max-height: 550px) and (orientation: landscape) {
     
@@ -3828,14 +3636,12 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         font-size: 2em !important;
     }
 
-    /* 3. SUBTEXT ("Inviting: ...") - Sakop din ang buong lapad */
+    
     #invite-game-select > p:nth-of-type(1) {
         grid-column: 1 / -1 !important;
         grid-row: 2 !important;
         margin-bottom: 10px !important;
     }
-
-    /* --- LEFT SIDE: BETTING AREA --- */
 
     /* Label "Select Bet:" */
     #invite-game-select > p:nth-of-type(2) {
@@ -3866,9 +3672,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
         margin-top: 10px !important;
     }
 
-    /* --- RIGHT SIDE: GAME MODES --- */
-
-    /* Pagsamahin ang Game Buttons sa Kanan */
     #invite-poker-button {
         grid-column: 2 !important;
         grid-row: 3 !important; /* Start at row 3 */
@@ -3898,9 +3701,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === INVITE MODAL CLOSE BUTTON FIX === */
-/* ================================================== */
 
 /* Targetin ang Close Button sa loob ng Invite Game Select */
 #invite-game-select .modal-close-btn {
@@ -3933,9 +3733,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     color: #FFD700 !important; /* Mag-go-gold pag tinutok */
 }
 
-/* ================================================== */
-/* === INVITE CLOSE BUTTON "FORCE VISIBLE" FIX === */
-/* ================================================== */
+
 
 @media (max-height: 550px) and (orientation: landscape) {
     
@@ -3975,11 +3773,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     }
 }
 
-/* ================================================== */
-/* === NUCLEAR FIX: INVITE CLOSE BUTTON === */
-/* ================================================== */
 
-/* Targetin ang SPECIFIC ID na ito */
 #invite-game-select-close-btn {
     /* 1. POSITIONING: Dikit sa Salamin (Viewport) */
     position: fixed !important; 
@@ -4023,9 +3817,6 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     cursor: pointer !important;
 }
 
-/* ================================================== */
-/* === FINAL FIX: INVITE CLOSE BUTTON (Corrected) === */
-/* ================================================== */
 
 /* Targetin ang SPECIFIC ID na ito */
 #invite-game-select-close-btn {
@@ -4047,8 +3838,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     border-radius: 50% !important;
     color: white !important;
     
-    /* 5. TEXT ALIGNMENT (SIMPLIFIED) */
-    /* Tinanggal ang Flexbox para iwas bug sa grid layout */
+    
     display: block !important; 
     text-align: center !important;
     
@@ -4077,12 +3867,7 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
     background-color: #cc0000 !important;
 }
 
-/* ========================================================== */
-/* === SUPER OVERRIDE FIX: INVITE MODAL & CLOSE BUTTON === */
-/* ========================================================== */
 
-/* 1. AYUSIN ANG BACKGROUND (Gawing Solid para matakpan ang likod) */
-/* Gumamit tayo ng ID selector para mas malakas ang power */
 div#invite-game-select.modal-overlay {
     /* Solid Dark Blue/Black (Wala nang transparency) */
     background: #0f0f1a !important; 
@@ -4096,8 +3881,7 @@ div#invite-game-select.modal-overlay {
     box-shadow: 0 0 100px rgba(0,0,0,1) !important;
 }
 
-/* 2. ANG NAWAWALANG X BUTTON (Sapilitang Palitawin) */
-/* Tinatawag natin ang ID ng parent + ID ng button para sure na ito ang masusunod */
+
 div#invite-game-select span#invite-game-select-close-btn {
     /* Pilitin na maging FIXED sa screen (Dedma sa grid layout) */
     position: fixed !important;
@@ -4142,9 +3926,6 @@ div#invite-game-select span#invite-game-select-close-btn:hover {
     cursor: pointer !important;
 }
 
-/* ================================================== */
-/* === VIOLET SETTINGS MODAL (Shop Style) === */
-/* ================================================== */
 
 /* 1. Modal Content (Violet Glass) */
 #settings-modal .settings-content {
@@ -4244,9 +4025,6 @@ input:checked + .slider:before {
     display: none !important;
 }
 
-/* ================================================== */
-/* === SETTINGS BUTTON POSITION FIX === */
-/* ================================================== */
 
 #main-settings-btn {
     /* Siguraduhing naka-FIXED o ABSOLUTE sa screen */
@@ -4274,10 +4052,6 @@ input:checked + .slider:before {
     background-color: #D500F9 !important;
     cursor: pointer;
 }
-
-/* ================================================== */
-/* === FORCE SHOW SETTINGS BUTTON (GEAR) === */
-/* ================================================== */
 
 #main-settings-btn {
     /* Pilitin na maging FIXED sa screen (Dedma sa ibang div) */
@@ -4317,11 +4091,6 @@ input:checked + .slider:before {
     box-shadow: 0 0 25px rgba(213, 0, 249, 0.9) !important;
 }
 
-/* ================================================== */
-/* === SETTINGS CLOSE BUTTON FIX (Force Clickable) === */
-/* ================================================== */
-
-/* 1. Siguraduhing ang Kahon ang basehan ng pwesto */
 #settings-modal .settings-content {
     position: relative !important; 
 }
@@ -4356,9 +4125,6 @@ input:checked + .slider:before {
     transform: scale(1.1);
 }
 
-/* ================================================== */
-/* === STRONG TURN INDICATOR (NEON GLOW) === */
-/* ================================================== */
 
 /* Default State (Hindi Turn) - Medyo dim */
 #player-info, #opponent-info {
@@ -4368,11 +4134,7 @@ input:checked + .slider:before {
     transform: scale(0.95); /* Paliitin konti pag di turn */
 }
 
-/* ================================================== */
-/* === BREATHING TURN INDICATOR (ANIMATED) === */
-/* ================================================== */
 
-/* 1. Ang Animation (Huminga Effect) */
 @keyframes breathingGlow {
     0% {
         /* Mahina */
@@ -4405,11 +4167,6 @@ input:checked + .slider:before {
     animation: breathingGlow 1.5s infinite ease-in-out !important;
 }
 
-/* ================================================== */
-/* === ULTIMATE TURN INDICATOR FIX (FORCE GLOW) === */
-/* ================================================== */
-
-/* 1. BAGONG ANIMATION (Gamit ang Filter & Transform para sure na gagana) */
 @keyframes superBreathing {
     0% { 
         transform: scale(1); 
@@ -4506,6 +4263,105 @@ div#opponent-info.hud-active {
 #preloader-overlay.hidden {
     opacity: 0;
     pointer-events: none;
+}
+
+/* ========================================= */
+/* 💻 PC / DESKTOP MODE (Automatic Scaling)  */
+/* ========================================= */
+
+@media screen and (min-width: 1024px) {
+
+    /* 1. GENERAL TEXT SCALING */
+    body {
+        font-size: 20px !important; /* Lakihan ang base font */
+    }
+
+    /* 2. LOBBY: PROFILE & COINS (Palakihin ng 30%) */
+    .profile-section {
+        transform: scale(1.3) !important; 
+        transform-origin: top left !important;
+        margin-left: 20px !important;
+        margin-top: 10px !important;
+    }
+
+    .coin-pill {
+        transform: scale(1.3) !important;
+        transform-origin: top right !important;
+        margin-right: 20px !important;
+        margin-top: 10px !important;
+    }
+
+    /* 3. LOBBY: CARDS (Game Modes) */
+    .game-card {
+        width: 380px !important; /* Mas malapad */
+        height: 260px !important; /* Mas matangkad */
+        margin: 20px !important;
+    }
+    .card-title { font-size: 2.5em !important; } /* Malaking Title */
+    .card-icon { font-size: 5em !important; }   /* Malaking Emoji */
+
+    /* 4. LOBBY: BOTTOM DOCK (Icons sa baba) */
+    .lobby-dock {
+        transform: scale(1.2) !important; /* Palakihin ang buong dock */
+        margin-bottom: 30px !important;
+        padding: 20px 40px !important;
+    }
+
+    /* 5. IN-GAME HUD (Player Names sa taas) */
+    #player-info, #opponent-info {
+        transform: scale(1.5) !important; /* 50% Bigger */
+        top: 20px !important;
+    }
+    
+    #player-info { 
+        left: 180px !important; /* Usog pa-kanan para di dikit sa gilid */
+        transform-origin: top left !important; 
+    }
+    
+    #opponent-info { 
+        right: 180px !important; /* Usog pa-kaliwa */
+        transform-origin: top right !important; 
+    }
+
+    /* 6. COINS DISPLAY (In-Game) */
+    #currency-display {
+        transform: scale(1.5) !important;
+        top: 20px !important;
+        left: 20px !important;
+        transform-origin: top left !important;
+    }
+
+    /* 7. SETTINGS & UTILITY BUTTONS (Gear, Mute, Chat) */
+    .ui-button, .icon-button, #main-settings-btn {
+        width: 60px !important;  /* Lakihan ang pindutan */
+        height: 60px !important;
+        font-size: 1.5em !important; /* Lakihan ang icon sa loob */
+    }
+    
+    /* Ayusin ang pwesto ng Settings button */
+    #main-settings-btn {
+        top: 100px !important; /* Ibaba konti kasi lumaki ang Coins display */
+        left: 25px !important;
+    }
+
+    /* 8. MODALS (Popups) - Zoom In effect */
+    .modal-overlay .content {
+        transform: scale(1.2) !important; /* Lahat ng popup (Shop, Winner, etc) lalaki */
+        max-width: 800px !important; /* Mas malapad na limit */
+    }
+
+    /* 9. MENU BUTTONS (Yung mga mahahabang button) */
+    .menu-button {
+        font-size: 1.3em !important;
+        padding: 15px 30px !important;
+        border-radius: 20px !important;
+    }
+
+    /* 10. NOTIFICATIONS / TOASTS */
+    #message-box {
+        font-size: 2em !important; /* Sobrang laki para kitang kita */
+        padding: 20px 40px !important;
+    }
 }
 
 </style>
@@ -4609,18 +4465,15 @@ div#opponent-info.hud-active {
 
 <div id="xp-container" style="position: absolute; bottom: 5px; left: 5px; background-color: var(--dark-bg); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; 
     
-    /* ▼▼▼ DITO KO INAYOS ANG PADDING (ESPASYO) ▼▼▼ */
     padding: 3px 5px; /* <--- GINAWA KONG 3px (taas/baba) at 5px (kaliwa/kanan) */
     
     display: flex; align-items: center; backdrop-filter: blur(5px); z-index: 10; white-space: nowrap;
     
-    /* ▼▼▼ DITO KO INALIS ANG PESTENG 'GAP' ▼▼▼ */
     gap: 0px; 
 ">
     
     <div id="xp-level" style="font-size: 0.8em; font-weight: bold; color: var(--light-text); flex-shrink: 0;
-        
-        /* ▼▼▼ DITO KO KINONTROL ANG ESPASYO ▼▼▼ */
+      
         padding-right: 4px;
     ">
           <span id="player-level-display">1</span>
@@ -4632,7 +4485,7 @@ div#opponent-info.hud-active {
 
     <div id="xp-text-display-new" style="font-size: 0.8em; font-weight: bold; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         
-        /* ▼▼▼ DITO KO KINONTROL ANG ESPASYO ▼▼▼ */
+        
         padding-left: 4px;
     ">
         0/100
@@ -4666,9 +4519,33 @@ div#opponent-info.hud-active {
             <div id="pektus-dot"></div>
         </div>
         <div id="left-arrow" class="arrow-button control-area">&lt;</div>
-        <div id="right-arrow" class="arrow-button control-area">&gt;</div>
-    </div>
+        <div id="right-arrow" class="arrow-button control-area">&gt;</div> 
 
+</div>
+
+<div id="pektus-modal" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; flex-direction: column;">
+    
+    <h2 style="color: #FFD700; font-family: 'Luckiest Guy'; margin-bottom: 20px; text-shadow: 2px 2px 0 #000; letter-spacing: 2px; pointer-events: none;">ADJUST SPIN</h2>
+    
+    <div id="big-cue-ball" style="
+        width: 300px; 
+        height: 80px; 
+        background: linear-gradient(to bottom, #FFD700 0%, #E6C200 100%);
+        border-radius: 12px; 
+        position: relative; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+        border: 2px solid #B8860B;">
+        
+        <div style="position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: rgba(0,0,0,0.1); border-top: 1px dashed rgba(255,255,255,0.3); pointer-events: none;"></div>
+        <div style="position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: rgba(0,0,0,0.1); border-left: 1px dashed rgba(255,255,255,0.3); pointer-events: none;"></div>
+        
+        <div id="big-red-dot" style="width: 30px; height: 30px; background: red; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.5); pointer-events: none;"></div>
+        
+        <div id="big-pektus-touch-area" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer;"></div>
+    </div>
+    
+    <p style="color: white; margin-top: 15px; font-size: 14px; text-shadow: 1px 1px 2px black; pointer-events: none;">(Release to Set)</p>
+</div>
 <div id="lobby-screen" style="display: none;">
     
     <div class="lobby-header">
@@ -4788,7 +4665,7 @@ div#opponent-info.hud-active {
             <div class="winner-text-and-buttons">
                 <h2 id="winner-text"></h2>
                 <!-- Button for AI Rematch (formerly Play Again) -->
-                <button id="ai-rematch-button" style="display: none;">Rematch vs AI</button>
+                <button id="ai-rematch-button" style="display: none;">Rematch</button>
                 <!-- Button to go back to Menu (New) -->
                 <button id="back-to-menu-button" style="display: none;">Back to Menu</button>
                  <!-- Button for Online Rematch Request (Original, stays hidden for AI) -->
@@ -4998,9 +4875,32 @@ window.isInGame = false;
 let tempInviteFriendUid = null;
 let tempInviteFriendName = null;
 
+// --- 🤖 STEP 1: BOT NAME GENERATOR 🤖 ---
+const BotGenerator = {
+    prefixes: [
+        "Boy", "Mang", "Aling", "Totoy", "Nene", "Boss", "Lodi", 
+        "Master", "Batang", "King", "Don", "Pareng", "Kuya", "Ate"
+    ],
+    roots: [
+        "Sili", "Bawang", "Pogi", "Ganda", "Tumbok", "Sargo", 
+        "Pektus", "Kanto", "Quiapo", "Tondo", "Manila", "Davao", 
+        "Cebu", "Barako", "Agimat", "Cardo", "Bato", "Malupit", 
+        "Tigas", "Lupet", "Hustler", "Shark"
+    ],
+    generateName: function() {
+        const pre = this.prefixes[Math.floor(Math.random() * this.prefixes.length)];
+        const root = this.roots[Math.floor(Math.random() * this.roots.length)];
+        const hasNumber = Math.random() < 0.4; // 40% chance may number
+        const number = hasNumber ? Math.floor(Math.random() * 99) : "";
+        return `${pre}${root}${number}`;
+    }
+};
+// ----------------------------------------
+
+
         const musicPlayer1 = document.getElementById('bg-music-reggae-1'), musicPlayer2 = document.getElementById('bg-music-reggae-2'), muteButton = document.getElementById('mute-button');
         const backgroundPlaylist = [musicPlayer1, musicPlayer2];
-const VIRTUAL_WIDTH = 970;
+const VIRTUAL_WIDTH = 950;
 const VIRTUAL_HEIGHT = 500;
 
 let lastTime = 0;
@@ -5104,7 +5004,7 @@ const SHOP_ITEMS = {
             price: 60000, 
             imageSrc: 'https://i.imgur.com/VghHWbE.png',
             displayWidth: 450,
-            displayHeight: 150, // Sakto sa taba ng image
+            displayHeight: 150, 
             stats: { Power: 10, Aim: 10, Spin: 9 } 
         }
  
@@ -5217,30 +5117,23 @@ let selectedBetAmount = 0; // Default: Free play
 const HOUSE_CUT_PERCENTAGE = 0.10; // 10% Tong ng laro
 
 
-/**
- * Kinukuha ang stats object ng kasalukuyang naka-equip na tako.
- * Nagbibigay ng default stats kung sakaling may error.
- */
+
 function getCurrentCueStats() {
     // Hanapin ang data ng cue na naka-equip
     const equippedCue = SHOP_ITEMS.cues.find(cue => cue.id === equippedItems.cue);
 
-    // Kung nahanap, ibalik ang stats nito
+    
     if (equippedCue && equippedCue.stats) {
         return equippedCue.stats;
     }
 
-    // Kung hindi nahanap (e.g., error), ibalik ang pinakamahinang stats
+    
     return { Power: 1, Aim: 1, Spin: 1 };
 }
 
-// ▲▲▲ HANGGANG DITO ▲▲▲
-// ▼ IDAGDAG MO ITO ▼
-let opponentEquippedCueId = 'default'; // Para malaman kung anong tako gamit ng kalaban online
-// ▲ END NG DAGDAG ▲
 
-// ▲ END NG PAGPALIT ▲
-// Dito ise-save ang mga nabili na
+let opponentEquippedCueId = 'default'; 
+
 let playerInventory = {
     cues: ['default'] // Default na pagmamay-ari
 };
@@ -5249,9 +5142,7 @@ let playerInventory = {
 let equippedItems = {
     cue: 'default'
 };
-let currentShopTab = 'cues'; // Default tab
-
-// ▲ END NG DAGDAG NA VARIABLES ▲
+let currentShopTab = 'cues'; 
         let currentTrackIndex = Math.floor(Math.random() * backgroundPlaylist.length), musicHasStarted = false;     
 const canvas = document.getElementById('game-canvas'), ctx = canvas.getContext('2d'), gameWrapper = document.getElementById('game-wrapper'), backgroundCanvas = document.createElement('canvas'), backgroundCtx = backgroundCanvas.getContext('2d'), messageBox = document.getElementById('message-box'), winnerModal = document.getElementById('winner-modal'), winnerText = document.getElementById('winner-text'), playerInfo = document.getElementById('player-info'), opponentInfo = document.getElementById('opponent-info'), powerControl = document.getElementById('power-control'), powerBar = document.getElementById('power-bar'), gameModeSelect = document.getElementById('game-mode-select'), /*difficultySelect = document.getElementById('difficulty-select'),*/ onlineMenu = document.getElementById('online-menu'), exitButton = document.getElementById('exit-button'), vsAiButton = document.getElementById('vs-ai-button'), onlineButton = document.getElementById('online-button'), createGameButton = document.getElementById('create-game-button'), joinGameButton = document.getElementById('join-game-button'), gameIdInput = document.getElementById('game-id-input'), /*difficultyBackButton = document.getElementById('difficulty-back-button'),*/  cardHandContainer = document.getElementById('card-hand-container'), opponentHandReveal = document.getElementById('opponent-hand-reveal'),
             // == WINNER MODAL BUTTONS ==
@@ -5281,43 +5172,38 @@ ghostHand = document.getElementById('ghost-hand'),
         const interactiveElements = [canvas, powerControl, pektusControl, leftArrow, rightArrow];
         // END: Tutorial variables
 
-        const TABLE_ASPECT_RATIO = 1.94, 
-       BALL_RADIUS = 18,     // <-- Pinalitan galing 16
+        const TABLE_ASPECT_RATIO = 1.9, 
+       BALL_RADIUS = 17,     // <-- Pinalitan galing 16
               CUE_BALL_RADIUS = 20,  // <-- Pinalitan galing 18
               HOLE_RADIUS = 38,    // <-- Pinalitan galing 35
               
-              // ▼▼▼ IDAGDAG MO ITO ▼▼▼
+              
               CUE_CHIP_MASS = 3.5,     // Bigat ng Cue Chip (mas mabigat)
-              OBJECT_CHIP_MASS = 1.0,  // Bigat ng Object Chip (mas magaan)
+              OBJECT_CHIP_MASS = 1.5,  // Bigat ng Object Chip (mas magaan)
               
-              // ▼▼▼ IDAGDAG MO ITO ▼▼▼
               COLLISION_FRICTION = 0.5, // 0 = Walang preno sa banggaan, 1 = Sobrang preno
-              // ▲▲▲ HANGGANG DITO ▲▲▲
-
-              // Ang 'FRICTION' na ito ay ibig sabihin na pagkatapos ng 1 segundo,
-
-              // Ang 'FRICTION' na ito ay ibig sabihin na pagkatapos ng 1 segundo,
-              // ang bilis ng picha ay 10% na lang ng original.
+       
               FRICTION_PER_SECOND = 0.3, // <-- ITO ANG PALIT SA 'FRICTION'
-              MIN_VELOCITY = 10.0, // <-- ITO ANG PALIT SA 'MIN_VELOCITY'
+              MIN_VELOCITY = 5.0, // <-- ITO ANG PALIT SA 'MIN_VELOCITY'
               MIN_ROTATION_SPEED = 0.01, 
               ROTATION_SPEED = 0.001,
               TOUCH_AIM_SENSITIVITY = 0.00001;
         
         // START: SPINNING CHIP UPDATE (Nagdagdag ng spin friction)
         const SPIN_FRICTION_PER_SECOND = 0.15;
+// Idagdag mo ito para gumana ang Pektus sa Pader
+const RAIL_KICK_FACTOR = 1.5; // 0.2 = Sakto lang, 0.5 = Sobrang lakas kumabig
         const WALL_SPIN_FACTOR = 0.005; // Lakas ng spin galing sa pader
         const COLLISION_SPIN_FACTOR = 0.03; // Lakas ng spin galing sa banggaan
-        const COLLISION_FRICTION_FACTOR = 0.05; // Mababang friction para madulas (Iwas hatak pabalik)
+        const COLLISION_FRICTION_FACTOR = 0.01; // Mababang friction para madulas (Iwas hatak pabalik)
 
         let scale = 1, table = { width: 0, height: 0 }, chips = [], holes = [], cueStick = { angle: 0, length: 10000, visible: true, power: 0, pullback: 0 }, gameState = 'menu', gameMode = 'ai-classic', playerTurn = true, colorsAssigned = false, playerChipsType = null, opponentChipsType = null, canMoveCueBall = false, chipsMoving = false, chipsPocketedInTurn = [], firstChipHitInTurn = null, isPoweringUp = false, isAimingOnCanvas = false, isDraggingCueBall = false, difficulty = 'pro', deck = [], playerHand = [], opponentHand = [], originalPlayerHand = [], originalOpponentHand = [], selectedGameConfig = {}, isBreakShot = false, pektusOffset = { x: 0, y: 0 }, shotPektusOffset = { x: 0, y: 0 }, isDraggingPektusDot = false, isRotatingLeft = false, isRotatingRight = false, isInvalidPlacement = false, player61Score = 0, opponent61Score = 0, lowestChipNumber = 1, aiConsecutivePots = 0;
-let currentShotStats = { Power: 2, Aim: 3, Spin: 1 }; // Default stats, para lang may laman
-// ▲▲▲ HANGGANG DITO ▲▲▲
+let currentShotStats = { Power: 2, Aim: 3, Spin: 1 }; 
         let gameId = null, localPlayerId = null, localPlayerUid = null, currentTurnUid = null, unsubscribeGameListener, isOnlineGame = false, isMyTurnOnline = false, isProcessingTurnEnd = false, lastProcessedTurnId = -1, isSyncing = false, selectedOnlineGameType = 'poker', lastAimUpdateTime = 0;
         const AIM_UPDATE_INTERVAL = 50;
         let lastTurnControllerUid = null, unsubscribeFromQueue, matchmakingTimeoutId = null, isAiTakeoverActive = false;
 let fireworks = [];
-        // --- Sound Variables ---
+        
         let audioInitialized = false, chipCollisionSynth, pocketSynth, uiSynth, cueHitSynth, cushionSynth;
         let aimingSynth, powerSynth; // BAGONG synths
         let lastCollisionSoundTime = -1, lastCushionSoundTime = -1, lastAimSoundTime = -1, buttonSoundPlaying = false;
@@ -5359,6 +5245,111 @@ const tableSurfaceImage = new Image();
             history.replaceState({ modal: 'start' }, 'Start', '#start');
             requestAnimationFrame(update); // Ito na ang magsisimula ng game loop
         }
+
+// --- NEW PEKTUS MODAL LOGIC (FIXED) ---
+
+const pektusModal = document.getElementById('pektus-modal');
+const bigRedDot = document.getElementById('big-red-dot');
+const bigTouchArea = document.getElementById('big-pektus-touch-area');
+const bigCueBall = document.getElementById('big-cue-ball');
+let isDraggingBigPektus = false; // Eto ang kulang kanina
+
+function openPektusModal() {
+    if (!pektusModal) return;
+    playButtonSound();
+    pektusModal.style.display = 'flex';
+    updateBigDotUI();
+}
+
+// Logic para igalaw ang malaking dot
+function handleBigPektusMove(clientX, clientY) {
+    if (!bigCueBall) return;
+    const rect = bigCueBall.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // Position relative sa gitna
+    let dx = clientX - rect.left - centerX;
+    let dy = clientY - rect.top - centerY;
+    
+    // LIMITER (RECTANGLE BAKOD)
+    const maxDistX = (rect.width / 2) - 15;
+    const maxDistY = (rect.height / 2) - 15;
+    
+    if (dx > maxDistX) dx = maxDistX;
+    if (dx < -maxDistX) dx = -maxDistX;
+    
+    if (dy > maxDistY) dy = maxDistY;
+    if (dy < -maxDistY) dy = -maxDistY;
+    
+    // Update Global Values
+    pektusOffset.x = dx / maxDistX;
+    pektusOffset.y = dy / maxDistY;
+    
+    updateBigDotUI();
+    
+    if (!isTutorialActive) sendLiveAimData();
+}
+
+function updateBigDotUI() {
+    if (!bigCueBall || !bigRedDot) return;
+    const rect = bigCueBall.getBoundingClientRect();
+    const maxDistX = (rect.width / 2) - 15;
+    const maxDistY = (rect.height / 2) - 15;
+    
+    const x = (pektusOffset.x * maxDistX) + (rect.width / 2);
+    const y = (pektusOffset.y * maxDistY) + (rect.height / 2);
+    
+    bigRedDot.style.left = x + 'px';
+    bigRedDot.style.top = y + 'px';
+}
+
+// LISTENERS (Updated para sa Auto-Close)
+if (bigTouchArea) {
+    // Mouse
+    bigTouchArea.addEventListener('mousedown', (e) => {
+        isDraggingBigPektus = true;
+        handleBigPektusMove(e.clientX, e.clientY);
+    });
+    
+    window.addEventListener('mousemove', (e) => {
+        if (isDraggingBigPektus) handleBigPektusMove(e.clientX, e.clientY);
+    });
+
+    // Touch
+    bigTouchArea.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        isDraggingBigPektus = true;
+        handleBigPektusMove(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+        if (isDraggingBigPektus) {
+            e.preventDefault(); 
+            handleBigPektusMove(e.touches[0].clientX, e.touches[0].clientY);
+        }
+    }, { passive: false });
+}
+
+// AUTO CLOSE PAG BINITAWAN (Release to Set)
+function finishPektusDrag() {
+    if (isDraggingBigPektus) {
+        isDraggingBigPektus = false;
+        // Isara agad ang modal
+        if(pektusModal) pektusModal.style.display = 'none';
+        playButtonSound();
+        
+        // Update yung maliit na icon sa baba
+        updatePektusUI();
+    }
+}
+
+// Ikabit sa window para kahit saan bumitaw, magsasara
+window.addEventListener('mouseup', finishPektusDrag);
+window.addEventListener('touchend', finishPektusDrag);
+
+// TANGGALIN NA NATIN ANG LISTENER SA BUTTON DAHIL WALA NA YUN
+// (Dati meron ditong closePektusBtn listener, burado na)
         
                 function startGame(mode, difficultyLevel = 'pro') {
             // ITO ANG IPALIT MO:
@@ -5935,7 +5926,7 @@ window.onpopstate = (event) => {
 
     updateDailyRewardButtonState(); 
 };
-// ▲▲▲ HANGGANG DITO (PART F) ▲▲▲
+
         function showExitConfirmation() { playButtonSound(); if (gameState !== 'menu' && gameState !== 'gameover' && !confirmExitModal.classList.contains('show')) { confirmExitModal.classList.add('show'); } }
         
         async function forfeitOnlineGame() {
@@ -6133,10 +6124,7 @@ document.getElementById('invite-game-select-close-btn').addEventListener('click'
     // Gagamitin natin ang history.back() para gumana sa popstate
     history.back();
 });
-// ▲▲▲ HANGGANG DITO ▲▲▲
 
-
-    // --- AI Menu Listeners ---
     aiStraightBallButton.addEventListener('click', () => {
         selectedGameConfig.mode = 'ai-straight-ball';
         aiMenu.classList.remove('show');
@@ -6161,9 +6149,6 @@ document.getElementById('invite-game-select-close-btn').addEventListener('click'
     playPokerButton.addEventListener('click', () => startGame(selectedGameConfig.mode, 'pro'));
     play61BallButton.addEventListener('click', () => startGame(selectedGameConfig.mode, 'pro'));
 
-    // ============================================================
-    // === SUPER SAFE ONLINE MENU LISTENERS (ANTI-CRASH FIX) ===
-    // ============================================================
 
     // 1. POKER BUTTON
     const btnPoker = document.getElementById('online-poker-button');
@@ -6586,7 +6571,7 @@ function toggleMusic() { const isMuted = backgroundPlaylist[0].muted; background
     let chipRatios;
 
     if (!isBreakShot && chips.length > 0 && oldCanvasWidth > 0 && oldCanvasHeight > 0) {
-        // Gumamit ng VIRTUAL_WIDTH/HEIGHT para sa ratio
+        
         chipRatios = chips.map(c => ({ x: c.x / VIRTUAL_WIDTH, y: c.y / VIRTUAL_HEIGHT }));
     }
 
@@ -6599,7 +6584,7 @@ function toggleMusic() { const isMuted = backgroundPlaylist[0].muted; background
     // ▼▼▼ ITO YUNG SOLUSYON SA SHADOW ▼▼▼
     // Mag-iwan tayo ng espasyo para sa shadow.
     // 0.95 = 95% ng screen (mag-iiwan ng 2.5% sa bawat gilid)
-    const paddingPercentage = 0.95; 
+    const paddingPercentage = 0.90; 
 
     if (screenAspectRatio > TABLE_ASPECT_RATIO) {
         frameHeight = containerHeight * paddingPercentage; // <-- NILAGYAN NG PADDING
@@ -6650,7 +6635,7 @@ function toggleMusic() { const isMuted = backgroundPlaylist[0].muted; background
     drawBackgroundLayer();
 }
         function setupHoles() { const hr = HOLE_RADIUS * scale; holes = [ { x: 0, y: 0, radius: hr }, { x: canvas.width, y: 0, radius: hr }, { x: 0, y: canvas.height, radius: hr }, { x: canvas.width, y: canvas.height, radius: hr } ]; }
-        function setupChips() { chips = []; const newCueChip = { id: 0, value: 0, x: canvas.width * 0.25, y: canvas.height / 2, vx: 0, vy: 0, radius: CUE_BALL_RADIUS * scale, inPlay: true, color: '#1a1a1a', type: 'cue', isPocketing: false, pocketingProgress: 0, pocketingHole: null, rotation: 0, rotationSpeed: 0 }; chips.push(newCueChip); const objectChipRadius = BALL_RADIUS * scale; if (gameMode.includes('straight-ball') || gameMode.includes('poker')) { const redChipsSource = []; const blueChipsSource = []; for (let i = 1; i <= 12; i++) { if (i <= 6) { redChipsSource.push({ id: i, color: '#C8102E', type: 'red', value: i }); } else { blueChipsSource.push({ id: i, color: '#0033A0', type: 'blue', value: i }); } } const startX = canvas.width * 0.7; const startY = canvas.height / 2; const colSpacing = objectChipRadius * 2.1; const rowSpacing = objectChipRadius * 1.8; const positions = []; const rows = 4; const cols = 3; const totalHeight = (rows - 1) * rowSpacing; const initialY = startY - totalHeight / 2; for (let row = 0; row < rows; row++) { for (let col = 0; col < cols; col++) { positions.push({ x: startX + col * colSpacing, y: initialY + row * rowSpacing }); } } const chipDataOrder = [ ...redChipsSource, ...blueChipsSource ]; for (let i = 0; i < positions.length; i++) { let chipData = chipDataOrder[i]; if (chipData) { const newObjectChip = { id: chipData.id, value: chipData.value, x: positions[i].x, y: positions[i].y, vx: 0, vy: 0, radius: objectChipRadius, inPlay: true, color: chipData.color, type: chipData.type, isPocketing: false, pocketingProgress: 0, pocketingHole: null, rotation: 0, rotationSpeed: 0 }; chips.push(newObjectChip); } } } else if (gameMode.includes('61-ball')) { const chipColors = [ null, '#FFD700', '#0000FF', '#FF0000', '#800080', '#FFA500', '#008000', '#964B00', '#212121', '#FFC107', '#03A9F4', '#F44336', '#9C27B0', '#FF9800', '#4CAF50', '#795548' ]; let chipIds = Array.from({length: 15}, (_, i) => i + 1); const startX = canvas.width * 0.7; const startY = canvas.height / 2; const rowSpacing = objectChipRadius * 1.8; const rackPositions = []; for (let row = 0; row < 5; row++) { for (let col = 0; col <= row; col++) { rackPositions.push({ x: startX + row * rowSpacing, y: startY + (col * objectChipRadius * 2.1) - (row * objectChipRadius * 1.05) }); } } for (let i = 0; i < 15; i++) { const chipId = chipIds[i]; const newObjectChip = { id: chipId, value: chipId, x: rackPositions[i].x, y: rackPositions[i].y, vx: 0, vy: 0, radius: objectChipRadius, inPlay: true, color: chipColors[chipId], type: 'numbered', isPocketing: false, pocketingProgress: 0, pocketingHole: null, rotation: 0, rotationSpeed: 0 }; chips.push(newObjectChip); } } }
+        function setupChips() { chips = []; const newCueChip = { id: 0, value: 0, x: canvas.width * 0.25, y: canvas.height / 2, vx: 0, vy: 0, radius: CUE_BALL_RADIUS * scale, inPlay: true, color: '#1a1a1a', type: 'cue', isPocketing: false, pocketingProgress: 0, pocketingHole: null, rotation: 0, rotationSpeed: 0, currentSideSpin: 0 }; chips.push(newCueChip); const objectChipRadius = BALL_RADIUS * scale; if (gameMode.includes('straight-ball') || gameMode.includes('poker')) { const redChipsSource = []; const blueChipsSource = []; for (let i = 1; i <= 12; i++) { if (i <= 6) { redChipsSource.push({ id: i, color: '#C8102E', type: 'red', value: i }); } else { blueChipsSource.push({ id: i, color: '#0033A0', type: 'blue', value: i }); } } const startX = canvas.width * 0.7; const startY = canvas.height / 2; const colSpacing = objectChipRadius * 2.1; const rowSpacing = objectChipRadius * 1.8; const positions = []; const rows = 4; const cols = 3; const totalHeight = (rows - 1) * rowSpacing; const initialY = startY - totalHeight / 2; for (let row = 0; row < rows; row++) { for (let col = 0; col < cols; col++) { positions.push({ x: startX + col * colSpacing, y: initialY + row * rowSpacing }); } } const chipDataOrder = [ ...redChipsSource, ...blueChipsSource ]; for (let i = 0; i < positions.length; i++) { let chipData = chipDataOrder[i]; if (chipData) { const newObjectChip = { id: chipData.id, value: chipData.value, x: positions[i].x, y: positions[i].y, vx: 0, vy: 0, radius: objectChipRadius, inPlay: true, color: chipData.color, type: chipData.type, isPocketing: false, pocketingProgress: 0, pocketingHole: null, rotation: 0, rotationSpeed: 0 }; chips.push(newObjectChip); } } } else if (gameMode.includes('61-ball')) { const chipColors = [ null, '#FFD700', '#0000FF', '#FF0000', '#800080', '#FFA500', '#008000', '#964B00', '#212121', '#FFC107', '#03A9F4', '#F44336', '#9C27B0', '#FF9800', '#4CAF50', '#795548' ]; let chipIds = Array.from({length: 15}, (_, i) => i + 1); const startX = canvas.width * 0.7; const startY = canvas.height / 2; const rowSpacing = objectChipRadius * 1.8; const rackPositions = []; for (let row = 0; row < 5; row++) { for (let col = 0; col <= row; col++) { rackPositions.push({ x: startX + row * rowSpacing, y: startY + (col * objectChipRadius * 2.1) - (row * objectChipRadius * 1.05) }); } } for (let i = 0; i < 15; i++) { const chipId = chipIds[i]; const newObjectChip = { id: chipId, value: chipId, x: rackPositions[i].x, y: rackPositions[i].y, vx: 0, vy: 0, radius: objectChipRadius, inPlay: true, color: chipColors[chipId], type: 'numbered', isPocketing: false, pocketingProgress: 0, pocketingHole: null, rotation: 0, rotationSpeed: 0 }; chips.push(newObjectChip); } } }
         
 
 function drawBackgroundLayer() {
@@ -6678,10 +6663,6 @@ function drawBackgroundLayer() {
         backgroundCtx.fillRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
     }
     
-    
-
-    // ==========================================
-    // === 3. INNER SHADOWS (WAG GALAWIN) ===
     const shadowColor = 'rgba(0, 0, 0, 0.5)'; 
     const shadowWidth = 10; 
     const transparent = 'rgba(0, 0, 0, 0)';
@@ -6705,9 +6686,7 @@ function drawBackgroundLayer() {
     const rightGradient = backgroundCtx.createLinearGradient(backgroundCanvas.width - shadowWidth, 0, backgroundCanvas.width, 0);
     rightGradient.addColorStop(0, transparent); rightGradient.addColorStop(1, shadowColor);
     backgroundCtx.fillStyle = rightGradient; backgroundCtx.fillRect(backgroundCanvas.width - shadowWidth, 0, shadowWidth, backgroundCanvas.height);
-    // ==========================================
-
-    // 4. DRAW HOLES
+    
     backgroundCtx.fillStyle = '#1a1a1a';
     holes.forEach(hole => {
         backgroundCtx.beginPath();
@@ -6718,7 +6697,6 @@ function drawBackgroundLayer() {
         backgroundCtx.stroke();
     });
 
-    // ▼▼▼ 5. MONSTER TEXT LOGIC ▼▼▼
     if (backgroundCanvas.width > 0) {
         const fontSize = 60 * scale; 
         backgroundCtx.font = `italic bold ${fontSize}px Georgia`;
@@ -6737,8 +6715,7 @@ function drawBackgroundLayer() {
         backgroundCtx.beginPath();
         backgroundCtx.arc(spotX, spotY, spotRadius, 0, Math.PI * 2);
         backgroundCtx.stroke(); 
-        
-        // --- PINALITAN ANG TEXT PARA SA "M-O-NSTER" ---
+     
         const textPart1 = "M";      // Kaliwa ng spot
         const textPart2 = "nster";  // Kanan ng spot
         const spacing = 8 * scale;
@@ -7009,9 +6986,6 @@ function drawGuidelines() {
         endY = cueChip.y + shotVector.y * 2000;
     }
 
-    // ==========================================
-    // === 1. THE WHITE BEAM (SOLID GLOW) ===
-    // ==========================================
     
     ctx.save();
     
@@ -7035,18 +7009,12 @@ function drawGuidelines() {
     
     ctx.stroke();
     
-    // (TINANGGAL NA NATIN YUNG INNER CORE DITO)
-    
     ctx.restore();
 
-    // ==========================================
-    // === 2. GHOST BALL & DEFLECTION ===
-    // ==========================================
-
+    
     if (firstHit) {
         const impactPoint = { x: endX, y: endY };
         
-        // --- GHOST BALL (White Theme) ---
         ctx.save();
         ctx.translate(impactPoint.x, impactPoint.y);
         
@@ -7148,7 +7116,7 @@ function drawGuidelines() {
         function updateChipPositions(dt_sec) { // <-- Tumatanggap na ng oras (in seconds)
             
             // Gaano kaliit ang bawat substep
-            const subSteps = 8; 
+            const subSteps = 20; 
             const dt_sub = dt_sec / subSteps; // Oras bawat substep
 
             for (let i = 0; i < subSteps; i++) { 
@@ -7164,37 +7132,67 @@ function drawGuidelines() {
                     }
                 }); 
                 
-                const spinFactor = WALL_SPIN_FACTOR; // Ito 'yung luma mong code, ok na 'to
+                // Sa loob ng updateChipPositions loop...
+const spinFactor = WALL_SPIN_FACTOR; 
 
-                for (let j = 0; j < chips.length; j++) { 
-                    const chip1 = chips[j]; 
-                    if (!chip1.inPlay || chip1.isPocketing) continue; 
-                    
-                    if (chip1.x + chip1.radius > canvas.width) { 
-                        playCushionSound(Math.abs(chip1.vx)); 
-                        chip1.vx *= -1; 
-                        chip1.x = canvas.width - chip1.radius; 
-                        chip1.rotationSpeed -= chip1.vy * spinFactor; 
-                    } 
-                    if (chip1.x - chip1.radius < 0) { 
-                        playCushionSound(Math.abs(chip1.vx)); 
-                        chip1.vx *= -1; 
-                        chip1.x = chip1.radius; 
-                        chip1.rotationSpeed -= chip1.vy * spinFactor; 
-                    } 
-                    if (chip1.y + chip1.radius > canvas.height) { 
-                        playCushionSound(Math.abs(chip1.vy)); 
-                        chip1.vy *= -1; 
-                        chip1.y = canvas.height - chip1.radius; 
-                        chip1.rotationSpeed += chip1.vx * spinFactor; 
-                    } 
-                    if (chip1.y - chip1.radius < 0) { 
-                        playCushionSound(Math.abs(chip1.vy)); 
-                        chip1.vy *= -1; 
-                        chip1.y = chip1.radius; 
-                        chip1.rotationSpeed += chip1.vx * spinFactor; 
-                    } 
-                    
+for (let j = 0; j < chips.length; j++) { 
+    const chip1 = chips[j]; 
+    if (!chip1.inPlay || chip1.isPocketing) continue; 
+    
+    // Siguraduhing may value ang side spin
+    const sideSpin = chip1.currentSideSpin || 0;
+
+    // 1. KANANG PADER (Right Wall)
+    if (chip1.x + chip1.radius > canvas.width) { 
+        playCushionSound(Math.abs(chip1.vx)); 
+        chip1.vx = -Math.abs(chip1.vx); 
+        chip1.x = canvas.width - chip1.radius; 
+        
+        // Dati += ito, ngayon -= na
+        chip1.vy -= sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
+        
+        chip1.rotationSpeed -= chip1.vy * spinFactor; 
+        chip1.currentSideSpin *= 0.8; 
+    } 
+    
+    // 2. KALIWANG PADER (Left Wall)
+    else if (chip1.x - chip1.radius < 0) { 
+        playCushionSound(Math.abs(chip1.vx)); 
+        chip1.vx = Math.abs(chip1.vx); 
+        chip1.x = chip1.radius; 
+        
+        // Dati += ito, ngayon -= na
+        chip1.vy -= sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
+        
+        chip1.rotationSpeed -= chip1.vy * spinFactor; 
+        chip1.currentSideSpin *= 0.8; 
+    } 
+    
+    // 3. BABANG PADER (Bottom Wall)
+    if (chip1.y + chip1.radius > canvas.height) { 
+        playCushionSound(Math.abs(chip1.vy)); 
+        chip1.vy = -Math.abs(chip1.vy); 
+        chip1.y = canvas.height - chip1.radius; 
+        
+        // Dati -= ito, ngayon += na
+        chip1.vx += sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
+        
+        chip1.rotationSpeed += chip1.vx * spinFactor; 
+        chip1.currentSideSpin *= 0.8; 
+    } 
+    
+    // 4. TAAS NA PADER (Top Wall)
+    else if (chip1.y - chip1.radius < 0) { 
+        playCushionSound(Math.abs(chip1.vy)); 
+        chip1.vy = Math.abs(chip1.vy); 
+        chip1.y = chip1.radius; 
+        
+        // Dati -= ito, ngayon += na
+        chip1.vx += sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
+        
+        chip1.rotationSpeed += chip1.vx * spinFactor; 
+        chip1.currentSideSpin *= 0.8; 
+    }
                     for (let k = j + 1; k < chips.length; k++) { 
                         const chip2 = chips[k]; 
                         if (chip2.inPlay && !chip2.isPocketing) handleChipCollision(chip1, chip2); 
@@ -7233,23 +7231,50 @@ function drawGuidelines() {
                         chip.vx *= frictionThisStep; 
                         chip.vy *= frictionThisStep;
                         chip.rotationSpeed *= spinFrictionThisStep;
+
+// ▼▼▼ ISINGIT ITO DITO ▼▼▼
+                    if (chip.currentSideSpin) {
+                        chip.currentSideSpin *= 0.995; 
+                        if (Math.abs(chip.currentSideSpin) < 0.1) {
+                            chip.currentSideSpin = 0;
+                        }
+                    }
+                    // ▲▲▲ ▲▲▲
                         
                         if (Math.abs(chip.vx) < MIN_VELOCITY) chip.vx = 0; 
                         if (Math.abs(chip.vy) < MIN_VELOCITY) chip.vy = 0; 
 
                         // Bagong check: ihinto ang spin kung sobrang bagal na
                         if (Math.abs(chip.rotationSpeed) < MIN_ROTATION_SPEED) chip.rotationSpeed = 0;
-                        holes.forEach(hole => { 
-                            if (Math.sqrt((hole.x - chip.x)**2 + (hole.y - chip.y)**2) < hole.radius) { 
-                                playPocketSound(); 
-                                chip.isPocketing = true; 
-                                chip.pocketingHole = hole; 
-                                chip.rotationSpeed = (Math.random() - 0.5) * 0.2; 
-                                chip.vx = 0; 
-                                chip.vy = 0; 
-                                if (!chipsPocketedInTurn.find(p => p.id === chip.id)) chipsPocketedInTurn.push(chip); 
-                            } 
-                        }); 
+                        // IPALIT ITO (GOD MODE POCKETS):
+holes.forEach(hole => { 
+    const distToHole = Math.sqrt((hole.x - chip.x)**2 + (hole.y - chip.y)**2);
+    
+    // Default size ng butas
+    let effectiveHoleRadius = hole.radius;
+
+    // GOD MODE CHEAT:
+    // Kung AI ang tumitira, lakihan natin ang butas ng 30% (multiplier 1.3)
+    // Para kahit sobrang lakas ng tira, "hihigupin" ng butas at di luluwa.
+    if (!playerTurn && gameMode.startsWith('ai')) {
+        effectiveHoleRadius = hole.radius * 1.3; 
+    }
+
+    // Dito na tayo magche-check gamit ang pinalaking butas
+    if (distToHole < effectiveHoleRadius) { 
+        playPocketSound(); 
+        chip.isPocketing = true; 
+        chip.pocketingHole = hole; 
+        
+        // Dagdag effect: Biglang preno para di lumusot sa graphics
+        chip.vx = chip.vx * 0.1; 
+        chip.vy = chip.vy * 0.1;
+        
+        chip.rotationSpeed = (Math.random() - 0.5) * 0.2; 
+        
+        if (!chipsPocketedInTurn.find(p => p.id === chip.id)) chipsPocketedInTurn.push(chip); 
+    } 
+});
                     } 
                     
                     if (chip.vx !== 0 || chip.vy !== 0 || chip.isPocketing) stillMoving = true;
@@ -7268,8 +7293,6 @@ function drawGuidelines() {
                 } 
             } 
         }
-        
-       // ▼▼▼ IPALIT MO ITONG BUONG handleChipCollision FUNCTION ▼▼▼
 
 function handleChipCollision(chip1, chip2) { 
     const dx = chip2.x - chip1.x, dy = chip2.y - chip1.y; 
@@ -7337,7 +7360,6 @@ function handleChipCollision(chip1, chip2) {
                 cueVel.x += followEnergy;  // Dagdag na "follow"
             }
         }
-        
         // 7. Ayusin ang "overlap"
         const overlap = combinedRadius - dist; 
         chip1.x -= (overlap / 2) * cos; 
@@ -7995,32 +8017,26 @@ async function shoot(shotPowerValue) { // Renamed parameter to avoid conflict
 }
 
 
-/**
- * Ina-apply ang shot sa cue ball. (MAY TIMESTEP FIX V2)
- */
 function applyShot(shotData) {
     if (chipsMoving) return;
     const cueChip = chips[0];
     if (!cueChip || !cueChip.inPlay) return;
 
-    // --- SIMULA NG PAGBABAGO ---
-
-    // 1. Kunin ang stats mula sa 'shotData'
-    //    Kung walang cueStats (galing sa AI o lumang shot), gamitin ang stats ng naka-equip
     const stats = shotData.cueStats || getCurrentCueStats();
-
-    // 2. I-save ang stats na ito sa global variable para magamit ng handleChipCollision
     currentShotStats = stats;
-    
-    // --- TAPOS NG PAGBABAGO ---
 
-    // 3. Kalkulahin ang epekto ng Power stat
-    const powerBonus = (stats.Power - 2) * 0.05; // 5% bonus per stat point above 2
+    const powerBonus = (stats.Power - 2) * 0.05;
     const finalPowerMultiplier = VELOCITY_MULTIPLIER * (1 + powerBonus);
 
     shotPektusOffset = shotData.pektus || { x: 0, y: 0 };
     
-    // 4. Gamitin ang 'finalPowerMultiplier'
+    // ▼▼▼ DITO TAYO MAGPAPALIT PARA LUMAKAS ANG SPIN ▼▼▼
+    const spinMultiplier = 1 + (stats.Spin / 5); 
+    
+    // Gawing * 35 (Dati ay * 20). Ito ang "Starting Spin Power".
+    cueChip.currentSideSpin = (shotPektusOffset.x * 35) * spinMultiplier; 
+    // ▲▲▲ ▲▲▲
+
     cueChip.vx = Math.cos(shotData.angle) * shotData.power * finalPowerMultiplier;
     cueChip.vy = Math.sin(shotData.angle) * shotData.power * finalPowerMultiplier;
     
@@ -8101,7 +8117,43 @@ async function updatePlayerData(uid, didWin = false) {
 // ▲▲▲ DULO NG STEP 5 ▲▲▲
         async function cleanupMatchmakingEntry() { if (unsubscribeFromQueue) { unsubscribeFromQueue(); unsubscribeFromQueue = null; } const queueCollection = collection(db, "matchmakingQueue"); const q = query(queueCollection, where("uid", "==", localPlayerUid)); const snapshot = await getDocs(q); if (!snapshot.empty) { const myDocRef = snapshot.docs[0].ref; await deleteDoc(myDocRef); } }
         
+// --- 🤖 STEP 2: START BOT MATCH FUNCTION (FINAL VERSION) 🤖 ---
+    async function startBotMatch() {
+        // 1. Linisin ang Queue (Para hindi ka na ma-match sa iba habang naglalaro)
+        await cleanupMatchmakingEntry();
         
+        // 2. Itago ang "Searching..." modal
+        matchmakingWaitModal.classList.remove('show');
+
+        // 3. Gumawa ng Fake Opponent Name
+        const botName = BotGenerator.generateName();
+        
+        // 4. I-set ang pangalan ng kalaban (Global Variable)
+        opponentPlayerName = botName;
+
+        // 5. Ipakita ang "MATCH FOUND!" effect
+        showMessage(`Match Found! Opponent: ${botName}`, 3000);
+        playButtonSound(); 
+
+        // 6. Refund logic (Balik pera sa background dahil AI lang to)
+        // Ibabalik natin ang pera pero hindi ipapaalam sa player para akala nila tuloy ang pustahan
+        if (selectedBetAmount > 0) {
+            playerTotalCurrency += selectedBetAmount;
+            saveCurrency();
+            updateCurrencyDisplay();
+        }
+
+        // 7. Start Game logic (AI Mode)
+        startGame(`ai-${selectedOnlineGameType}`, 'pro'); 
+        
+        // 8. FORCE UPDATE: Siguraduhin na ang pangalan sa taas ay Bot Name
+        // Ginagawa natin ito after 500ms para ma-override ang default reset
+        setTimeout(() => {
+            opponentPlayerName = botName; 
+            updateInfoBox(); // I-refresh ang display sa taas
+        }, 500); 
+    }
+    // ---------------------------------------------  
 async function findMatch() {
     const displayName = localPlayerName || "Guest";
     if (!isAuthReady || !localPlayerUid) { showMessage("Connecting..."); return; }
@@ -8124,25 +8176,23 @@ async function findMatch() {
     matchmakingWaitModal.classList.add('show');
     history.pushState({ modal: 'matchmaking' }, 'Matchmaking', '#matchmaking');
 
-    // Timeout Logic
+  // --- 🤖 STEP 3: PALITAN ANG TIMEOUT LOGIC DITO 🤖 ---
+    
+    // Timeout Logic (Ginawang 12 seconds lang para mabilis)
     if (matchmakingTimeoutId) clearTimeout(matchmakingTimeoutId);
+    
     matchmakingTimeoutId = setTimeout(async () => {
-        if (gameId) return; // Kung may gameId na, wag na mag-refund dito
+        // Kung may nahanap na totoong gameId bago matapos ang oras, stop.
+        if (gameId) return; 
         
-        console.log("Timeout. Refund and start AI.");
+        console.log("Walang tao. Papasukin ang Bot.");
         
-        // REFUND DAHIL WALANG KALARO
-        if (selectedBetAmount > 0) {
-             playerTotalCurrency += selectedBetAmount;
-             saveCurrency();
-             updateCurrencyDisplay();
-        }
-        
-        matchmakingWaitModal.classList.remove('show');
-        try { await cleanupMatchmakingEntry(); } catch (e) {}
-        showMessage("No opponents. Playing vs AI (Coins Refunded).", 3000);
-        startGame(`ai-${selectedOnlineGameType}`, 'pro');
-    }, 30000); 
+        // TAWAGIN ANG FUNCTION NA GINAWA NATIN SA STEP 2
+        startBotMatch(); 
+
+    }, 12000); // 12 Seconds lang (imbes na 30). Sakto lang pampainip konti.
+    
+    // ----------------------------------------------------
 
     const queueCollection = collection(db, "matchmakingQueue");
     
@@ -8764,13 +8814,17 @@ function updateInfoBox() {
     let myAvatar = myRank.icon; 
     let opponentAvatar = opponentRank.icon; 
 
-    // Check kung AI ang kalaban
+  // Check kung AI ang kalaban
     if (!isOnlineGame) {
         opponentAvatar = "🤖"; 
-        player2Name = "AI Bot"; 
+        
+        // FIX: Kung may pangalan na (galing sa Bot Generator), wag palitan ng "AI Bot"
+        if (opponentPlayerName && opponentPlayerName !== "Opponent") {
+            player2Name = opponentPlayerName; 
+        } else {
+            player2Name = "AI Bot"; 
+        }
     }
-    // --------------------
-
     // 2. Subtext Logic (Cards / Balls / Points)
     let p1Sub = "", p2Sub = "";
     if (gameMode.includes('poker')) { 
@@ -9898,57 +9952,63 @@ function applyEquippedItems() {
 
 function setCueForCurrentTurn() {
     let isPlayerShooting = false;
-    // Titingnan natin kung nasa laro ba tayo at kung turn ng player
+    // Check kung sino ang titira
     if (gameState !== 'menu' && gameState !== 'gameover') {
-         // Sa online game, isMyTurnOnline ang basehan. Sa AI game, playerTurn.
         isPlayerShooting = isOnlineGame ? isMyTurnOnline : playerTurn; 
     } else {
-        // Kung nasa menu (like shop), assume na player ang context
         isPlayerShooting = true; 
     }
 
     let cueIdToUse;
     if (isPlayerShooting) {
-        // Kung player ang titira, gamitin ang naka-equip
         cueIdToUse = equippedItems.cue;
     } else {
-        // Kung AI ang titira (sa AI game), laging gamitin ang default
         cueIdToUse = isOnlineGame ? (opponentEquippedCueId || 'default') : 'default';  
     }
 
-    // Hanapin ang data ng cue na gagamitin
+    // Hanapin ang data ng cue
     const cueToDisplay = SHOP_ITEMS.cues.find(i => i.id === cueIdToUse);
-    // Hanapin din ang default cue para sa fallback/default sizes
     const defaultCueData = SHOP_ITEMS.cues.find(i => i.id === 'default');
     
-    // Default sizes kung sakaling walang naka-define
-    const fallbackWidth = defaultCueData?.displayWidth || 500;
-    const fallbackHeight = defaultCueData?.displayHeight || 14;
+    // Base sizes (Pang Mobile)
+    const baseWidth = cueToDisplay?.displayWidth || defaultCueData?.displayWidth || 450;
+    const baseHeight = cueToDisplay?.displayHeight || defaultCueData?.displayHeight || 150;
 
+    // ▼▼▼ DITO ANG FIX PARA SA PC (AUTO-SCALE) ▼▼▼
+    
+    // 1. Detect kung malaki ang screen (PC/Laptop usually > 1024px)
+    const isBigScreen = window.innerWidth > 1024;
+    
+    // 2. Set Multiplier: 
+    // Kung PC: 1.6 (Palakihin ng 60%)
+    // Kung Mobile: 1.0 (Normal size)
+    const scaleMultiplier = isBigScreen ? 1.6 : 1.0; 
+
+    // 3. Compute Final Size
+    const finalWidth = baseWidth * scaleMultiplier;
+    const finalHeight = baseHeight * scaleMultiplier;
+
+    // ▲▲▲ END NG FIX ▲▲▲
+
+    let imageSrc = '';
     if (cueToDisplay && cueToDisplay.imageSrc) {
-        // Set ang image source
-        cueStickElement.src = cueToDisplay.imageSrc;
-        // Set ang sukat (width/height)
-        cueStickElement.style.width = `${cueToDisplay.displayWidth || fallbackWidth}px`;
-        cueStickElement.style.height = `${cueToDisplay.displayHeight || fallbackHeight}px`;
+        imageSrc = cueToDisplay.imageSrc;
     } else if (defaultCueData && defaultCueData.imageSrc) {
-        // Fallback: Kung hindi mahanap yung cue ID, gamitin ang default
-        cueStickElement.src = defaultCueData.imageSrc;
-        cueStickElement.style.width = `${fallbackWidth}px`;
-        cueStickElement.style.height = `${fallbackHeight}px`;
+        imageSrc = defaultCueData.imageSrc;
+    }
+
+    if (imageSrc) {
+        cueStickElement.src = imageSrc;
+        // I-apply ang bagong computed size
+        cueStickElement.style.width = `${finalWidth}px`;
+        cueStickElement.style.height = `${finalHeight}px`;
     } else {
-        // Worst case: Kung pati default ay walang src, itago na lang
         cueStickElement.src = '';
         cueStickElement.style.width = '0px';
         cueStickElement.style.height = '0px';
     }
 }
 
-// ==========================================
-// === ANIMATED CURRENCY & FLYING COINS ===
-// ==========================================
-
-// 1. Global Variables (Para sa Animation)
 let displayedCurrency = 0; 
 let currencyAnimInterval = null; 
 
@@ -10819,154 +10879,491 @@ function listenToGameUpdates(gameId) {
     }); 
 }
         async function leaveOnlineGame(isForfeit) { if (!isOnlineGame || !gameId || !localPlayerId) return; const gameDocRef = doc(db, "games", gameId); try { const docSnap = await getDoc(gameDocRef); if (docSnap.exists() && docSnap.data().gameState !== 'finished') { const opponentId = localPlayerId === 'player1' ? 'player2' : 'player1'; const winnerUid = docSnap.data().players[opponentId]?.uid; if (isForfeit && winnerUid) { await updateDoc(gameDocRef, { gameState: 'finished', winner: winnerUid, [`players.${localPlayerId}.status`]: 'disconnected' }); } else { await updateDoc(gameDocRef, { [`players.${localPlayerId}.status`]: 'disconnected' }); } } } catch (error) { console.error("Error leaving/forfeiting game:", error); } }
-        function isPathObstructed(startObj, endObj, ignoreChipIds = []) { const allObstacles = chips.filter(c => c.inPlay && !ignoreChipIds.includes(c.id)); for (const obstacle of allObstacles) { const dist = Math.abs((endObj.y - startObj.y) * obstacle.x - (endObj.x - startObj.x) * obstacle.y + endObj.x * startObj.y - endObj.y * startObj.x) / Math.hypot(endObj.y - startObj.y, endObj.x - startObj.x); const safetyMargin = 4 * scale; const effectiveRadius = obstacle.radius + (startObj.radius || 0) + safetyMargin; if (dist < effectiveRadius) { const dotProduct = (obstacle.x - startObj.x) * (endObj.x - startObj.x) + (obstacle.y - startObj.y) * (endObj.y - startObj.y); const squaredLength = Math.pow(Math.hypot(endObj.x - startObj.x, endObj.y - startObj.y), 2); if (dotProduct > 0 && dotProduct < squaredLength) { return true; } } } return false; }
-        function isAnyDirectPathClear(cueChip, legalTargets) { if (!legalTargets || legalTargets.length === 0) return false; for (const target of legalTargets) { if (!isPathObstructed(cueChip, target, [])) return true; } return false; }
-        function evaluateShot(cueChip, targetChip, hole, allLegalTargets, difficulty, isCombination = false) { let firstContactTarget = isCombination ? allLegalTargets[0] : targetChip; if (!firstContactTarget) return null; const aiTargetHole = { x: hole.x, y: hole.y }; let shotAngle; if (isCombination) { const impactAngle1 = Math.atan2(aiTargetHole.y - targetChip.y, aiTargetHole.x - targetChip.x); const pfm = { x: targetChip.x - Math.cos(impactAngle1) * (firstContactTarget.radius + targetChip.radius), y: targetChip.y - Math.sin(impactAngle1) * (firstContactTarget.radius + targetChip.radius) }; const impactAngle2 = Math.atan2(pfm.y - firstContactTarget.y, pfm.x - firstContactTarget.x); const gbfc = { x: firstContactTarget.x - Math.cos(impactAngle2) * (cueChip.radius + firstContactTarget.radius), y: firstContactTarget.y - Math.sin(impactAngle2) * (cueChip.radius + firstContactTarget.radius) }; shotAngle = Math.atan2(gbfc.y - cueChip.y, gbfc.x - cueChip.y); } else { const targetToHoleAngle = Math.atan2(aiTargetHole.y - targetChip.y, aiTargetHole.x - targetChip.x); const ghostBall = { x: targetChip.x - Math.cos(targetToHoleAngle) * (cueChip.radius + targetChip.radius), y: targetChip.y - Math.sin(targetToHoleAngle) * (cueChip.radius + targetChip.radius) }; shotAngle = Math.atan2(ghostBall.y - cueChip.y, ghostBall.x - cueChip.x); } const path1Clear = !isPathObstructed(cueChip, firstContactTarget, [targetChip.id]); const path2Clear = !isPathObstructed(targetChip, hole, [cueChip.id, firstContactTarget.id]); let path3Clear = !isCombination || !isPathObstructed(firstContactTarget, targetChip, [cueChip.id]); if (!path1Clear || !path2Clear || !path3Clear) return null; const distance = Math.hypot(firstContactTarget.x - cueChip.x, firstContactTarget.y - cueChip.y); const lineToTargetCenterAngle = Math.atan2(firstContactTarget.y - cueChip.y, firstContactTarget.x - cueChip.x); const cutAngle = shotAngle - lineToTargetCenterAngle; const anglePenalty = (Math.abs(cutAngle) / (Math.PI / 2)) * 0.7; const distancePenalty = (distance / canvas.width) * 0.5; let probability = 1.0 - distancePenalty - anglePenalty; if (isCombination) probability *= 0.6; let pocketingScore = 1000; if (gameMode.includes('61-ball')) { pocketingScore += targetChip.value * 20; } const power = Math.min(1.2, (distance / (canvas.width * 0.5)) + 0.3); const predictedCuePos = predictSimpleCuePos(cueChip, firstContactTarget, shotAngle, power); let positionalScore = calculatePositionalScore(predictedCuePos, targetChip.id, allLegalTargets);
-        let positionalMultiplier = 1.0;
-        if (difficulty === 'easy') positionalMultiplier = 0.2;
-        else if (difficulty === 'hard') positionalMultiplier = 0.6;
-        const totalScore = (pocketingScore + (positionalScore * positionalMultiplier)) * Math.max(0, probability);
-        return { angle: shotAngle, power, score: totalScore, probability: Math.max(0, probability), target: targetChip, hole: hole, firstContactTarget: firstContactTarget, isCombination };
-    }
+        function isPathObstructed(startObj, endObj, ignoreChipIds = []) {
+    // Kunin lahat ng bola na pwedeng makaharang (buhay at hindi kasama sa ignore list)
+    const allObstacles = chips.filter(c => c.inPlay && !ignoreChipIds.includes(c.id));
+    
+    // Vector ng daan (Path Vector)
+    const pathVec = { x: endObj.x - startObj.x, y: endObj.y - startObj.y };
+    const pathLen = Math.hypot(pathVec.x, pathVec.y);
+    
+    // Normalize (Direction only)
+    const pathDir = { x: pathVec.x / pathLen, y: pathVec.y / pathLen };
+
+    for (const obstacle of allObstacles) {
+        // Vector mula start papunta sa obstacle
+        const toObstacle = { x: obstacle.x - startObj.x, y: obstacle.y - startObj.y };
         
+        // Project obstacle position sa path line (Dot Product)
+        const projection = toObstacle.x * pathDir.x + toObstacle.y * pathDir.y;
 
-// ▼▼▼ PALITAN MO ITONG BUONG FUNCTION ▼▼▼
+        // 1. Check kung ang obstacle ay nasa likod o lampas sa target
+        // Dapat nasa pagitan lang siya ng Start at End point
+        if (projection < 0 || projection > pathLen) continue;
 
+        // 2. Kalkulahin ang layo ng obstacle mula sa gitna ng daan (Perpendicular Distance)
+        // Ito ang pinakamalapit na distansya ng sentro ng obstacle sa linya ng tira
+        const closestPoint = {
+            x: startObj.x + pathDir.x * projection,
+            y: startObj.y + pathDir.y * projection
+        };
+        
+        const distToLine = Math.hypot(obstacle.x - closestPoint.x, obstacle.y - closestPoint.y);
+
+        // 3. COLLISION CHECK (Dito ang higpit)
+        // Obstacle Radius + Cue Ball Radius + SAFETY GAP
+        // Tinaasan ko ang safety gap (mula 4 -> 6) para siguradong di sasabit
+        const minClearance = obstacle.radius + (startObj.radius || BALL_RADIUS * scale) + (6 * scale);
+
+        if (distToLine < minClearance) {
+            return true; // HARANG!
+        }
+    }
+    return false; // CLEAR!
+}
+        function isAnyDirectPathClear(cueChip, legalTargets) { if (!legalTargets || legalTargets.length === 0) return false; for (const target of legalTargets) { if (!isPathObstructed(cueChip, target, [])) return true; } return false; }
+        function evaluateShot(cueChip, targetChip, hole, allLegalTargets, difficulty, isCombination = false) {
+    let firstContactTarget = isCombination ? allLegalTargets[0] : targetChip;
+    if (!firstContactTarget) return null;
+
+    // --- OBSTRUCTION CHECK ---
+    const path1Clear = !isPathObstructed(cueChip, firstContactTarget, [targetChip.id]);
+    const path2Clear = !isPathObstructed(targetChip, hole, [cueChip.id, firstContactTarget.id]);
+    if (!path1Clear || !path2Clear) return null;
+
+    // --- GHOST BALL CALCULATION ---
+    const dx = hole.x - targetChip.x;
+    const dy = hole.y - targetChip.y;
+    const angleToHole = Math.atan2(dy, dx);
+    const distToGhost = cueChip.radius + targetChip.radius;
+    const ghostX = targetChip.x - Math.cos(angleToHole) * distToGhost;
+    const ghostY = targetChip.y - Math.sin(angleToHole) * distToGhost;
+    const shotAngle = Math.atan2(ghostY - cueChip.y, ghostX - cueChip.x);
+
+    // --- BASE SCORING ---
+    let score = 1000;
+    const distToHole = Math.hypot(dx, dy);
+    score -= distToHole; 
+
+    // --- POSITIONAL PLAY (PREPARE SHOT) ---
+    // Predict kung saan hihinto ang Cue Ball (Simpleng Tangent Line prediction)
+    // Ang cue ball ay lilihis ng 90 degrees mula sa impact line pagkatapos tumama (Stun shot assumption)
+    const impactLineAngle = angleToHole; // Linya papunta sa butas
+    const cueArrivalAngle = shotAngle; // Anggulo ng dating ng cue ball
+    const cutAngle = Math.abs(impactLineAngle - cueArrivalAngle);
+    
+    // Simpleng estimate: Cue ball moves along tangent line
+    // Kung full ball hit (0 degrees cut), stop ball. Kung manipis, takbo malayo.
+    const tangentAngle = impactLineAngle + (Math.PI / 2); // 90 degrees
+    const predictedTravelDist = 100 * Math.sin(cutAngle); // Tantiya lang
+    
+    const predictedCueX = ghostX + Math.cos(tangentAngle) * predictedTravelDist;
+    const predictedCueY = ghostY + Math.sin(tangentAngle) * predictedTravelDist;
+
+    // Check Next Ball: Hanapin ang pinakamalapit na *ibang* target mula sa predicted spot
+    let bestNextDist = Infinity;
+    for (const nextTarget of allLegalTargets) {
+        if (nextTarget.id === targetChip.id) continue; // Skip current target
+        
+        const distToNext = Math.hypot(nextTarget.x - predictedCueX, nextTarget.y - predictedCueY);
+        
+        // Check kung clear ang daan mula Predicted Spot -> Next Target -> Any Hole
+        // (Simpleng check lang para di masyadong mabigat sa CPU)
+        if (distToNext < bestNextDist) {
+            bestNextDist = distToNext;
+        }
+    }
+
+    // SCORING BOOST: Kung malapit sa next ball, dagdag points!
+    if (bestNextDist < 300) {
+        score += (300 - bestNextDist) * 0.5; // Up to +150 points para sa magandang pwesto
+    }
+
+    // --- POWER CALCULATION ---
+    const distCueToTarget = Math.hypot(ghostX - cueChip.x, ghostY - cueChip.y);
+    const totalDist = distCueToTarget + distToHole;
+    let power;
+    if (distToHole < canvas.width * 0.2) {
+        power = Math.min(0.6, (totalDist / canvas.width) + 0.15);
+    } else {
+        power = Math.min(0.85, (totalDist / canvas.width) * 1.5 + 0.3);
+    }
+
+    return {
+        angle: shotAngle,
+        power: power,
+        score: score,
+        probability: 1.0,
+        target: targetChip,
+        hole: hole,
+        pektus: { x: 0, y: 0 }
+    };
+}
+
+// --- NEW FUNCTION: DOBLETE (Bank Shot Calculator) ---
+function findBestBankShot(cueChip, legalTargets) {
+    let bestBank = null;
+    let highestScore = -Infinity;
+
+    const cushions = [
+        { type: 'y', val: 0 },             // Top
+        { type: 'y', val: canvas.height }, // Bottom
+        { type: 'x', val: 0 },             // Left
+        { type: 'x', val: canvas.width }   // Right
+    ];
+
+    for (const target of legalTargets) {
+        for (const hole of holes) {
+            for (const cushion of cushions) {
+                // 1. MIRROR THE POCKET (Ilipat ang butas sa kabila ng pader)
+                let mirroredHole = { x: hole.x, y: hole.y };
+                if (cushion.type === 'y') {
+                    mirroredHole.y = cushion.val + (cushion.val - hole.y);
+                } else {
+                    mirroredHole.x = cushion.val + (cushion.val - hole.x);
+                }
+
+                // 2. HANAPIN ANG POINT SA PADER (Banking Point)
+                // Ito ang linya mula Target Ball papunta sa Mirrored Hole
+                const angleToMirrored = Math.atan2(mirroredHole.y - target.y, mirroredHole.x - target.x);
+                
+                // Saan tatama sa pader?
+                let bankPoint;
+                if (cushion.type === 'y') {
+                    const dy = cushion.val - target.y;
+                    const dx = dy / Math.tan(angleToMirrored);
+                    bankPoint = { x: target.x + dx, y: cushion.val };
+                } else {
+                    const dx = cushion.val - target.x;
+                    const dy = dx * Math.tan(angleToMirrored);
+                    bankPoint = { x: cushion.val, y: target.y + dy };
+                }
+
+                // Check kung pasok sa table ang tama sa pader
+                if (bankPoint.x < 0 || bankPoint.x > canvas.width || bankPoint.y < 0 || bankPoint.y > canvas.height) continue;
+
+                // 3. OBSTRUCTION CHECK (Malinis ba ang daan?)
+                // A. Target -> Pader -> Butas
+                const pathTargetToRail = !isPathObstructed(target, bankPoint, [cueChip.id]);
+                const pathRailToHole = !isPathObstructed(bankPoint, hole, [cueChip.id, target.id]);
+                
+                // 4. CUE BALL AIMING (Ghost Ball para sa Bank Shot)
+                // Kailangan tamaan ang target para pumunta ito sa bankPoint
+                const angleTargetToRail = Math.atan2(bankPoint.y - target.y, bankPoint.x - target.x);
+                // Ghost ball location (likod ng target)
+                const ghostX = target.x - Math.cos(angleTargetToRail) * (cueChip.radius + target.radius);
+                const ghostY = target.y - Math.sin(angleTargetToRail) * (cueChip.radius + target.radius);
+                
+                // B. Cue -> Ghost Ball
+                const ghostPos = { x: ghostX, y: ghostY, radius: cueChip.radius };
+                const pathCueToTarget = !isPathObstructed(cueChip, ghostPos, [target.id]);
+
+                if (pathTargetToRail && pathRailToHole && pathCueToTarget) {
+                    const shotAngle = Math.atan2(ghostY - cueChip.y, ghostX - cueChip.x);
+                    
+                    // Calculation ng Score
+                    const distCueToTarget = Math.hypot(ghostX - cueChip.x, ghostY - cueChip.y);
+                    const distTargetToRail = Math.hypot(bankPoint.x - target.x, bankPoint.y - target.y);
+                    const distRailToHole = Math.hypot(hole.x - bankPoint.x, hole.y - bankPoint.y);
+                    const totalDist = distCueToTarget + distTargetToRail + distRailToHole;
+
+                    // Power calculation (Mas malakas kasi doblete)
+                    const power = Math.min(1.0, (totalDist / canvas.width) * 1.6 + 0.35);
+
+                    // Mas mababa konti ang score ng doblete kesa direct shot, 
+                    // pero mas mataas kesa sa wala.
+                    const score = 800 - totalDist; 
+
+                    if (score > highestScore) {
+                        highestScore = score;
+                        bestBank = {
+                            angle: shotAngle,
+                            power: power,
+                            score: score,
+                            target: target,
+                            type: 'doblete',
+                            pektus: { x: 0, y: 0.2 } // Konting follow para kumagat
+                        };
+                    }
+                }
+            }
+        }
+    }
+    return bestBank;
+}
+  
 function aiTurn() {
     if (gameState !== 'aiming' || chipsMoving || !chips[0]?.inPlay) return;
     const cueChip = chips[0];
 
-    // 1. BREAK SHOT LOGIC (Mula sa "Terminator" AI)
+    // 1. BREAK SHOT
     if (isBreakShot) {
-        showMessage("AI is breaking...", 2000);
-        
-        let apexBall; // Ito 'yung bola sa pinaka-unahan ng rack
-        
-        if (gameMode.includes('61-ball')) {
-            apexBall = chips.find(c => c.inPlay && c.id === 1);
-        } else {
-            let frontMostX = canvas.width; 
-            chips.forEach(c => {
-                if (c.inPlay && c.id !== 0) {
-                    if (c.x < frontMostX) {
-                        frontMostX = c.x;
-                        apexBall = c; 
-                    }
-                }
-            });
-        }
-
-        if (!apexBall) {
-            const rackX = gameMode.includes('61-ball') ? canvas.width * 0.75 : canvas.width * 0.7;
-            apexBall = { x: rackX, y: canvas.height / 2 };
-        }
-
+        showMessage("AI performing Power Break!", 2000);
+        let apexBall = gameMode.includes('61-ball') ? chips.find(c => c.inPlay && c.id === 1) : null;
+        if (!apexBall) apexBall = { x: canvas.width * 0.7, y: canvas.height / 2 };
         const breakAngle = Math.atan2(apexBall.y - cueChip.y, apexBall.x - cueChip.x);
-        const breakPower = 1.1 + (Math.random() * 0.1); // Normalized power (1.1 hanggang 1.2)
-        
-        const breakShot = {
-            angle: breakAngle,
-            power: breakPower,
-            probability: 1.0,
-            pektus: { x: 0, y: -0.2 } // Kaunting topspin para sa "break"
-        };
-
-        const breakPacing = { DURATION_ALIGN: 100, DURATION_FEATHER: 2500, DURATION_PAUSE: 100 };
-        
-        animateAiAiming(breakShot.angle, breakShot.power, breakPacing, breakShot.pektus);
-        return; 
+        animateAiAiming(breakAngle, 1.0, { DURATION_ALIGN: 1000 }, { x: 0, y: -0.5 });
+        return;
     }
 
-    // 2. REGULAR SHOT LOGIC (Paghanap ng Tira)
+    // 2. IDENTIFY TARGETS
     let allLegalTargets = [], allPocketableChips = [];
-
     if (gameMode.includes('poker')) {
         allLegalTargets = chips.filter(c => c.inPlay && opponentHand.some(card => card.value === c.id));
-        allPocketableChips = allLegalTargets;
+        allPocketableChips = chips.filter(c => c.inPlay && c.id !== 0); // Lahat pwede maging 2nd ball
     } else if (gameMode.includes('61-ball')) {
         const lowestChip = chips.find(c => c.id === lowestChipNumber);
-        if (!lowestChip) {
-            setTimeout(handleTurnEnd, 500);
-            return;
-        }
+        if (!lowestChip) { setTimeout(handleTurnEnd, 500); return; }
         allLegalTargets = [lowestChip];
         allPocketableChips = chips.filter(c => c.inPlay && c.id !== 0);
     } else {
         if (colorsAssigned && opponentChipsType) allLegalTargets = chips.filter(c => c.inPlay && c.type === opponentChipsType);
         else allLegalTargets = chips.filter(c => c.inPlay && (c.type === 'red' || c.type === 'blue'));
-        allPocketableChips = allLegalTargets;
+        allPocketableChips = chips.filter(c => c.inPlay && c.id !== 0);
     }
 
-    let simplePots = [];
-    let complexShots = [];
+    // 3. SCAN SHOTS
+    let bestDirectShot = null;
+    let bestBankShot = null;
+    let bestComboShot = null; // New Variable
+    let highestScore = -Infinity;
 
-    // Titingnan lahat ng posibleng tira
+    // A. Direct Shots (with Position Score included)
     for (const target of allLegalTargets) {
         for (const hole of holes) {
-            const evaluation = evaluateShot(cueChip, target, hole, allLegalTargets, difficulty, false);
-            if (evaluation) simplePots.push(evaluation);
-        }
-    }
-    if (gameMode.includes('61-ball')) {
-        for (const target of allPocketableChips.filter(c => c.id !== allLegalTargets[0].id)) {
-            for (const hole of holes) {
-                const evaluation = evaluateShot(cueChip, target, hole, allLegalTargets, difficulty, true);
-                if (evaluation) complexShots.push(evaluation);
+            const evalShot = evaluateShot(cueChip, target, hole, allLegalTargets, 'hard', false);
+            if (evalShot && evalShot.score > highestScore) {
+                highestScore = evalShot.score;
+                bestDirectShot = evalShot;
             }
         }
     }
 
-    const allPossibleShots = [...simplePots, ...complexShots];
-    let bestShot;
-
-    if (allPossibleShots.length > 0) {
-        // --- "TERMINATOR" LOGIC ---
-        // Laging pipiliin ang pinaka-the best shot (highest score)
-        allPossibleShots.sort((a, b) => b.score - a.score);
-        bestShot = allPossibleShots[0]; 
-
-    } else {
-        // --- NO SHOT FOUND LOGIC (Kick or Defensive) ---
-        showMessage("AI is calculating a kick shot...", 2000);
-        bestShot = findBestKickShot(cueChip, allLegalTargets);
-
-        if (!bestShot) {
-            bestShot = findBestDefensiveShot(cueChip, allLegalTargets);
-        }
-        if (!bestShot) {
-            const finalTarget = allLegalTargets[0] || allPocketableChips[0];
-            if (finalTarget) {
-                bestShot = { angle: Math.atan2(finalTarget.y - cueChip.y, finalTarget.x - cueChip.x), power: 0.4, probability: 0.5, pektus: {x:0, y:0} };
-            } else {
-                setTimeout(handleTurnEnd, 500);
-                return;
-            }
-        }
+    // B. Combination Shots (Kung walang clear Direct Shot o mababa score)
+    if (!bestDirectShot || highestScore < 700) {
+        bestComboShot = findBestCombinationShot(cueChip, allLegalTargets, allPocketableChips);
     }
 
-    // --- BAGONG "PRO PLAYER" PACING (Ito 'yung binago natin) ---
-    let pacing = {};
-    const shotProbability = bestShot.probability || 1.0; 
-    let isDefensiveShot = bestShot.isDefensive || false;
-    let isKickShot = !bestShot.hole && !isDefensiveShot; 
+    // C. Bank Shots (Doblete)
+    if ((!bestDirectShot && !bestComboShot) || highestScore < 600) {
+        bestBankShot = findBestBankShot(cueChip, allLegalTargets);
+    }
 
-    if (isKickShot || isDefensiveShot) {
-        // Mas matagal mag-isip para sa complex shots
-        pacing = { DURATION_ALIGN: 1000, DURATION_FEATHER: 2500, DURATION_PAUSE: 100 };
-    } else if (shotProbability < 0.75) {
-        // Medyo matagal para sa mahihirap na tira (para "parang tao")
-        pacing = { DURATION_ALIGN: 1000, DURATION_FEATHER: 2500, DURATION_PAUSE: 100 };
-    } else {
-        // Mabilis at confident para sa madali o standard na tira
-        pacing = { DURATION_ALIGN: 1000, DURATION_FEATHER: 2500, DURATION_PAUSE: 100 };
+    // --- 4. DECISION MAKING ---
+    let finalShot = null;
+    let shotType = "normal";
+
+    // Priority 1: High Score Direct Shot
+    if (bestDirectShot && highestScore >= 700) {
+        finalShot = bestDirectShot;
+        shotType = "direct";
+    }
+    // Priority 2: Combination Shot (Sargo)
+    // Kung may sureball na sargo at mas maganda sa alanganing direct shot
+    else if (bestComboShot && (!bestDirectShot || bestComboShot.score > highestScore)) {
+        finalShot = bestComboShot;
+        shotType = "combo";
+    }
+    // Priority 3: Bank Shot (Doblete)
+    else if (bestBankShot && (!bestDirectShot || bestBankShot.score > highestScore)) {
+        finalShot = bestBankShot;
+        shotType = "doblete";
+    }
+    // Priority 4: Low Score Direct Shot
+    else if (bestDirectShot) {
+        finalShot = bestDirectShot;
+        shotType = "direct_risky";
     }
     
-    animateAiAiming(bestShot.angle, bestShot.power, pacing, bestShot.pektus || { x: 0, y: 0 });
-    // --- END NG BAGONG PACING ---
+    // Priority 5: Kick Shot (Banda - Last Resort pag blocked)
+    if (!finalShot) {
+        showMessage("Blocked! Calculating Kick Shot...", 2000);
+        const bestKick = findBestKickShot(cueChip, allLegalTargets);
+        if (bestKick) {
+            finalShot = bestKick;
+            shotType = "banda";
+        }
+    }
+
+    // Priority 6: Safety
+    if (!finalShot) {
+        showMessage("No shot found. Playing Safe.", 2000);
+        const target = allLegalTargets[0];
+        if (target) {
+            finalShot = { angle: Math.atan2(target.y - cueChip.y, target.x - cueChip.x), power: 0.3, pektus: {x:0, y:0} };
+        } else { setTimeout(handleTurnEnd, 500); return; }
+    }
+
+    // --- 5. EXECUTE ---
+    if(shotType === "combo") showMessage("AI aiming Combination Shot!", 2000);
+    else if(shotType === "banda") showMessage("AI aiming Kick Shot!", 2000);
+    else if(shotType === "doblete") showMessage("AI aiming Bank Shot!", 2000);
+    else if(shotType === "direct" && highestScore > 1100) showMessage("AI planning position...", 1500); // Mataas score dahil sa position
+
+    animateAiAiming(finalShot.angle, finalShot.power, { DURATION_ALIGN: 800 }, finalShot.pektus || { x: 0, y: 0 });
 }
-// ▲▲▲ HANGGANG DITO ANG PALIT ▲▲▲
+
+// --- NEW FUNCTION: COMBINATION SHOT (Sargo) ---
+function findBestCombinationShot(cueChip, legalTargets, allPocketableChips) {
+    let bestCombo = null;
+    let highestScore = -Infinity;
+
+    // 1. Loop sa lahat ng LEGAL TARGETS (Ito ang unang tatamaan - Bola 1)
+    for (const firstBall of legalTargets) {
         
-        function findBestKickShot(cueChip, legalTargets) { let bestKickShot = { score: -Infinity }; const cushions = [ { type: 'y', val: 0 }, { type: 'y', val: canvas.height }, { type: 'x', val: 0 }, { type: 'x', val: canvas.width } ]; for (const target of legalTargets) { for (const cushion of cushions) { let virtualCue = (cushion.type === 'y') ? { x: cueChip.x, y: cushion.val * 2 - cueChip.y } : { x: cushion.val * 2 - cueChip.x, y: cueChip.y }; const angleToVirtual = Math.atan2(target.y - virtualCue.y, target.x - virtualCue.x); const impactPoint = (cushion.type === 'y') ? { y: cushion.val, x: cueChip.x + (cushion.val - cueChip.y) / Math.tan(angleToVirtual) } : { x: cushion.val, y: cueChip.y + (cushion.val - cueChip.x) * Math.tan(angleToVirtual) }; const pathToCushionClear = !isPathObstructed(cueChip, impactPoint, [target.id]); const pathFromCushionClear = !isPathObstructed(impactPoint, target, [cueChip.id]); if (pathToCushionClear && pathFromCushionClear) { const finalShotAngle = Math.atan2(impactPoint.y - cueChip.y, impactPoint.x - cueChip.x); const distance = Math.hypot(impactPoint.x - cueChip.x, impactPoint.y - cueChip.y) + Math.hypot(target.x - impactPoint.x, target.y - impactPoint.y); const power = Math.min(1.0, (distance / canvas.width) * 1.5) + 0.3; const score = 500 - distance; if (score > bestKickShot.score) { bestKickShot = { score, angle: finalShotAngle, power, probability: 0.7 }; } } } } return bestKickShot.score > -Infinity ? bestKickShot : null; }
+        // 2. Loop sa lahat ng pwede ma-shoot (Bola 2)
+        // Pwedeng ibang legal target o kahit anong bola (basta legal ang unang tama)
+        for (const secondBall of allPocketableChips) {
+            
+            if (firstBall.id === secondBall.id) continue; // Bawal sarili
+
+            for (const hole of holes) {
+                // A. TARGETING: Ghost Ball para sa Bola 2 -> Butas
+                const dx2 = hole.x - secondBall.x;
+                const dy2 = hole.y - secondBall.y;
+                const angle2 = Math.atan2(dy2, dx2);
+                
+                // Pwesto kung saan dapat tamaan ang Bola 2
+                const ghost2X = secondBall.x - Math.cos(angle2) * (firstBall.radius + secondBall.radius);
+                const ghost2Y = secondBall.y - Math.sin(angle2) * (firstBall.radius + secondBall.radius);
+
+                // B. TARGETING: Ghost Ball para sa Bola 1 -> Ghost 2
+                // Kailangan tamaan ng Bola 1 ang Ghost 2 point
+                const dx1 = ghost2X - firstBall.x;
+                const dy1 = ghost2Y - firstBall.y;
+                const angle1 = Math.atan2(dy1, dx1);
+
+                // Pwesto kung saan dapat tamaan ng Cue Ball ang Bola 1
+                const ghost1X = firstBall.x - Math.cos(angle1) * (cueChip.radius + firstBall.radius);
+                const ghost1Y = firstBall.y - Math.sin(angle1) * (cueChip.radius + firstBall.radius);
+
+                // C. ANGLE CHECK (Mas mahirap ang combo pag manipis)
+                // Angle between Cue->Ball1 and Ball1->Ball2
+                const shotLineAngle = Math.atan2(ghost1Y - cueChip.y, ghost1X - cueChip.x);
+                const cutAngle = Math.abs(angle1 - shotLineAngle);
+                
+                // Kapag sobra sa 60 degrees ang hiwa, mahirap na 'to. Skip.
+                if (cutAngle > Math.PI / 3) continue;
+
+                // D. OBSTRUCTION CHECK (3 Paths ang iche-check)
+                // 1. Cue -> Bola 1
+                const path1 = !isPathObstructed(cueChip, {x: ghost1X, y: ghost1Y}, [firstBall.id]);
+                // 2. Bola 1 -> Bola 2
+                const path2 = !isPathObstructed(firstBall, {x: ghost2X, y: ghost2Y}, [cueChip.id, secondBall.id]);
+                // 3. Bola 2 -> Butas
+                const path3 = !isPathObstructed(secondBall, hole, [firstBall.id, cueChip.id]);
+
+                if (path1 && path2 && path3) {
+                    const shotAngle = Math.atan2(ghost1Y - cueChip.y, ghost1X - cueChip.x);
+                    const distTotal = Math.hypot(dx1, dy1) + Math.hypot(dx2, dy2) + Math.hypot(firstBall.x - cueChip.x, firstBall.y - cueChip.y);
+                    
+                    // Mas malakas na power kailangan
+                    const power = Math.min(1.0, (distTotal / canvas.width) * 1.5 + 0.4); 
+                    
+                    // Scoring: Mas mababa sa Direct Shot pero mas mataas sa wala
+                    let score = 900 - distTotal;
+                    
+                    // Mas prioritize ang combo kung malapit sa butas ang 2nd ball
+                    const distToHole = Math.hypot(dx2, dy2);
+                    if (distToHole < 100) score += 200;
+
+                    if (score > highestScore) {
+                        highestScore = score;
+                        bestCombo = {
+                            angle: shotAngle,
+                            power: power,
+                            score: score,
+                            target: firstBall,
+                            type: 'combo',
+                            pektus: { x: 0, y: 0.3 } // Topspin para "follow through" ang energy
+                        };
+                    }
+                }
+            }
+        }
+    }
+    return bestCombo;
+}
+        
+        function findBestKickShot(cueChip, legalTargets) {
+    if (!legalTargets || legalTargets.length === 0) return null;
+    
+    let bestKickShot = { score: -Infinity };
+    const target = legalTargets[0]; // Ang target na bola (lowest number o card)
+
+    // Apat na pader (Top, Bottom, Left, Right)
+    const cushions = [
+        { type: 'y', val: 0, name: 'top' },
+        { type: 'y', val: canvas.height, name: 'bottom' },
+        { type: 'x', val: 0, name: 'left' },
+        { type: 'x', val: canvas.width, name: 'right' }
+    ];
+
+    // Subukan ang bawat pader
+    for (const cushion of cushions) {
+        // --- MIRROR SYSTEM CALCULATION ---
+        // I-mirror natin ang target ball sa kabila ng pader para makuha ang tamang aiming point
+        let mirroredTarget = { x: target.x, y: target.y };
+        
+        if (cushion.type === 'y') { // Top or Bottom Wall
+            // Mirror Y coordinate
+            mirroredTarget.y = cushion.val + (cushion.val - target.y);
+        } else { // Left or Right Wall
+            // Mirror X coordinate
+            mirroredTarget.x = cushion.val + (cushion.val - target.x);
+        }
+
+        // Kalkulahin ang Ghost Ball sa mirrored position (para tumama sa gitna ng bola)
+        const angleToMirrored = Math.atan2(mirroredTarget.y - cueChip.y, mirroredTarget.x - cueChip.x);
+        
+        // Ito ang punto sa pader na dapat tamaan
+        let impactPoint;
+        if (cushion.type === 'y') {
+            const dy = cushion.val - cueChip.y;
+            const dx = dy / Math.tan(angleToMirrored);
+            impactPoint = { x: cueChip.x + dx, y: cushion.val };
+        } else {
+            const dx = cushion.val - cueChip.x;
+            const dy = dx * Math.tan(angleToMirrored);
+            impactPoint = { x: cushion.val, y: cueChip.y + dy };
+        }
+
+        // Check kung pasok sa table ang tama sa pader (baka lumampas)
+        if (impactPoint.x < 0 || impactPoint.x > canvas.width || impactPoint.y < 0 || impactPoint.y > canvas.height) continue;
+
+        // --- PATH CHECKING ---
+        // 1. Path mula Cue Ball papuntang Pader (Clear ba?)
+        const pathToCushionClear = !isPathObstructed(cueChip, impactPoint, [target.id]);
+        
+        // 2. Path mula Pader papuntang Target (Clear ba?)
+        const pathFromCushionClear = !isPathObstructed(impactPoint, target, [cueChip.id]);
+
+        if (pathToCushionClear && pathFromCushionClear) {
+            // Success! May nakitang banda.
+            const finalShotAngle = Math.atan2(impactPoint.y - cueChip.y, impactPoint.x - cueChip.x);
+            const totalDistance = Math.hypot(impactPoint.x - cueChip.x, impactPoint.y - cueChip.y) + 
+                                  Math.hypot(target.x - impactPoint.x, target.y - impactPoint.y);
+            
+            // Mas malakas na power para sigurado umabot kahit tumalbog
+            const power = Math.min(1.0, (totalDistance / canvas.width) * 1.8) + 0.2; 
+            
+            // Mas mataas ang score pag mas malapit ang distansya
+            const score = 1000 - totalDistance; 
+
+            if (score > bestKickShot.score) {
+                bestKickShot = { 
+                    score, 
+                    angle: finalShotAngle, 
+                    power, 
+                    probability: 1.0, // Sureball ang aim
+                    pektus: { x: 0, y: 0.5 } // Konting forward spin para kumagat sa banda
+                };
+            }
+        }
+    }
+
+    return bestKickShot.score > -Infinity ? bestKickShot : null;
+}
         function predictSimpleCuePos(cueChip,targetChip,shotAngle,power){const distance=Math.hypot(targetChip.x-cueChip.x,targetChip.y-cueChip.y);const followDistance=(power*power)*(distance*0.4);return{id:0,x:targetChip.x+Math.cos(shotAngle)*followDistance,y:targetChip.y+Math.sin(shotAngle)*followDistance,radius:cueChip.radius};}
         // ▼▼▼ PALITAN MO ITONG BUONG FUNCTION ▼▼▼
 
@@ -11218,74 +11615,51 @@ function animateAIHandDrag(cueChip, targetX, targetY) {
     requestAnimationFrame(animate);
 }
 
-// Binago para tumanggap ng 'pektus' object
 function animateAiAiming(targetAngle, finalPower, pacingOptions = {}, pektus = { x: 0, y: 0 }) {
+    // Override pacing para mabilis at walang arte (God Mode style)
+    const DURATION_ALIGN = 500;  // Mabilis na align
+    const DURATION_FEATHER = 1000; // Isang atras-abante lang
+    const TOTAL_DURATION = DURATION_ALIGN + DURATION_FEATHER;
+    
     const startTime = performance.now();
     const startAngle = cueStick.angle;
 
-    // Default values
-    const defaults = {
-        DURATION_ALIGN: 800,
-        DURATION_FEATHER: 2500,
-        DURATION_PAUSE: 0
-    };
-
-    // I-merge ang defaults sa pinasang pacingOptions
-    const basePacing = { ...defaults, ...pacingOptions };
-
-    // --- BAGONG DAGDAG (New Addition): Randomization ---
-    // Gawing random ang timing para magmukhang tao
-    const DURATION_ALIGN = basePacing.DURATION_ALIGN * (0.8 + Math.random() * 0.4); // 80% to 120%
-    const DURATION_FEATHER = basePacing.DURATION_FEATHER * (0.8 + Math.random() * 0.4); // 80% to 120%
-    const DURATION_PAUSE = basePacing.DURATION_PAUSE; // Ang pause ay mananatiling fixed
-    // --- END NG DAGDAG ---
-    
-    const FEATHER_COUNT = 1.5;
-    const FEATHER_DISTANCE = 60 * scale;
-    const TOTAL_DURATION = DURATION_ALIGN + DURATION_FEATHER + DURATION_PAUSE;
-
     function animate(currentTime) {
         const elapsedTime = currentTime - startTime;
-        if (elapsedTime < DURATION_ALIGN) {
-            // Stage 1: Pag-align ng tako
-            const alignProgress = elapsedTime / DURATION_ALIGN;
-            const easeOut = 1 - Math.pow(1 - alignProgress, 4);
-            cueStick.angle = startAngle + (targetAngle - startAngle) * easeOut;
-            cueStick.pullback = 0;
-            
-            // Habang nag-a-align, i-set na rin ang pektus
-            // Gagawa tayo ng "easing" para 'yung dot ay dahan-dahang pumupunta sa pwesto
-            pektusOffset.x = pektus.x * easeOut;
-            pektusOffset.y = pektus.y * easeOut;
-            updatePektusUI(); // I-update ang itsura ng pektus dot
 
-        } else if (elapsedTime < DURATION_ALIGN + DURATION_FEATHER) {
-            // Stage 2: Pag-"Feather" (yung umatras-abante)
-            cueStick.angle = targetAngle;
+        if (elapsedTime < DURATION_ALIGN) {
+            // Stage 1: Aligning
+            const progress = elapsedTime / DURATION_ALIGN;
+            // Smooth easing
+            const ease = 1 - Math.pow(1 - progress, 3); 
+            cueStick.angle = startAngle + (targetAngle - startAngle) * ease;
             
-            // Siguraduhin na 100% nang nasa tamang pwesto ang pektus
-            pektusOffset = { ...pektus };
+            // Set Pektus visuals
+            pektusOffset.x = pektus.x * ease;
+            pektusOffset.y = pektus.y * ease;
             updatePektusUI();
-            
-            const featherTime = elapsedTime - DURATION_ALIGN;
-            const featherProgress = featherTime / DURATION_FEATHER;
-            cueStick.pullback = Math.abs(Math.sin(featherProgress * Math.PI * (FEATHER_COUNT * 2))) * FEATHER_DISTANCE;
 
         } else if (elapsedTime < TOTAL_DURATION) {
-            // Stage 3: Sandaling pag-pause bago tumira
-            cueStick.angle = targetAngle;
-            pektusOffset = { ...pektus }; // Siguraduhin ulit
+            // Stage 2: LOCK ON TARGET (Dito ang sikreto, naka-lock na)
+            cueStick.angle = targetAngle; // <--- FORCE PERFECT ANGLE
+            
+            // Set Final Pektus
+            pektusOffset = { ...pektus };
             updatePektusUI();
-            cueStick.pullback = 0;
+
+            // Pullback animation lang (Visuals lang to, di nakakaapekto sa aim)
+            const featherTime = elapsedTime - DURATION_ALIGN;
+            const featherProgress = featherTime / DURATION_FEATHER;
+            cueStick.pullback = Math.sin(featherProgress * Math.PI) * (50 * scale);
 
         } else {
-            // Stage 4: Tumira!
-            cueStick.angle = targetAngle;
-            
-            // Ito na 'yung final pektus na ipapasa sa 'shoot' function
+            // Stage 3: SHOOT
+            // SIGURADUHIN na naka-set ang angle at pektus bago tumira
+            cueStick.angle = targetAngle; 
             pektusOffset = { ...pektus };
-            updatePektusUI(); 
+            updatePektusUI();
             
+            // Fire!
             shoot(finalPower * 40 + 2);
             return;
         }
@@ -11293,10 +11667,6 @@ function animateAiAiming(targetAngle, finalPower, pacingOptions = {}, pektus = {
     }
     requestAnimationFrame(animate);
 }
-// ▲▲▲ HANGGANG DITO ANG PALIT ▲▲▲
-        
-        
-        // ▼▼▼ BURAHIN MO YUNG LUMA MONG "placeChipOnSpot" AT IPALIT MO ITO ▼▼▼
 
 function placeChipOnSpot(chipToPlace) {
     // Siguraduhin na ang pwesto ay LAGING 0.7 (70%)
@@ -11330,43 +11700,52 @@ function placeChipOnSpot(chipToPlace) {
         function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => showMessage(`Could not activate full-screen mode.`, 2000)); else if (document.exitFullscreen) document.exitFullscreen(); }
         
         function handlePointerDown(e) { 
-            e.preventDefault(); 
+    e.preventDefault(); 
 
-            if (isTutorialActive) {
-                const currentStep = tutorialSteps[tutorialStep];
-                if (currentStep && currentStep.trigger === 'drag') {
-                    // This is handled in pointerMove to detect the start of the drag
-                }
-            }
-
-            const isMyTurn = isOnlineGame ? isMyTurnOnline : playerTurn; 
-            if (!isMyTurn || (isOnlineGame && isSyncing)) return; 
-            const targetId = e.currentTarget.id; 
-            if (gameState === 'moving' && canMoveCueBall && targetId === 'game-canvas') { 
-                isDraggingCueBall = true; 
-                cueStick.visible = false; 
-                ghostHand.style.display = 'block'; 
-                dragGuideText.style.display = 'none'; 
-                updateCueBallPosition(e); 
-            } else if (gameState === 'aiming') { 
-                if (targetId === 'game-canvas') { 
-                    isAimingOnCanvas = true; 
-                    updateAimFromCanvas(e); 
-                    playAimingSound(); // Play sound on initial aim drag
-                } else if (targetId === 'power-control') {
-                    isPoweringUp = true;
-                    playPowerSound(0); // Start power sound at low level
-                } else if (targetId === 'pektus-control') { 
-                    isDraggingPektusDot = true; 
-                    handlePektusInput(e); 
-                    playAimingSound(); // Play sound when adjusting pektus
-                } else if (targetId === 'left-arrow') {
-                    isRotatingLeft = true; 
-                } else if (targetId === 'right-arrow') {
-                    isRotatingRight = true; 
-                }
-            } 
+    if (isTutorialActive) {
+        const currentStep = tutorialSteps[tutorialStep];
+        if (currentStep && currentStep.trigger === 'drag') {
+            // Handled in pointerMove
         }
+    }
+
+    const isMyTurn = isOnlineGame ? isMyTurnOnline : playerTurn; 
+    if (!isMyTurn || (isOnlineGame && isSyncing)) return; 
+    
+    const targetId = e.currentTarget.id; 
+    
+    if (gameState === 'moving' && canMoveCueBall && targetId === 'game-canvas') { 
+        isDraggingCueBall = true; 
+        cueStick.visible = false; 
+        ghostHand.style.display = 'block'; 
+        dragGuideText.style.display = 'none'; 
+        updateCueBallPosition(e); 
+    } else if (gameState === 'aiming') { 
+        if (targetId === 'game-canvas') { 
+            isAimingOnCanvas = true; 
+            updateAimFromCanvas(e); 
+            playAimingSound(); 
+        } else if (targetId === 'power-control') {
+            isPoweringUp = true;
+            playPowerSound(0); 
+        } 
+        // --- DITO NATIN BINAGO ---
+        else if (targetId === 'pektus-control') { 
+            // Buksan ang Modal sa gitna
+            if (typeof openPektusModal === 'function') {
+                openPektusModal();
+            } else {
+                console.error("Wala pa yung openPektusModal function!");
+            }
+        } 
+        // -------------------------
+        else if (targetId === 'left-arrow') {
+            isRotatingLeft = true; 
+        } else if (targetId === 'right-arrow') {
+            isRotatingRight = true; 
+        }
+    } 
+}
 
         function handlePointerMove(e) { 
             if (isTutorialActive) {
@@ -11406,59 +11785,62 @@ function placeChipOnSpot(chipToPlace) {
         }
 
         function handlePointerUp(e) {
-            if (isTutorialActive) {
-                const currentStep = tutorialSteps[tutorialStep];
-                if (currentStep) {
-                     if (isDraggingCueBall && currentStep.key === 'place') {
-                        if (!isInvalidPlacement) nextTutorialStep();
-                    }
-                }
-            }
-
-            if (isPoweringUp) {
-                isPoweringUp = false;
-                stopPowerSound(); // Stop the power sound
-                if (cueStick.power > 0.05) {
-                    shoot(cueStick.power * 40 + 2);
-                } else {
-                    cueStick.power = 0;
-                    powerBar.style.height = '0%';
-                    cueStick.pullback = 0;
-                }
-            }
-            isAimingOnCanvas = false;
-            if (isDraggingCueBall) {
-                isDraggingCueBall = false;
-                ghostHand.style.display = 'none';
-                dragGuideText.style.display = 'none';
-                if (!isInvalidPlacement) {
-                    canMoveCueBall = false;
-                    gameState = 'aiming';
-                    resetPektus();
-                    cueStick.visible = true;
-                    if (cueStickElement) cueStickElement.style.display = 'block';
-                    if (isOnlineGame && !isTutorialActive) {
-                        const chipsToSend = chips.map(c => ({...c, x: c.x / canvas.width, y: c.y / canvas.height }));
-                        updateDoc(doc(db, "games", gameId), { canMoveCueBall: false, chips: chipsToSend, liveAimData: null, currentTurnUid: localPlayerUid });
-                    }
-                } else {
-                    cueStick.visible = true; 
-                }
-            }
-            isDraggingPektusDot = false;
-            isRotatingLeft = false;
-            isRotatingRight = false;
-            if (e.currentTarget.id === 'left-arrow' || e.currentTarget.id === 'right-arrow') {
-                e.currentTarget.style.transform = '';
+    if (isTutorialActive) {
+        const currentStep = tutorialSteps[tutorialStep];
+        if (currentStep) {
+                if (isDraggingCueBall && currentStep.key === 'place') {
+                if (!isInvalidPlacement) nextTutorialStep();
             }
         }
-        // ▼▼▼ PALITAN MO ITONG BUONG FUNCTION ▼▼▼
-// ▼▼▼ IPALIT MO ITO SA LUMA MONG "getEventPos" ▼▼▼
+    }
 
-/**
- * Kinukuha ang mouse position para sa mga UI elements (Power, Pektus)
- * Ito ay kumukuha ng pixel coordinates (px)
- */
+    if (isPoweringUp) {
+        isPoweringUp = false;
+        stopPowerSound(); 
+        if (cueStick.power > 0.05) {
+            shoot(cueStick.power * 40 + 2);
+        } else {
+            cueStick.power = 0;
+            powerBar.style.height = '0%';
+            cueStick.pullback = 0;
+        }
+    }
+    
+    isAimingOnCanvas = false;
+    
+    if (isDraggingCueBall) {
+        isDraggingCueBall = false;
+        ghostHand.style.display = 'none';
+        dragGuideText.style.display = 'none';
+        if (!isInvalidPlacement) {
+            canMoveCueBall = false;
+            gameState = 'aiming';
+            resetPektus();
+            cueStick.visible = true;
+            if (cueStickElement) cueStickElement.style.display = 'block';
+            if (isOnlineGame && !isTutorialActive) {
+                const chipsToSend = chips.map(c => ({...c, x: c.x / canvas.width, y: c.y / canvas.height }));
+                updateDoc(doc(db, "games", gameId), { canMoveCueBall: false, chips: chipsToSend, liveAimData: null, currentTurnUid: localPlayerUid });
+            }
+        } else {
+            cueStick.visible = true; 
+        }
+    }
+
+    // --- DITO ANG FIX PARA SA RED DOT ---
+    if (isDraggingPektusDot) {
+        isDraggingPektusDot = false;
+        resetPektus(); // <--- ITO ANG MAGBABALIK SA GITNA
+        if (!isTutorialActive) sendLiveAimData(); // Optional: Para makita ng kalaban na bumalik sa gitna
+    }
+    // ------------------------------------
+
+    isRotatingLeft = false;
+    isRotatingRight = false;
+    if (e.currentTarget.id === 'left-arrow' || e.currentTarget.id === 'right-arrow') {
+        e.currentTarget.style.transform = '';
+    }
+}
 function getUIPos(e, relativeTo) {
     const rect = relativeTo.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -11529,27 +11911,42 @@ function updateCueBallPosition(e) {
 
 function handlePektusInput(e) {
     const rect = pektusControl.getBoundingClientRect();
-    const pos = getUIPos(e, pektusControl); // <-- Pinalitan na natin
-    const centerX = rect.width / 2, centerY = rect.height / 2;
-    let dx = pos.x - centerX, dy = pos.y - centerY; // <-- Ginamit ang pos.x/pos.y
+    const pos = getUIPos(e, pektusControl);
     
-    // ▼▼▼ IDAGDAG MO ITONG ISANG LINYA ▼▼▼
-    if (dy > 0) dy = 0; // Ito ang pipigil sa "backspin" (draw shot)
-    // ▲▲▲ HANGGANG DITO ▲▲▲
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
 
-    const dist = Math.sqrt(dx * dx + dy * dy), maxDist = rect.width / 2;
+    // 1. Calculate Distances from Center
+    let dx = pos.x - centerX;
+    let dy = pos.y - centerY; 
+
+    // 2. Limits (X Axis - Lapad)
+    // Binawasan ko ng 4px (kalahati ng dot size na 8px) para hindi lumabas ang gilid ng bilog
+    const maxDistX = (rect.width / 2) - 4; 
     
-    if (dist > maxDist) {
-        dx = (dx / dist) * maxDist;
-        dy = (dy / dist) * maxDist;
-    }
+    // CLAMPING: Kung sobra, gawing max
+    if (dx > maxDistX) dx = maxDistX;
+    if (dx < -maxDistX) dx = -maxDistX;
+
+    // 3. Limits (Y Axis - Taas/Baba)
+    const maxDistY = (rect.height / 2) - 4; 
     
-    pektusOffset.x = dx / maxDist;
-    pektusOffset.y = dy / maxDist;
-    updatePektusUI();
+    // CLAMPING: Kung sobra, gawing max
+    if (dy > maxDistY) dy = maxDistY;
+    if (dy < -maxDistY) dy = -maxDistY;
+    
+    // 4. Save normalized values (-1 to 1) for Game Logic
+    pektusOffset.x = dx / maxDistX;
+    pektusOffset.y = dy / maxDistY; 
+    
+    // 5. Update UI visually
+    // Direkta nating i-set ang style dito para smooth at sunod sa clamp
+    const dotSize = pektusDot.offsetWidth; 
+    pektusDot.style.left = `${centerX + dx - (dotSize/2)}px`;
+    pektusDot.style.top = `${centerY + dy - (dotSize/2)}px`;
+
     if (!isTutorialActive) sendLiveAimData();
 }
-
 // ▲▲▲ HANGGANG DITO ANG PAGPALIT ▲▲▲
         function isPositionOccupied(x, y, draggedChip) { for (const chip of chips) { if (chip.id === draggedChip.id || !chip.inPlay) continue; if ((x-chip.x)**2 + (y-chip.y)**2 < (draggedChip.radius + chip.radius)**2) return true; } return false; }
         function updateCardDisplay() { if (gameMode.includes('poker')) { cardHandContainer.style.display = 'flex'; cardHandContainer.innerHTML = ''; let currentHand = playerHand; if (!currentHand) return; currentHand.forEach(card => { const cardDiv = document.createElement('div'); cardDiv.className = 'card'; const rankSpan = document.createElement('span'); rankSpan.className = 'card-rank'; rankSpan.textContent = card.rank; const suitSpan = document.createElement('span'); suitSpan.className = 'card-suit'; suitSpan.textContent = card.suit; if (card.suit === '♥' || card.suit === '♦') { rankSpan.style.color = '#D32F2F'; suitSpan.style.color = '#D32F2F'; } else { rankSpan.style.color = '#212121'; suitSpan.style.color = '#212121'; } cardDiv.appendChild(rankSpan); cardDiv.appendChild(suitSpan); cardHandContainer.appendChild(cardDiv); }); } else { cardHandContainer.style.display = 'none'; } updateInfoBox(); }
@@ -11598,8 +11995,22 @@ function handlePektusInput(e) {
 
 
         function resetPektus() { pektusOffset = { x: 0, y: 0 }; updatePektusUI(); }
-        function updatePektusUI() { const controlSize = pektusControl.offsetWidth; if (controlSize === 0) return; const dotSize = pektusDot.offsetWidth; const maxOffset = (controlSize / 2) - (dotSize / 2); const dotX = (pektusOffset.x * maxOffset) + (controlSize / 2); const dotY = (pektusOffset.y * maxOffset) + (controlSize / 2); pektusDot.style.left = `${dotX}px`; pektusDot.style.top = `${dotY}px`; }
-        
+        function updatePektusUI() { 
+    const rect = pektusControl.getBoundingClientRect(); 
+    const dotSize = pektusDot.offsetWidth; 
+    
+    // X Axis Logic (Kaliwa/Kanan)
+    const maxOffsetX = (rect.width / 2) - 6; 
+    const dotX = (rect.width / 2) + (pektusOffset.x * maxOffsetX) - (dotSize / 2); 
+    
+    // Y Axis Logic (Taas/Baba) - ETO ANG BAGO
+    // Imbes na naka-lock sa gitna, nag-a-adjust na siya base sa pektusOffset.y
+    const maxOffsetY = (rect.height / 2) - 6;
+    const dotY = (rect.height / 2) + (pektusOffset.y * maxOffsetY) - (dotSize / 2); 
+    
+    pektusDot.style.left = `${dotX}px`; 
+    pektusDot.style.top = `${dotY}px`; 
+}        
         // START: Tutorial Functions
         function startTutorial(mode, difficultyLevel) {
             resizeCanvas(); 
@@ -11773,38 +12184,22 @@ function handlePektusInput(e) {
                  updateLegalTargetChips(); // Update highlights for the actual game
             }
         }
-        // END: Tutorial Functions
-
-// ======================================================
-// ▼▼▼ SIMULA NG CODE PARA SA DAILY REWARDS ▼▼▼
-// ======================================================
-
-// --- Variables para sa Daily Reward ---
+        
 const DAILY_REWARD_AMOUNT = 500; // Magkano ang reward
 const DAILY_REWARD_COOLDOWN = 24 * 60 * 60 * 1000; // 24 oras in milliseconds (pwede mong babaan for testing, e.g., 60000 for 1 minute)
 let lastRewardClaimTime = 0;
 
-/**
- * Kinukuha ang timestamp ng huling claim mula sa localStorage.
- */
 function loadLastClaimTime() {
     const savedTime = localStorage.getItem('pinoyPoolLastRewardClaim');
     lastRewardClaimTime = savedTime ? parseInt(savedTime, 10) : 0;
     // Hindi na kailangan i-update dito, tatawagin ito ng showLobbyUI or init
 }
 
-/**
- * Sine-save ang kasalukuyang oras bilang huling claim time.
- */
 function saveLastClaimTime() {
     lastRewardClaimTime = Date.now();
     localStorage.setItem('pinoyPoolLastRewardClaim', lastRewardClaimTime.toString());
 }
 
-/**
- * Tinitingnan kung available na ba ang daily reward.
- * @returns {boolean} True kung available, false kung hindi pa.
- */
 function isDailyRewardAvailable() {
     const currentTime = Date.now();
     // Check kung ang lastRewardClaimTime ay valid (hindi 0)
@@ -11840,11 +12235,6 @@ function updateDailyRewardButtonState() {
     }
 }
 
-
-
-/**
- * Ang function na tatawagin kapag pinindot ang claim button.
- */
 function claimDailyReward() {
     if (isDailyRewardAvailable()) {
         playButtonSound(); // Patunugin ang button
@@ -12073,9 +12463,14 @@ async function showProfile(target) {
     } else {
         // --- DATA NG KALABAN ---
         if (!isOnlineGame) {
-            // AI PROFILE
+            // AI PROFILE (Updated for Fake Bot Name)
+            // Gamitin ang opponentPlayerName kung meron, kung wala, "AI Bot"
+            const botNameDisplay = (opponentPlayerName && opponentPlayerName !== "Opponent") 
+                                   ? opponentPlayerName 
+                                   : "AI Bot";
+
             playerData = {
-                name: "AI Bot",
+                name: botNameDisplay, // <-- Eto na ang fix
                 avatar: "🤖",
                 rankName: "Computer",
                 rankColor: "#aaa",
@@ -12282,15 +12677,9 @@ function renderInviteBetButtons() {
     });
 }
 
-// ==================================================
-// === REAL-TIME CHAT SYSTEM (Firebase) ===
-// ==================================================
-
 let currentChatUnsubscribe = null;
 let currentChatFriendUid = null;
 
-// 1. Helper: Gumawa ng Unique Chat ID (Sort UIDs)
-// Para laging pareho ang ID niyo ng friend mo (e.g., "UID1_UID2")
 function getChatId(uid1, uid2) {
     return [uid1, uid2].sort().join("_");
 }
@@ -12493,11 +12882,6 @@ function sortFriendsList() {
     items.forEach(item => container.appendChild(item));
 }
 
-// ==================================================
-// === SETTINGS MENU LOGIC ===
-// ==================================================
-
-// 1. OPEN SETTINGS
 const settingsModal = document.getElementById('settings-modal');
 const settingsBtn = document.getElementById('main-settings-btn');
 const settingsCloseBtn = document.getElementById('settings-close-btn');
@@ -12557,10 +12941,6 @@ if (fsToggle) {
     });
 }
 
-// ==================================================
-// === FORCE SETTINGS CLOSE LOGIC ===
-// ==================================================
-
 const forceSettingsCloseBtn = document.getElementById('settings-close-btn');
 const settingsModalEl = document.getElementById('settings-modal');
 
@@ -12584,9 +12964,6 @@ if (forceSettingsCloseBtn) {
     });
 }
 
-// ==================================================
-// === PROFILE CLOSE BUTTON FIX (NO EXIT POPUP) ===
-// ==================================================
 
 const fixProfileCloseBtn = document.getElementById('profile-close-btn');
 const profileModalEl = document.getElementById('profile-modal');
@@ -12613,14 +12990,6 @@ if (fixProfileCloseBtn) {
         }
     });
 }
-
-// ==========================================================
-// === ULTIMATE CLOSE BUTTON FIX (NO EXIT CONFIRMATION) ===
-// ==========================================================
-
-// ==========================================================
-// === ULTIMATE CLOSE BUTTON FIX (FLAG VERSION) ===
-// ==========================================================
 
 function attachSafeCloseListener(btnId, modalId) {
     const btn = document.getElementById(btnId);
@@ -12655,10 +13024,7 @@ function attachSafeCloseListener(btnId, modalId) {
 // Apply
 attachSafeCloseListener('profile-close-btn', 'profile-modal');
 attachSafeCloseListener('settings-close-btn', 'settings-modal');
-        // ==========================================
-// === ASSET PRELOADER SYSTEM ===
-// ==========================================
-
+        
 const assetsToLoad = [
     // 1. Audio Files (Music & SFX)
     'https://arnoldtasipit66-wq.github.io/my-game-assets/mrbas-music-labs-roots-reggae-285790.mp3',
@@ -12776,4 +13142,3 @@ startPreloading();
     </script>
 </body>
 </html>
-
