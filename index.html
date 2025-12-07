@@ -8570,51 +8570,7 @@ function openShop() {
     renderShopTabs(); // Render tabs
     renderShopItems(); // Render items
 }
-
-
-async function showLeaderboard() {
-    playButtonSound(); // Tunog ng button
-
-    // 1. Ipakita ang Modal at Loading Text
-    const modal = document.getElementById('leaderboard-modal');
-    const tbody = document.getElementById('leaderboard-body');
-    
-    // Tago muna ang ibang modal
-    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
-    
-    modal.classList.add('show');
-    history.pushState({ modal: 'leaderboardModal' }, 'Leaderboard', '#leaderboard');
-
-    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; font-style: italic; color: #aaa;">Fetching Top Players...</td></tr>';
-
-    // Check kung ready na ang Firebase
-    if (!db) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Database not connected.</td></tr>';
-        return;
-    }
-
-    try {
-        // 2. QUERY: Kunin ang Top 50 players base sa 'wins' (Descending)
-        const playersRef = collection(db, "players");
-        const q = query(playersRef, orderBy("wins", "desc"), limit(50));
-
-        const querySnapshot = await getDocs(q);
-
-        // 3. Kung Walang Laman
-        if (querySnapshot.empty) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">No records yet. Be the first!</td></tr>';
-            return;
-        }
-
-        // 4. I-render ang Listahan
-        tbody.innerHTML = ''; // Linisin ang loading text
-        let rank = 1;
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const row = document.createElement('tr');
-            
-            // Special Colors para sa Top 3
+// Special Colors para sa Top 3
             let rankDisplay = `#${rank}`;
             let rowColor = "inherit"; // Default text color
             let bgColor = "transparent";
@@ -8649,28 +8605,7 @@ async function showLeaderboard() {
             `;
             
             // Apply styles
-            row.style.color = rowColor;
-            row.style.backgroundColor = bgColor;
-            row.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
-
-            tbody.appendChild(row);
-            rank++;
-        });
-
-    } catch (error) {
-        console.error("Leaderboard Error:", error);
-        
-        // 5. IMPORTANTE: Index Error Handling
-        if (error.code === 'failed-precondition') {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: orange; padding: 20px;">Setup Required:<br>Open Console (F12) and click the Firebase link to create an Index.</td></tr>';
-            
-            // Ipakita ang message na ito sa player para alam mong may kailangan ayusin sa Firebase Console
-            showMessage("Database Index Required! Check Console.", 5000);
-        } else {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Error loading data.</td></tr>';
-        }
-    }
-}
+            row.style
 
 function showVsScreen(player1, player2, gameType) {
     const modal = document.getElementById('vs-screen-modal');
