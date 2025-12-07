@@ -12423,8 +12423,6 @@ function updateLobbyRankDisplay() {
     }
 }
 
-// ▼▼▼ UPDATED LOBBY LOGIC ▼▼▼
-
 function showLobbyUI() {
     const lobbyScreen = document.getElementById('lobby-screen');
     if (lobbyScreen) lobbyScreen.style.display = 'flex';
@@ -12433,30 +12431,41 @@ function showLobbyUI() {
     const nameEl = document.getElementById('lobby-player-name');
     const levelEl = document.getElementById('lobby-level-badge');
     
+    // --- AVATAR UPDATE ---
+    const avatarContainer = document.querySelector('.avatar-circle'); // Hanapin ang bilog sa lobby
+    
+    // Check local storage for photo
+    const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
+    
+    if (avatarContainer) {
+        if (myPhoto) {
+            // Kung may picture, gawin itong background image ng div
+            avatarContainer.style.backgroundImage = `url('${myPhoto}')`;
+            avatarContainer.style.backgroundSize = 'cover';
+            avatarContainer.style.backgroundPosition = 'center';
+            avatarContainer.innerHTML = ''; // Tanggalin ang emoji
+            avatarContainer.style.border = '2px solid #FFD700'; // Gold border
+        } else {
+            // Kung wala, balik sa default
+            avatarContainer.style.backgroundImage = 'none';
+            avatarContainer.innerHTML = '👤';
+            avatarContainer.style.border = '2px solid #fff';
+        }
+    }
+    // ---------------------
+
     if (nameEl) nameEl.textContent = localPlayerName || "Guest";
     if (levelEl) {
-        // Gamitin ang Rank icon para astig
         const rankInfo = getPlayerRank(playerTrophies);
         levelEl.innerHTML = `${rankInfo.icon} Lv. ${playerLevel}`;
         levelEl.style.color = rankInfo.color;
     }
 
+    // ... (rest of the function remains the same) ...
     updateDailyRewardButtonState(); 
     setCueForCurrentTurn(); 
     updateCurrencyDisplay();
-
-    // Itago ang game elements
-    const gameControls = ['power-control', 'pektus-control', 'left-arrow', 'right-arrow', 'exit-button', 'player-info', 'opponent-info', 'card-hand-container', 'cue-stick-element', 'chat-toggle-button'];
-    gameControls.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-    
-    // Itago ang lumang buttons kung meron pa
-    const oldLobby = document.getElementById('lobby-buttons-container');
-    if (oldLobby) oldLobby.style.display = 'none';
-    
-    gameState = 'lobby'; 
+    // ...
 }
 
 function hideLobbyUI() {
