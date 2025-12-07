@@ -8599,109 +8599,85 @@ function openShop() {
     renderShopItems(); // Render items
 }
 
-
 async function showLeaderboard() {
-    playButtonSound(); // Tunog ng button
+    playButtonSound();
 
     const modal = document.getElementById('leaderboard-modal');
     const tbody = document.getElementById('leaderboard-body');
     
-    // Tago muna ang ibang modal
     document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
-    
     modal.classList.add('show');
     history.pushState({ modal: 'leaderboardModal' }, 'Leaderboard', '#leaderboard');
 
     tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; font-style: italic; color: #aaa;">Fetching Top Players...</td></tr>';
 
-    // Check kung ready na ang Firebase
-    if (!db) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Database not connected.</td></tr>';
-        return;
-    }
+    if (!db) return;
 
     try {
-        // 1. QUERY: Kunin ang data mula sa Firestore
         const playersRef = collection(db, "players");
         const q = query(playersRef, orderBy("wins", "desc"), limit(50));
         const querySnapshot = await getDocs(q);
 
-        // 2. Kung Walang Laman
         if (querySnapshot.empty) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">No records yet. Be the first!</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">No records yet.</td></tr>';
             return;
         }
 
-        // 3. FILTER DUPLICATES & PREPARE DATA
         let uniqueMap = {};
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            // Siguraduhing may default values
             const name = data.displayName || "Unknown";
             const wins = parseInt(data.wins) || 0;
             const level = parseInt(data.level) || 1;
-            
-            // Logic: Kung wala pa sa listahan ang pangalan, o mas mataas ang wins ng bago, i-save.
+            const photo = data.photo || null; // <--- KUNIN ANG PHOTO
+
             if (!uniqueMap[name] || wins > uniqueMap[name].wins) {
                 uniqueMap[name] = {
                     name: name,
                     wins: wins,
                     level: level,
-                    // Check kung ikaw ito (para sa green highlight)
+                    photo: photo, // <--- I-SAVE DITO
                     isMe: (doc.id === localPlayerUid) 
                 };
             }
         });
 
-        // Ibalik sa Array at i-sort ulit (High to Low wins)
         let sortedPlayers = Object.values(uniqueMap);
         sortedPlayers.sort((a, b) => b.wins - a.wins);
 
-        // 4. RENDER SA TABLE
-        tbody.innerHTML = ''; // Linisin ang loading text
+        tbody.innerHTML = '';
         let rank = 1;
 
         sortedPlayers.forEach(player => {
             const row = document.createElement('tr');
             
-            // --- Rank Styling (Gold/Silver/Bronze) ---
             let rankDisplay = `#${rank}`;
             let rowBackground = "transparent";
-            let nameColor = "#fff"; // Default white
+            let nameColor = "#fff"; 
 
-            if (rank === 1) {
-                rankDisplay = "🥇";
-                rowBackground = "rgba(255, 215, 0, 0.1)"; // Gold tint
-                nameColor = "#FFD700";
-            } else if (rank === 2) {
-                rankDisplay = "🥈";
-                rowBackground = "rgba(192, 192, 192, 0.1)"; // Silver tint
-                nameColor = "#C0C0C0";
-            } else if (rank === 3) {
-                rankDisplay = "🥉";
-                rowBackground = "rgba(205, 127, 50, 0.1)"; // Bronze tint
-                nameColor = "#CD7F32";
+            if (rank === 1) { rankDisplay = "🥇"; rowBackground = "rgba(255, 215, 0, 0.1)"; nameColor = "#FFD700"; }
+            else if (rank === 2) { rankDisplay = "🥈"; rowBackground = "rgba(192, 192, 192, 0.1)"; nameColor = "#C0C0C0"; }
+            else if (rank === 3) { rankDisplay = "🥉"; rowBackground = "rgba(205, 127, 50, 0.1)"; nameColor = "#CD7F32"; }
+
+            if (player.isMe) { rowBackground = "rgba(0, 255, 0, 0.15)"; nameColor = "#00FF00"; }
+
+            // --- AVATAR LOGIC ---
+            let avatarHtml = "";
+            if (player.photo) {
+                // Kung may photo, gamitin ito
+                avatarHtml = `<img src="${player.photo}" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; border: 1px solid rgba(255,255,255,0.3); object-fit: cover;">`;
+            } else {
+                // Kung wala, gamitin ang Letters
+                const safeName = player.name.replace(/ /g, "+");
+                avatarHtml = `<img src="https://ui-avatars.com/api/?name=${safeName}&background=random&color=fff&size=64&bold=true" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; border: 1px solid rgba(255,255,255,0.3);">`;
             }
 
-            // Highlight kung IKAW 'to
-            if (player.isMe) {
-                rowBackground = "rgba(0, 255, 0, 0.15)"; // Greenish tint
-                nameColor = "#00FF00";
-            }
-
-            // --- AVATAR GENERATOR ---
-            // Gumagawa ng picture base sa initial ng pangalan (e.g., "D" para kay Dugzhak)
-            const safeName = player.name.replace(/ /g, "+");
-            const avatarUrl = `https://ui-avatars.com/api/?name=${safeName}&background=random&color=fff&size=64&bold=true`;
-
-            // HTML ng Row
             row.innerHTML = `
                 <td style="padding: 10px; font-weight: bold; font-size: 1.2em; text-align: center;">${rankDisplay}</td>
                 <td style="padding: 10px;">
                     <div style="display: flex; align-items: center;">
-                        <img src="${avatarUrl}" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; border: 1px solid rgba(255,255,255,0.3);">
-                        
+                        ${avatarHtml}
                         <div>
                             <div style="font-weight: bold; font-size: 1em; color: ${nameColor};">${player.name}</div>
                             <div style="font-size: 0.7em; opacity: 0.6; color: #ddd;">Lv. ${player.level}</div>
@@ -8711,26 +8687,16 @@ async function showLeaderboard() {
                 <td style="padding: 10px; font-weight: bold; color: #33FF57; text-align: right;">${player.wins} Wins</td>
             `;
             
-            // Apply Styles
             row.style.backgroundColor = rowBackground;
             row.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
-
             tbody.appendChild(row);
             rank++;
         });
 
     } catch (error) {
         console.error("Leaderboard Error:", error);
-        
-        // Handle Missing Index Error (Firestore requirement)
-        if (error.code === 'failed-precondition') {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: orange; padding: 20px;">Setup Required:<br>Open Console (F12) and click the Firebase link to create an Index.</td></tr>';
-            showMessage("Database Index Required! Check Console.", 5000);
-        } else {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Error loading data.</td></tr>';
-        }
     }
-}
+} 
 
 function showVsScreen(player1, player2, gameType) {
     const modal = document.getElementById('vs-screen-modal');
