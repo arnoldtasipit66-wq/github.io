@@ -13226,6 +13226,103 @@ startBtn.addEventListener('click', async () => {
 
 // Simulan ang proseso
 startPreloading();
+
+ // --- PROFILE PICTURE UPLOAD LOGIC ---
+
+// 1. Setup Listeners pag-load ng game
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadBtn = document.getElementById('profile-upload-btn');
+    const fileInput = document.getElementById('profile-file-input');
+
+    if (uploadBtn && fileInput) {
+        // Pag pinindot ang Camera icon, buksan ang file selector
+        uploadBtn.addEventListener('click', () => {
+            playButtonSound();
+            fileInput.click();
+        });
+
+        // Pag nakapili na ng file
+        fileInput.addEventListener('change', handleProfileUpload);
+    }
+});
+
+function handleProfileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Loading indicator (Simpleng opacity change muna)
+    const avatarImg = document.getElementById('profile-avatar-img');
+    const defaultAvatar = document.getElementById('profile-avatar-default');
+    if(defaultAvatar) defaultAvatar.innerHTML = "⏳"; // Hourglass
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.src = e.target.result;
+
+        img.onload = function() {
+            // --- IMAGE COMPRESSION MAGIC ---
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // I-set ang max size (150px ay sapat na para sa avatar)
+            const MAX_SIZE = 150;
+            let width = img.width;
+            let height = img.height;
+
+            // Kalkulahin ang bagong size habang pinapanatili ang aspect ratio
+            if (width > height) {
+                if (width > MAX_SIZE) {
+                    height *= MAX_SIZE / width;
+                    width = MAX_SIZE;
+                }
+            } else {
+                if (height > MAX_SIZE) {
+                    width *= MAX_SIZE / height;
+                    height = MAX_SIZE;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Kunin ang compressed base64 string (JPEG, 70% quality)
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+            // --- SAVE TO FIREBASE FIRESTORE ---
+            if (localPlayerUid && db) {
+                const playerRef = doc(db, "players", localPlayerUid);
+                
+                // Update ang field na "photo"
+                updateDoc(playerRef, {
+                    photo: compressedDataUrl
+                }).then(() => {
+                    showMessage("Profile picture updated!", 2000);
+                    
+                    // Update UI agad para makita ang pagbabago
+                    if(avatarImg) {
+                        avatarImg.src = compressedDataUrl;
+                        avatarImg.style.display = 'block';
+                    }
+                    if(defaultAvatar) defaultAvatar.style.display = 'none';
+                    
+                    // Update Local Storage (Optional, para mabilis load sa susunod)
+                    localStorage.setItem('pinoyPoolPlayerPhoto', compressedDataUrl);
+                    
+                    // Refresh Lobby UI
+                    showLobbyUI(); 
+
+                }).catch((error) => {
+                    console.error("Upload failed:", error);
+                    showMessage("Upload failed. Try a smaller image.", 3000);
+                    if(defaultAvatar) defaultAvatar.innerHTML = "👤";
+                });
+            }
+        }
+    };
+    reader.readAsDataURL(file);
+}       
     </script>
 </body>
 </html>
