@@ -9179,96 +9179,67 @@ function renderFriendItem(listElement, docId, data, type) {
     const itemDiv = document.createElement('div');
     itemDiv.className = 'friend-item';
     itemDiv.id = `friend-item-${docId}`;
-    
-    // ▼▼▼ DITO ANG PAGBABAGO: NAGLAGAY TAYO NG TAGS ▼▼▼
     itemDiv.setAttribute('data-friend-uid', friendUid);
-    itemDiv.setAttribute('data-last-msg-time', 0); // Default 0
-    // ▲▲▲ ▲▲▲
 
-    let nameDisplayHtml = '';
-    let buttonsHtml = '';
+    // --- IMAGE LOADING TRICK ---
+    const imgId = `friend-img-${friendUid}`;
+    // Default muna (Avatar API)
+    const defaultImg = `https://ui-avatars.com/api/?name=${friendName}&background=random&color=fff&size=64`;
     
+    // Fetch REAL Photo sa background
+    if (db) {
+        getDoc(doc(db, "players", friendUid)).then(snap => {
+            if (snap.exists() && snap.data().photo) {
+                const imgEl = document.getElementById(imgId);
+                if (imgEl) imgEl.src = snap.data().photo;
+            }
+        });
+    }
+
+    const imageHTML = `<img id="${imgId}" src="${defaultImg}" style="width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; border: 1px solid rgba(255,255,255,0.2); object-fit: cover;">`;
+
+    // --- BUTTONS (Keep existing logic) ---
+    let buttonsHtml = '';
     if (type === "pending") {
-        nameDisplayHtml = `<span class="friend-name">${friendName}</span>`;
-        buttonsHtml = `
-            <button class="menu-button lobby-button accept-btn" data-doc-id="${docId}">Accept</button>
-            <button class="menu-button lobby-button decline-btn" data-doc-id="${docId}">Decline</button>
-        `;
-    } else if (type === "accepted") {
-        nameDisplayHtml = `
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span id="status-dot-${friendUid}" class="status-dot"></span>
-                <span class="friend-name">${friendName}</span>
-            </div>
-        `;
+        buttonsHtml = `<button class="menu-button lobby-button accept-btn" data-doc-id="${docId}">Accept</button><button class="menu-button lobby-button decline-btn" data-doc-id="${docId}">Decline</button>`;
+    } else {
         buttonsHtml = `
             <button class="menu-button lobby-button invite-btn" data-friend-uid="${friendUid}" data-friend-name="${friendName}">Invite</button>
             <button class="menu-button lobby-button message-btn" data-friend-uid="${friendUid}" data-friend-name="${friendName}">Chat</button>
-            <button class="menu-button lobby-button decline-btn" data-doc-id="${docId}">Unfriend</button>
+            <button class="menu-button lobby-button decline-btn" data-doc-id="${docId}">X</button>
         `;
-        
-        if (rtdb) {
-            const friendStatusRef = ref(rtdb, '/status/' + friendUid);
-            onValue(friendStatusRef, (snapshot) => {
-                const statusData = snapshot.val();
-                const dotEl = document.getElementById(`status-dot-${friendUid}`);
-                if (dotEl) {
-                    if (statusData && statusData.state === 'online') {
-                        dotEl.classList.add('online');
-                    } else {
-                        dotEl.classList.remove('online');
-                    }
-                }
-            });
-        }
     }
 
     itemDiv.innerHTML = `
-        <div class="friend-info">
-            ${nameDisplayHtml}
-            <span class="friend-rank" style="color: ${rankInfo.color}; margin-left: 20px;">[${rankInfo.name}]</span>
+        <div class="friend-info" style="flex-direction: row; align-items: center;">
+            ${imageHTML}
+            <div style="display: flex; flex-direction: column;">
+                <span class="friend-name">${friendName}</span>
+                <span class="friend-rank" style="color: ${rankInfo.color}; font-size: 0.8em;">[${rankInfo.name}]</span>
+            </div>
         </div>
-        <div class="friend-actions">
-            ${buttonsHtml}
-        </div>
+        <div class="friend-actions">${buttonsHtml}</div>
     `;
 
     listElement.appendChild(itemDiv);
 
-    // --- LISTENERS ---
+    // Re-attach listeners (Invite, Chat, Accept, Decline)...
+    // (Gamitin mo yung existing code mo dito para sa listeners)
+    const inviteBtn = itemDiv.querySelector('.invite-btn');
+    if(inviteBtn) inviteBtn.onclick = () => inviteFriend(friendUid, friendName);
+    
+    const msgBtn = itemDiv.querySelector('.message-btn');
+    if(msgBtn) {
+        monitorFriendChat(friendUid, friendName, msgBtn);
+        msgBtn.onclick = () => openPrivateChat(friendUid, friendName);
+    }
+
     const acceptBtn = itemDiv.querySelector('.accept-btn');
-    if (acceptBtn) acceptBtn.addEventListener('click', () => { 
-        playButtonSound(); 
-        acceptFriendRequest(acceptBtn.dataset.docId); 
-    });
+    if(acceptBtn) acceptBtn.onclick = () => acceptFriendRequest(docId);
 
     const declineBtn = itemDiv.querySelector('.decline-btn');
-    if (declineBtn) declineBtn.addEventListener('click', () => { 
-        playButtonSound(); 
-        declineOrUnfriend(declineBtn.dataset.docId); 
-    });
-    
-    const inviteBtn = itemDiv.querySelector('.invite-btn');
-    if (inviteBtn) inviteBtn.addEventListener('click', () => { 
-        playButtonSound(); 
-        inviteFriend(inviteBtn.dataset.friendUid, inviteBtn.dataset.friendName); 
-    });
-
-    // --- CHAT BUTTON ---
-    const msgBtn = itemDiv.querySelector('.message-btn');
-    if (msgBtn) {
-        // Simulan agad ang pakikinig para sa notification/sorting
-        monitorFriendChat(friendUid, friendName, msgBtn);
-
-        msgBtn.addEventListener('click', () => { 
-            playButtonSound();
-            if (typeof openPrivateChat === 'function') {
-                openPrivateChat(msgBtn.dataset.friendUid, msgBtn.dataset.friendName);
-            }
-        });
-    }
+    if(declineBtn) declineBtn.onclick = () => declineOrUnfriend(docId);
 }
-
 // ▼▼▼ GLOBAL ONLINE STATUS SETUP ▼▼▼
 function setupOnlineStatus() {
     if (!localPlayerUid || !rtdb) return;
