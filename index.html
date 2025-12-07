@@ -8378,180 +8378,210 @@ async function cancelMatchmaking() {
 
         function animateAndApplyShot(shotData) { cueStick.angle = shotData.angle; cueStick.visible = true; if (cueStickElement) cueStickElement.style.display = 'block'; gameState = 'shooting_animation'; let startTime = null; const animationDuration = 100; const shotPowerNormalized = (shotData.power - 5) / 40; const startPullback = shotPowerNormalized * (150 * scale); const endPullback = -30 * scale; function animate(timestamp) { if (!startTime) startTime = timestamp; const progress = Math.min((timestamp - startTime) / animationDuration, 1); cueStick.pullback = startPullback + (endPullback - startPullback) * progress; if (progress < 1) { requestAnimationFrame(animate); } else { cueStick.visible = false; cueStick.pullback = 0; if (cueStickElement) cueStickElement.style.display = 'none'; applyShot(shotData); } } requestAnimationFrame(animate); }
         
-       // === START PLAYER NAME UPDATE & RING LIGHT (Step 3B - May Ranks na!) ===
-        // In-update ang function para kunin ang 'displayName' ng kalaban
-        function syncGameState(data) {
-            if (isSyncing || !data) return;
-            isSyncing = true;
-            let opponentId = null;
-            let opponentStatus = null;
-            if (localPlayerId && data.players) {
-                opponentId = localPlayerId === 'player1' ? 'player2' : 'player1';
-                if (data.players[opponentId]) {
-                    opponentStatus = data.players[opponentId].status;
-                    // Kunin ang pangalan ng kalaban mula sa game data
-                    opponentPlayerName = data.players[opponentId].displayName || "Opponent"; 
-                }
-            }
+        function syncGameState(data) {
+    // 1. Safety Checks
+    if (isSyncing || !data) return;
+    isSyncing = true;
 
-            if (localPlayerId && data.players && data.players[opponentId]) {
-                // Kunin ang pangalan AT equipped cue ng kalaban
-                opponentPlayerName = data.players[opponentId].displayName || "Opponent";
-                opponentEquippedCueId = data.players[opponentId].equippedCueId || 'default';
-                opponentRankIndex = data.players[opponentId].rankIndex || 0; // <-- Ito yung dinagdag natin
-            } else {
-                // Fallback kung wala pang data
-                opponentPlayerName = "Opponent";
-                opponentEquippedCueId = 'default';
-                opponentRankIndex = 0; // <-- Ito yung dinagdag natin
-            }
-            if (data.gameState === 'playing' && gameState !== 'playing') {
-                gameState = 'playing';
-                isOnlineGame = true;
-                showGameUI();
-                gameMode = `online-${data.gameType}`;
-                lastProcessedTurnId = -1;
-                winnerModal.classList.remove('show');
-                waitingRoom.classList.remove('show');
-                onlineMenu.classList.remove('show');
-                gameModeSelect.classList.remove('show');
-                history.pushState({
-                    modal: 'game'
-                }, 'Game', '#game');
-                if (canvas.width === 0) resizeCanvas();
-                if (data.chips) {
-                    chips = data.chips.map(remoteChip => ({ ...remoteChip,
-                        x: remoteChip.x * canvas.width,
-                        y: remoteChip.y * canvas.height,
-                        radius: (remoteChip.id === 0 ? CUE_BALL_RADIUS : BALL_RADIUS) * scale
-                    }));
-                }
-                if (data.gameType === 'poker') {
-                    deck = data.deck || [];
-                    playerHand = (localPlayerId === 'player1') ? data.player1Hand : data.player2Hand;
-                    opponentHand = (localPlayerId === 'player1') ? data.player2Hand : data.player1Hand;
-                    originalPlayerHand = (localPlayerId === 'player1') ? data.originalPlayer1Hand : data.originalPlayer2Hand;
-                    originalOpponentHand = (localPlayerId === 'player1') ? data.originalPlayer2Hand : data.originalPlayer1Hand;
-                } else if (data.gameType === '61-ball') {
-                    player61Score = (localPlayerId === 'player1') ? data.player1_61Score : data.player2_61Score;
-                    opponent61Score = (localPlayerId === 'player1') ? data.player2_61Score : data.player1_61Score;
-                    lowestChipNumber = data.lowestChipNumber;
-                } else if (data.gameType === 'straight-ball') {
-                    colorsAssigned = data.colorsAssigned;
-                    playerChipsType = (localPlayerId === 'player1') ? data.player1ChipsType : data.player2ChipsType;
-                    opponentChipsType = (localPlayerId === 'player1') ? data.player2ChipsType : data.player1ChipsType;
-                }
-                updateInfoBox(); // I-update ang UI para ipakita ang mga pangalan
+    // 2. Identify Opponent Info & Status
+    let opponentId = null;
+    let opponentStatus = null;
+    
+    if (localPlayerId && data.players) {
+        opponentId = localPlayerId === 'player1' ? 'player2' : 'player1';
+        if (data.players[opponentId]) {
+            const oppData = data.players[opponentId];
+            
+            // --- KUNIN ANG DATA NG KALABAN ---
+            opponentStatus = oppData.status;
+            opponentPlayerName = oppData.displayName || "Opponent";
+            opponentEquippedCueId = oppData.equippedCueId || 'default';
+            opponentRankIndex = oppData.rankIndex || 0;
+            
+            // SAVE PHOTO para magamit sa HUD (UpdateInfoBox)
+            window.opponentPhotoUrl = oppData.photo || null; 
+        }
+    } else {
+        // Fallback defaults
+        opponentPlayerName = "Opponent";
+        opponentEquippedCueId = 'default';
+        opponentRankIndex = 0;
+        window.opponentPhotoUrl = null;
+    }
 
-                // --- ❗ SIMULA NG VS SCREEN TRIGGER ❗ ---
-                if (!vsScreenShownThisGame) {
-                    vsScreenShownThisGame = true; // Markahan na naipakita na
-                    
-                    // Kunin ang rank data
-                    const myRankInfo = getPlayerRank(playerLevel);
-                    const opponentRankInfo = RANKS[opponentRankIndex] || RANKS[0];
-                    
-                    // Ayusin kung sino si P1 at P2 sa display
-                    let player1Data, player2Data;
-                    if (localPlayerId === 'player1') {
-                        player1Data = { name: localPlayerName, rankInfo: myRankInfo };
-                        player2Data = { name: opponentPlayerName, rankInfo: opponentRankInfo };
-                    } else {
-                        // Kung ikaw si P2, dapat 'yung kalaban (P1) ang nasa kaliwa
-                        player1Data = { name: opponentPlayerName, rankInfo: opponentRankInfo };
-                        player2Data = { name: localPlayerName, rankInfo: myRankInfo };
-                    }
-                    
-                    // Tawagin ang function!
-                    showVsScreen(player1Data, player2Data, data.gameType);
-                }
-                // --- ❗ DULO NG VS SCREEN TRIGGER ❗ ---
-            }
-            if (data.gameState === 'finished' && gameState !== 'gameover') {
-                endGame(data.winner === localPlayerUid ? 'You Win!' : 'You Lose!', data);
-                isSyncing = false;
-                return;
-            }
-            if (gameState === 'playing') {
-                 if (opponentStatus === 'disconnected' && !isAiTakeoverActive) {
-                    isAiTakeoverActive = true;
-                    showMessage("Opponent disconnected. AI will take over.", 4000);
-                    opponentPlayerName = "AI Opponent"; // Palitan ang pangalan sa UI
-                    updateInfoBox();
-                } else if (opponentStatus === 'online' && isAiTakeoverActive) {
-                    isAiTakeoverActive = false;
-                    opponentPlayerName = data.players[opponentId]?.displayName || "Opponent"; // Ibalik ang pangalan
-                    updateInfoBox();
-                    showMessage("Opponent has reconnected!", 4000);
-                }
-                isMyTurnOnline = (data.currentTurnUid === localPlayerUid);
-                setCueForCurrentTurn();
-             
-                if (data.turnId > lastProcessedTurnId) {
-                    lastProcessedTurnId = data.turnId;
-                    
-                    chipsMoving = false;
-                    if (data.chips && canvas.width > 0) {
-                        chips = data.chips.map(remoteChip => ({ ...remoteChip,
-                            x: remoteChip.x * canvas.width,
-                            y: remoteChip.y * canvas.height,
-                            radius: (remoteChip.id === 0 ? CUE_BALL_RADIUS : BALL_RADIUS) * scale
-                         }));
-                    }
-                    if (data.gameType === 'poker') {
-                        playerHand = (localPlayerId === 'player1') ? data.player1Hand : data.player2Hand;
-                        opponentHand = (localPlayerId === 'player1') ? data.player2Hand : data.player1Hand;
-                        originalPlayerHand = (localPlayerId === 'player1') ? data.originalPlayer1Hand : data.originalPlayer2Hand;
-                        originalOpponentHand = (localPlayerId === 'player1') ? data.originalPlayer2Hand : data.originalPlayer1Hand;
-                    } else if (data.gameType === '61-ball') {
-                        player61Score = (localPlayerId === 'player1') ? data.player1_61Score : data.player2_61Score;
-                        opponent61Score = (localPlayerId === 'player1') ? data.player2_61Score : data.player1_61Score;
-                        lowestChipNumber = data.lowestChipNumber;
-                    } else if (data.gameType === 'straight-ball') {
-                        colorsAssigned = data.colorsAssigned;
-                        playerChipsType = (localPlayerId === 'player1') ? data.player1ChipsType : data.player2ChipsType;
-                        opponentChipsType = (localPlayerId === 'player1') ? data.player2ChipsType : data.player1ChipsType;
-                    }
-                    canMoveCueBall = data.canMoveCueBall;
-                    isBreakShot = data.isBreakShot;
-                    updateCardDisplay();
-                    updateInfoBox(); // Tatawagin nito ang updateLegalTargetChips()
-                    const message = data.isBreakShot ? (isMyTurnOnline ? "You break!" : `${opponentPlayerName}'s break!`) : (isMyTurnOnline ? "Your turn" : `${opponentPlayerName}'s turn`);
-                    if (isMyTurnOnline && canMoveCueBall) {
-                        showMessage(message, 3000);
-                        dragGuideText.style.display = 'block';
-                    } else if (!canMoveCueBall) {
-                        showMessage(message, 2000);
-                     }
-                    if (isMyTurnOnline && !canMoveCueBall && gameState !== 'aiming') {
-                        // I-reset lang ang pektus kung:
-                        // 1. Turn KO na.
-                        // 2. HINDI ko ililipat ang cue ball (ibig sabihin, aiming na).
-                        // 3. Hindi pa "aiming" ang state (para 'di ma-reset habang umaasinta).
-                         resetPektus();
-                    }
-                }
-                if (isMyTurnOnline) {
-                       gameState = canMoveCueBall ? 'moving' : 'aiming';
-                    if (gameState === 'aiming') {
-                        dragGuideText.style.display = 'none';
-                        cueStick.visible = true;
-                        if (cueStickElement) cueStickElement.style.display = 'block';
-                    }
-                } else {
-                    gameState = 'aiming';
-                    dragGuideText.style.display = 'none';
-                }
-                if (isAiTakeoverActive && !isMyTurnOnline && !chipsMoving && !data.turnInProgress) {
-                     showMessage("AI is playing for your opponent...", 2000);
-                    setTimeout(() => {
-                        if (isAiTakeoverActive && !isMyTurnOnline && !chipsMoving) aiTurn();
-                     }, 1500);
-                }
-            }
-            isSyncing = false;
-        }
+    // 3. INITIAL GAME LOAD (Start of Game)
+    if (data.gameState === 'playing' && gameState !== 'playing') {
+        gameState = 'playing';
+        isOnlineGame = true;
+        showGameUI();
         
+        gameMode = `online-${data.gameType}`;
+        lastProcessedTurnId = -1;
+
+        // Hide ALL Modals/Menus
+        const modalsToHide = [
+            winnerModal, waitingRoom, onlineMenu, 
+            onlineGameSelect, invitePopupModal, gameModeSelect
+        ];
+        modalsToHide.forEach(m => { if(m) m.classList.remove('show'); });
+
+        history.pushState({ modal: 'game' }, 'Game', '#game');
+        if (canvas.width === 0) resizeCanvas();
+
+        // Load Initial Chips
+        if (data.chips) {
+            chips = data.chips.map(remoteChip => ({ ...remoteChip,
+                x: remoteChip.x * canvas.width,
+                y: remoteChip.y * canvas.height,
+                radius: (remoteChip.id === 0 ? CUE_BALL_RADIUS : BALL_RADIUS) * scale
+            }));
+        }
+
+        // Sync Specific Game Modes
+        if (data.gameType === 'poker') {
+            deck = data.deck || [];
+            playerHand = (localPlayerId === 'player1') ? data.player1Hand : data.player2Hand;
+            opponentHand = (localPlayerId === 'player1') ? data.player2Hand : data.player1Hand;
+            originalPlayerHand = (localPlayerId === 'player1') ? data.originalPlayer1Hand : data.originalPlayer2Hand;
+            originalOpponentHand = (localPlayerId === 'player1') ? data.originalPlayer2Hand : data.originalPlayer1Hand;
+        } else if (data.gameType === '61-ball') {
+            player61Score = (localPlayerId === 'player1') ? data.player1_61Score : data.player2_61Score;
+            opponent61Score = (localPlayerId === 'player1') ? data.player2_61Score : data.player1_61Score;
+            lowestChipNumber = data.lowestChipNumber;
+        } else if (data.gameType === 'straight-ball') {
+            colorsAssigned = data.colorsAssigned;
+            playerChipsType = (localPlayerId === 'player1') ? data.player1ChipsType : data.player2ChipsType;
+            opponentChipsType = (localPlayerId === 'player1') ? data.player2ChipsType : data.player1ChipsType;
+        }
+
+        updateInfoBox(); // Update HUD (Names & Photos)
+
+        // --- ❗ VS SCREEN DISPLAY (WITH PHOTOS) ❗ ---
+        if (!vsScreenShownThisGame) {
+            vsScreenShownThisGame = true;
+
+            const myRankInfo = getPlayerRank(playerLevel);
+            const opponentRankInfo = RANKS[opponentRankIndex] || RANKS[0];
+            const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
+
+            let player1Data, player2Data;
+
+            if (localPlayerId === 'player1') {
+                player1Data = { name: localPlayerName, rankInfo: myRankInfo, photo: myPhoto };
+                player2Data = { name: opponentPlayerName, rankInfo: opponentRankInfo, photo: window.opponentPhotoUrl };
+            } else {
+                player1Data = { name: opponentPlayerName, rankInfo: opponentRankInfo, photo: window.opponentPhotoUrl };
+                player2Data = { name: localPlayerName, rankInfo: myRankInfo, photo: myPhoto };
+            }
+
+            // Ipakita ang VS Screen
+            showVsScreen(player1Data, player2Data, data.gameType);
+        }
+    }
+
+    // 4. GAME OVER HANDLING
+    if (data.gameState === 'finished' && gameState !== 'gameover') {
+        endGame(data.winner === localPlayerUid ? 'You Win!' : 'You Lose!', data);
+        isSyncing = false;
+        return;
+    }
+
+    // 5. ACTIVE GAMEPLAY UPDATES
+    if (gameState === 'playing') {
+        
+        // --- AI TAKEOVER (Disconnect Handling) ---
+        if (opponentStatus === 'disconnected' && !isAiTakeoverActive) {
+            isAiTakeoverActive = true;
+            showMessage("Opponent disconnected. AI taking over.", 4000);
+            opponentPlayerName = "AI (Bot)";
+            updateInfoBox();
+        } else if (opponentStatus === 'online' && isAiTakeoverActive) {
+            isAiTakeoverActive = false;
+            // Ibalik ang tunay na pangalan
+            opponentPlayerName = data.players[opponentId]?.displayName || "Opponent";
+            updateInfoBox();
+            showMessage("Opponent reconnected!", 3000);
+        }
+
+        // --- TURN SYNC ---
+        isMyTurnOnline = (data.currentTurnUid === localPlayerUid);
+        setCueForCurrentTurn();
+
+        // Process Updates if Turn ID increased
+        if (data.turnId > lastProcessedTurnId) {
+            lastProcessedTurnId = data.turnId;
+            chipsMoving = false;
+
+            // Teleport Correction (Chip Positions)
+            if (data.chips && canvas.width > 0) {
+                chips = data.chips.map(remoteChip => ({ ...remoteChip,
+                    x: remoteChip.x * canvas.width,
+                    y: remoteChip.y * canvas.height,
+                    radius: (remoteChip.id === 0 ? CUE_BALL_RADIUS : BALL_RADIUS) * scale
+                }));
+            }
+
+            // Sync Game Specific Data
+            if (data.gameType === 'poker') {
+                playerHand = (localPlayerId === 'player1') ? data.player1Hand : data.player2Hand;
+                opponentHand = (localPlayerId === 'player1') ? data.player2Hand : data.player1Hand;
+            } else if (data.gameType === '61-ball') {
+                player61Score = (localPlayerId === 'player1') ? data.player1_61Score : data.player2_61Score;
+                opponent61Score = (localPlayerId === 'player1') ? data.player2_61Score : data.player1_61Score;
+                lowestChipNumber = data.lowestChipNumber;
+            } else if (data.gameType === 'straight-ball') {
+                colorsAssigned = data.colorsAssigned;
+                playerChipsType = (localPlayerId === 'player1') ? data.player1ChipsType : data.player2ChipsType;
+                opponentChipsType = (localPlayerId === 'player1') ? data.player2ChipsType : data.player1ChipsType;
+            }
+
+            canMoveCueBall = data.canMoveCueBall;
+            isBreakShot = data.isBreakShot;
+
+            updateCardDisplay();
+            updateInfoBox(); // Update HUD Glow
+
+            // Turn Messages & Guides
+            const message = data.isBreakShot ?
+                (isMyTurnOnline ? "You break!" : `${opponentPlayerName}'s break!`) :
+                (isMyTurnOnline ? "Your turn" : `${opponentPlayerName}'s turn`);
+
+            if (isMyTurnOnline && canMoveCueBall) {
+                showMessage(message, 3000);
+                dragGuideText.style.display = 'block';
+            } else if (!canMoveCueBall) {
+                showMessage(message, 2000);
+            }
+
+            // Reset Pektus if it's my turn to aim
+            if (isMyTurnOnline && !canMoveCueBall && gameState !== 'aiming') {
+                resetPektus();
+            }
+        }
+
+        // State Management (Aiming vs Moving)
+        if (isMyTurnOnline) {
+            gameState = canMoveCueBall ? 'moving' : 'aiming';
+            if (gameState === 'aiming') {
+                dragGuideText.style.display = 'none';
+                cueStick.visible = true;
+                if (cueStickElement) cueStickElement.style.display = 'block';
+            }
+        } else {
+            gameState = 'aiming';
+            dragGuideText.style.display = 'none';
+        }
+
+        // Trigger AI Logic if Takeover is active
+        if (isAiTakeoverActive && !isMyTurnOnline && !chipsMoving && !data.turnInProgress) {
+            setTimeout(() => {
+                if (isAiTakeoverActive && !isMyTurnOnline && !chipsMoving) aiTurn();
+            }, 1500);
+        }
+    }
+    
+    isSyncing = false;
+}
         function playBackgroundMusic() { if (musicHasStarted) return; const playNextTrack = () => { currentTrackIndex = (currentTrackIndex + 1) % backgroundPlaylist.length; const nextPlayer = backgroundPlaylist[currentTrackIndex]; nextPlayer.currentTime = 0; nextPlayer.play(); }; backgroundPlaylist.forEach(player => { player.volume = 0.25; player.onended = playNextTrack; }); const initialPlayer = backgroundPlaylist[currentTrackIndex]; initialPlayer.play().catch(error => { console.log("Music play was prevented by the browser."); }); musicHasStarted = true; }
         /**
  * Binubuksan ang shop at ipinapakita ang mga items.
