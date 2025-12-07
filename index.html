@@ -12510,55 +12510,78 @@ function showGameUI() {
      instructionModals.forEach(modal => modal.classList.remove('show'));
 }
 
-// ▼▼▼ UPDATED SHOW PROFILE (FIX EXIT BUG) ▼▼▼
 async function showProfile(target) {
     playButtonSound();
     
-    // 1. SABIHAN ANG LARO NA NASA MODAL TAYO (Para di mag-exit popup)
     gameState = 'modal_open'; 
     
     const modal = document.getElementById('profile-modal');
     const nameEl = document.getElementById('profile-name-display');
-    const avatarEl = document.getElementById('profile-avatar-display');
     const rankEl = document.getElementById('profile-rank-badge');
     const winsEl = document.getElementById('profile-wins-display');
     const levelEl = document.getElementById('profile-level-display');
     const cueImgEl = document.getElementById('profile-cue-preview');
     const cueNameEl = document.getElementById('profile-cue-name');
+    
+    // IMAGE ELEMENTS
+    const avatarImg = document.getElementById('profile-avatar-img');
+    const defaultAvatar = document.getElementById('profile-avatar-default');
+    const uploadBtn = document.getElementById('profile-upload-btn');
 
     let playerData = {};
 
     if (target === 'player') {
-        // --- DATA MO (SARILI) ---
+        // --- SARILI MONG PROFILE ---
         const rankInfo = getPlayerRank(playerTrophies);
+        
+        // Ipakita ang Upload Button kapag profile mo
+        if(uploadBtn) uploadBtn.style.display = 'flex';
+
+        // Check kung may naka-save na photo sa LocalStorage (Initial)
+        let myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
+
         playerData = {
             name: localPlayerName,
-            avatar: rankInfo.icon,
+            photo: myPhoto, // Gamitin ang local photo muna
             rankName: rankInfo.name,
             rankColor: rankInfo.color,
             wins: "My Stats", 
             level: playerLevel,
             cueId: equippedItems.cue
         };
-        // Fetch real wins from DB if online
+
+        // Fetch real data from DB (para makuha ang fresh photo)
         if (localPlayerUid && db) {
              getDoc(doc(db, "players", localPlayerUid)).then(snap => {
-                 if(snap.exists()) winsEl.textContent = snap.data().wins || 0;
+                 if(snap.exists()) {
+                     const data = snap.data();
+                     winsEl.textContent = data.wins || 0;
+                     
+                     // Update photo kung meron sa database
+                     if (data.photo) {
+                         if(avatarImg) {
+                             avatarImg.src = data.photo;
+                             avatarImg.style.display = 'block';
+                         }
+                         if(defaultAvatar) defaultAvatar.style.display = 'none';
+                         // Save latest to local
+                         localStorage.setItem('pinoyPoolPlayerPhoto', data.photo);
+                     }
+                 }
              });
         }
 
     } else {
-        // --- DATA NG KALABAN ---
-        if (!isOnlineGame) {
-            // AI PROFILE (Updated for Fake Bot Name)
-            // Gamitin ang opponentPlayerName kung meron, kung wala, "AI Bot"
-            const botNameDisplay = (opponentPlayerName && opponentPlayerName !== "Opponent") 
-                                   ? opponentPlayerName 
-                                   : "AI Bot";
+        // --- PROFILE NG KALABAN ---
+        // Itago ang Upload Button
+        if(uploadBtn) uploadBtn.style.display = 'none';
 
+        if (!isOnlineGame) {
+            // AI
+            const botNameDisplay = (opponentPlayerName && opponentPlayerName !== "Opponent") ? opponentPlayerName : "AI Bot";
             playerData = {
-                name: botNameDisplay, // <-- Eto na ang fix
-                avatar: "🤖",
+                name: botNameDisplay,
+                photo: null, // Walang photo ang AI
                 rankName: "Computer",
                 rankColor: "#aaa",
                 wins: "∞",
@@ -12568,32 +12591,50 @@ async function showProfile(target) {
         } else {
             // ONLINE OPPONENT
             const oppRankInfo = RANKS[opponentRankIndex] || RANKS[0];
+            
+            // Note: Sa ngayon, hindi pa natin sine-send ang photo ng kalaban sa 'syncGameState'.
+            // Sa susunod na update pwede natin idagdag yun. Sa ngayon, default muna sila.
             playerData = {
                 name: opponentPlayerName,
-                avatar: oppRankInfo.icon,
+                photo: null, 
                 rankName: oppRankInfo.name,
                 rankColor: oppRankInfo.color,
-                wins: "?", // Hidden muna
+                wins: "?", 
                 level: "?",
                 cueId: opponentEquippedCueId || 'default'
             };
         }
     }
 
-    // I-update ang itsura ng Modal
+    // --- RENDER TEXT ---
     nameEl.textContent = playerData.name;
-    avatarEl.textContent = playerData.avatar;
     rankEl.textContent = `[${playerData.rankName}]`;
     rankEl.style.color = playerData.rankColor;
     winsEl.textContent = playerData.wins;
     levelEl.textContent = playerData.level;
 
-    // Ipakita ang Tako nila
+    // --- RENDER PHOTO ---
+    // Kung may photo, ipakita ang IMG tag. Kung wala, ipakita ang Default Div.
+    if (playerData.photo) {
+        if(avatarImg) {
+            avatarImg.src = playerData.photo;
+            avatarImg.style.display = 'block';
+        }
+        if(defaultAvatar) defaultAvatar.style.display = 'none';
+    } else {
+        if(avatarImg) avatarImg.style.display = 'none';
+        if(defaultAvatar) {
+            defaultAvatar.style.display = 'flex';
+            // Kung AI, lagyan ng Robot emoji, kung tao, Tao emoji
+            defaultAvatar.innerHTML = (target !== 'player' && !isOnlineGame) ? "🤖" : "👤";
+        }
+    }
+
+    // --- RENDER CUE ---
     const cueItem = SHOP_ITEMS.cues.find(c => c.id === playerData.cueId) || SHOP_ITEMS.cues[0];
     cueImgEl.style.backgroundImage = `url('${cueItem.imageSrc}')`;
     cueNameEl.textContent = cueItem.name;
 
-    // Ipakita ang Modal
     modal.classList.add('show');
     history.pushState({ modal: 'profileModal' }, 'Profile', '#profile');
 }
