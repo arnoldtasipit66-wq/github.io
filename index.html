@@ -9714,10 +9714,7 @@ async function handleInviteAccept(inviteId, inviteData) {
     }
 }
 
-/**
- * Tatawagin kapag ni-decline ng player (Player B) ang imbitasyon.
- * @param {string} inviteId - Ang ID ng invite document.
- */
+
 async function handleInviteDecline(inviteId) {
     if (!inviteId) return;
     try {
@@ -9729,26 +9726,19 @@ async function handleInviteDecline(inviteId) {
         console.error("Error declining invite:", error);
     }
 }
-
 async function createPrivateGame(inviteData, inviteId) {
     const friendUid = inviteData.toUid;
     const friendName = inviteData.fromName === localPlayerName ? inviteData.toName : inviteData.fromName;
     const betCost = inviteData.betAmount || 0;
 
-    // ... (Generate ID Logic - Keep existing) ...
-    const newGameId = Math.random().toString(36).substring(2, 7).toUpperCase();
-    localPlayerId = 'player1';
-    gameId = newGameId;
-    gameMode = `online-${inviteData.gameType}`;
-    
-    // ▼▼▼ KALTASAN SI HOST ▼▼▼
+    // 1. CHECK BALANCE (Host pays first)
     if (betCost > 0) {
-        // Double check balance (just in case)
         if (playerTotalCurrency < betCost) {
-            showMessage("Error: Insufficient funds to start game.", 3000);
+            showMessage(`Insufficient coins! Need ${formatCurrencyShort(betCost)}.`, 3000);
             return; 
         }
         
+        // Kaltas Pera
         playerTotalCurrency -= betCost;
         currentMatchBet = betCost;
         saveCurrency();
@@ -9758,7 +9748,12 @@ async function createPrivateGame(inviteData, inviteId) {
             showRewardPopup(0, `<span style="color:red; font-size: 0.8em;">PAID BET: -${formatCurrencyShort(betCost)}</span>`);
         }, 500);
     }
-    // ▲▲▲ ▲▲▲
+
+    // 2. PREPARE GAME ID & MODE
+    const newGameId = Math.random().toString(36).substring(2, 7).toUpperCase();
+    localPlayerId = 'player1';
+    gameId = newGameId;
+    gameMode = `online-${inviteData.gameType}`;
     
     resizeCanvas();
     setupChips();
@@ -9766,48 +9761,59 @@ async function createPrivateGame(inviteData, inviteId) {
     const initialChipsToSend = chips.map(c => ({...c, x: c.x/canvas.width, y: c.y/canvas.height }));
     const startingPlayerUid = Math.random() < 0.5 ? localPlayerUid : friendUid;
 
+    // 3. PREPARE PLAYER INFO (MY DATA)
+    const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
+    const myRankInfo = getPlayerRank(playerLevel);
+    
     const myPlayerInfo = {
         uid: localPlayerUid,
         status: 'online',
         displayName: localPlayerName,
         equippedCueId: equippedItems.cue,
-        rankIndex: getPlayerRank(playerLevel).index
+        rankIndex: myRankInfo.index,
+        photo: myPhoto // <--- ISINAMA NA ANG PHOTO
     };
 
-    // ... (Keep Friend Info Fetching Logic) ...
-    // Note: Kopyahin mo lang yung logic mo sa pagkuha ng friendDoc data
-    let friendPlayerInfo;
+    // 4. FETCH FRIEND DATA (Opponent Data)
+    // Sinusubukan nating kunin ang fresh data ng friend galing DB (Rank, Cue, Photo)
+    let friendPlayerInfo = null;
     try {
         const friendDoc = await getDoc(doc(db, "players", friendUid));
         if (friendDoc.exists()) {
             const friendData = friendDoc.data();
             friendPlayerInfo = {
                 uid: friendUid,
-                status: 'online', 
+                status: 'online', // Assume online sya dahil kakacept lang
                 displayName: friendData.displayName,
                 equippedCueId: friendData.equippedCueId || 'default',
-                rankIndex: getPlayerRank(friendData.level || 1).index
+                rankIndex: getPlayerRank(friendData.trophies || 0).index,
+                photo: friendData.photo || null // <--- KUHA PHOTO NG FRIEND
             };
         }
-    } catch (e) { /* Error */ }
+    } catch (e) { console.log("Friend data fetch error", e); }
 
+    // Fallback kung hindi makuha ang data ng friend
     if (!friendPlayerInfo) {
         friendPlayerInfo = {
-            uid: friendUid, status: 'online', displayName: (friendName || "Friend"),
-            equippedCueId: 'default', rankIndex: 0
+            uid: friendUid, 
+            status: 'online', 
+            displayName: (friendName || "Friend"),
+            equippedCueId: 'default', 
+            rankIndex: 0,
+            photo: null
         };
     }
 
+    // 5. CONSTRUCT GAME DATA
     let gameData = {
         gameId: newGameId,
         gameType: inviteData.gameType,
         gameState: 'playing',
         turnId: 1,
         
-        // ▼▼▼ SAVE BET AMOUNT TO GAME ▼▼▼
+        // Pustahan Info
         betAmount: betCost,
-        pot: betCost * 2,
-        // ▲▲▲ ▲▲▲
+        pot: betCost * 2, // (Assuming magbabayad din si Guest pag-join)
         
         players: {
             player1: myPlayerInfo,
@@ -9819,7 +9825,7 @@ async function createPrivateGame(inviteData, inviteId) {
         canMoveCueBall: true, isBreakShot: true, winner: null
     };
 
-    // ... (Keep Game Mode Setup Logic: Poker/Straight/61) ...
+    // Setup Specific Game Modes
     if (inviteData.gameType === 'poker') {
         createDeck(); dealCards(); 
         Object.assign(gameData, { deck, player1Hand: playerHand, player2Hand: opponentHand, originalPlayer1Hand: originalPlayerHand, originalPlayer2Hand: originalOpponentHand });
@@ -9830,9 +9836,13 @@ async function createPrivateGame(inviteData, inviteId) {
     }
 
     try {
+        // 6. SAVE TO DATABASE
         await setDoc(doc(db, "games", newGameId), gameData);
+        
+        // Update Invite Status (Isama ang GameID para makapasok si Guest)
         await updateDoc(doc(db, "game_invites", inviteId), { gameId: newGameId });
         
+        // 7. SETUP UI & START GAME
         document.getElementById('invite-wait-modal').classList.remove('show');
         
         gameState = 'playing';
@@ -9840,13 +9850,31 @@ async function createPrivateGame(inviteData, inviteId) {
         showGameUI(); 
         history.pushState({ modal: 'game' }, 'Game', '#game');
         
+        // --- TRIGGER VS SCREEN ---
         vsScreenShownThisGame = true; 
-        const myRankInfo = getPlayerRank(playerLevel);
+        
+        // Prepare Data for VS Screen
         const friendRankInfo = RANKS[friendPlayerInfo.rankIndex] || RANKS[0];
-        const p1Data = { name: localPlayerName, rankInfo: myRankInfo };
-        const p2Data = { name: friendPlayerInfo.displayName, rankInfo: friendRankInfo };
+        
+        const p1Data = { 
+            name: localPlayerName, 
+            rankInfo: myRankInfo, 
+            photo: myPhoto 
+        };
+        const p2Data = { 
+            name: friendPlayerInfo.displayName, 
+            rankInfo: friendRankInfo, 
+            photo: friendPlayerInfo.photo 
+        };
+        
+        // Ipakita ang VS Screen
         showVsScreen(p1Data, p2Data, inviteData.gameType);
 
+        // Save opponent photo globally for HUD
+        window.opponentPhotoUrl = friendPlayerInfo.photo;
+        updateInfoBox(); // Update HUD
+
+        // Start Listening
         listenToGameUpdates(gameId);
 
     } catch (error) {
@@ -9861,8 +9889,7 @@ async function createPrivateGame(inviteData, inviteId) {
         }
         showMessage("Error: Could not create game.", 3000);
     }
-}
-
+} 
 function renderShopTabs() {
     const titleEl = document.querySelector('#shop-modal h2');
     // Inject Tabs HTML sa ilalim ng Title
