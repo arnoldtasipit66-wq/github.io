@@ -11241,6 +11241,99 @@ function aiTurn() {
             shotType = "banda";
         }
     }
+function aiTurn() {
+    if (gameState !== 'aiming' || chipsMoving || !chips[0]?.inPlay) return;
+    const cueChip = chips[0];
+
+    // 1. BREAK SHOT (Super Break)
+    if (isBreakShot) {
+        showMessage("AI performing Power Break!", 2000);
+        let apexBall;
+        if (gameMode.includes('61-ball')) {
+            apexBall = chips.find(c => c.inPlay && c.id === 1);
+        } else {
+            let frontMostX = canvas.width;
+            chips.forEach(c => {
+                if (c.inPlay && c.id !== 0 && c.x < frontMostX) {
+                    frontMostX = c.x;
+                    apexBall = c;
+                }
+            });
+        }
+        if (!apexBall) apexBall = { x: canvas.width * 0.7, y: canvas.height / 2 };
+        const breakAngle = Math.atan2(apexBall.y - cueChip.y, apexBall.x - cueChip.x);
+        animateAiAiming(breakAngle, 1.0, { DURATION_ALIGN: 1000, DURATION_FEATHER: 1000 }, { x: 0, y: -0.5 });
+        return;
+    }
+
+    // 2. TARGET IDENTIFICATION
+    let allLegalTargets = [], allPocketableChips = [];
+    if (gameMode.includes('poker')) {
+        allLegalTargets = chips.filter(c => c.inPlay && opponentHand.some(card => card.value === c.id));
+        allPocketableChips = allLegalTargets;
+    } else if (gameMode.includes('61-ball')) {
+        const lowestChip = chips.find(c => c.id === lowestChipNumber);
+        if (!lowestChip) { setTimeout(handleTurnEnd, 500); return; }
+        allLegalTargets = [lowestChip];
+        allPocketableChips = chips.filter(c => c.inPlay && c.id !== 0);
+    } else {
+        if (colorsAssigned && opponentChipsType) allLegalTargets = chips.filter(c => c.inPlay && c.type === opponentChipsType);
+        else allLegalTargets = chips.filter(c => c.inPlay && (c.type === 'red' || c.type === 'blue'));
+        allPocketableChips = allLegalTargets;
+    }
+
+    // 3. EVALUATE DIRECT SHOTS (Pina)
+    let bestDirectShot = null;
+    let highestDirectScore = -Infinity;
+
+    for (const target of allLegalTargets) {
+        for (const hole of holes) {
+            const evalShot = evaluateShot(cueChip, target, hole, allLegalTargets, 'hard', false);
+            if (evalShot && evalShot.score > highestDirectScore) {
+                highestDirectScore = evalShot.score;
+                bestDirectShot = evalShot;
+            }
+        }
+    }
+
+    // 4. DECISION MAKING (Dito ang talino ng AI)
+    let finalShot = null;
+    let shotType = "normal";
+
+    // A. Check kung "Alanganin" ang Direct Shot
+    // Ang score sa evaluateShot ay (1000 - distance). 
+    // Kung mababa sa 600, ibig sabihin malayo o mahirap ang anggulo.
+    const isDirectRisky = !bestDirectShot || highestDirectScore < 600;
+
+    if (isDirectRisky) {
+        // B. Kung alanganin, hanap ng DOBLETE (Bank Shot)
+        const bestBank = findBestBankShot(cueChip, allLegalTargets);
+        
+        if (bestBank) {
+            // Kung mas maganda ang score ng Doblete o kaya wala talagang Direct Shot
+            if (!bestDirectShot || bestBank.score > (highestDirectScore - 100)) { 
+                // Note: Minus 100 kasi mas prefer pa rin natin direct pag konti lang diperensya
+                finalShot = bestBank;
+                shotType = "doblete";
+            }
+        }
+    }
+
+    // C. Kung wala pa ring napili (so pwedeng Direct Shot ang best)
+    if (!finalShot && bestDirectShot) {
+        finalShot = bestDirectShot;
+        shotType = "direct";
+    }
+
+    // D. Kung "Walang Kita" (Blocked lahat), hanap ng BANDA (Kick Shot)
+    if (!finalShot) {
+        // Ito yung logic na binigay ko dati (Mirror Logic)
+        const bestKick = findBestKickShot(cueChip, allLegalTargets);
+        if (bestKick) {
+            finalShot = bestKick;
+            shotType = "banda";
+        }
+    }
 
     // E. Kung wala talagang magawa, SAFETY / DEFENSIVE na lang
     if (!finalShot) {
