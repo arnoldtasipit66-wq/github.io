@@ -4364,6 +4364,33 @@ div#opponent-info.hud-active {
     }
 }
 
+/* Siguraduhin na naka-relative o absolute ito para di lumabas ang tako */
+#power-control {
+    overflow: hidden; /* Putulin ang sobra para malinis */
+    display: flex;
+    justify-content: center; /* Gitna */
+    align-items: flex-start; /* Simula sa taas */
+}
+
+/* Style para sa Tako sa loob ng Power Bar */
+#power-cue-img {
+    position: absolute;
+    width: 230px;  /* Haba ng tako */
+    height: 100px;  /* Taba ng tako */
+    
+    /* Sentro Horizontal at Vertical + Ikot */
+    transform: translate(-50%, -50%) rotate(-90deg);
+    
+    left: 50%;     /* Gitna horizontally */
+    
+    /* ITO ANG BAGO: Naka-steady sa GITNA (50%) */
+    top: 50%;      
+    
+    pointer-events: none; 
+    transition: top 0.1s ease-out; /* May konting smooth effect pagbalik */
+    z-index: 5;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+}
 </style>
 </head>
 <body>
@@ -4511,10 +4538,10 @@ div#opponent-info.hud-active {
         <button id="exit-button" class="ui-button">Exit</button>
         <div id="card-hand-container"></div>
         
-        
         <div id="power-control" class="control-area">
-            <div id="power-bar"></div>
-        </div>
+    <div id="power-bar"></div>
+    <img id="power-cue-img" src="https://i.imgur.com/dKur0qc.png">
+</div>
         <div id="pektus-control" class="control-area">
             <div id="pektus-dot"></div>
         </div>
@@ -8461,21 +8488,26 @@ async function cancelMatchmaking() {
                 }
                 isMyTurnOnline = (data.currentTurnUid === localPlayerUid);
                 setCueForCurrentTurn();
-                if (!isMyTurnOnline && data.liveAimData && data.liveAimData.sender !== localPlayerUid) {
-                    cueStick.visible = true;
-                    if (cueStickElement) cueStickElement.style.display = 'block';
-                    const liveAim = data.liveAimData;
-                    const cueChip = chips.find(c => c.id === 0);
-                    if (data.canMoveCueBall && cueChip) {
-                        cueChip.x = liveAim.cueBallX * canvas.width;
-                        cueChip.y = liveAim.cueBallY * canvas.height;
-                    }
-                    cueStick.angle = liveAim.angle;
-                    cueStick.pullback = liveAim.pullback || 0;
-                    pektusOffset.x = liveAim.pektusX || 0;
-                    pektusOffset.y = liveAim.pektusY || 0;
-                    updatePektusUI();
-                }
+                // SA LOOB NG syncGameState FUNCTION:
+
+/* --- BURAHIN MO ITO MULA DITO --- */
+/* if (!isMyTurnOnline && data.liveAimData && data.liveAimData.sender !== localPlayerUid) {
+    cueStick.visible = true;
+    if (cueStickElement) cueStickElement.style.display = 'block';
+    const liveAim = data.liveAimData;
+    const cueChip = chips.find(c => c.id === 0);
+    if (data.canMoveCueBall && cueChip) {
+        cueChip.x = liveAim.cueBallX * canvas.width;
+        cueChip.y = liveAim.cueBallY * canvas.height;
+    }
+    cueStick.angle = liveAim.angle;
+    cueStick.pullback = liveAim.pullback || 0;
+    pektusOffset.x = liveAim.pektusX || 0;
+    pektusOffset.y = liveAim.pektusY || 0;
+    updatePektusUI();
+}
+*/
+/* --- HANGGANG DITO --- */
                 if (data.turnId > lastProcessedTurnId) {
                     lastProcessedTurnId = data.turnId;
                     
@@ -9917,37 +9949,39 @@ async function handleShopAction(itemId, category) {
 
 
 function applyEquippedItems() {
-    // 1. Apply Cue
+    // 1. Apply Cue to Game Stick (Yung ginagamit sa mesa)
     setCueForCurrentTurn();
 
-    // 2. Apply Frame
+    // 2. Apply Frame (Yung gilid ng mesa)
     const equippedFrame = SHOP_ITEMS.frames.find(f => f.id === equippedItems.frame);
     if (equippedFrame) {
         const frameEl = document.getElementById('table-frame');
         if (frameEl) {
-            // Update background image using the new item's src
-            // Note: Kailangan natin i-retain ang gradients kung meron
-            // Pero for simplicity, palitan muna natin ang URL
-            // (Pwede nating i-improve 'to kung gusto mo ng custom gradients per frame)
             frameEl.style.backgroundImage = `url('${equippedFrame.imageSrc}')`;
         }
     }
 
-    // 3. Apply Felt (Table Surface)
+    // 3. Apply Felt (Yung tela ng mesa)
     const equippedFelt = SHOP_ITEMS.felts.find(f => f.id === equippedItems.felt);
     if (equippedFelt) {
-        // Update image source
         tableSurfaceImage.src = equippedFelt.imageSrc;
-        
-        // Update TINT logic inside drawBackgroundLayer
-        // Kailangan nating i-save ang tint color sa global variable para mabasa ng drawBackgroundLayer
         window.currentFeltTint = equippedFelt.tint || 'rgba(0,0,0,0)'; 
-        
-        // I-redraw kapag nag-load ang image
         tableSurfaceImage.onload = () => {
             drawBackgroundLayer();
         };
     }
+
+    // ▼▼▼ 4. APPLY CUE TO POWER BAR (ITO ANG BAGONG DAGDAG) ▼▼▼
+    const powerCueImg = document.getElementById('power-cue-img');
+    
+    // Hanapin ang info ng kasalukuyang naka-equip na tako
+    const currentCueData = SHOP_ITEMS.cues.find(c => c.id === equippedItems.cue);
+
+    // Kung nahanap, palitan ang picture sa loob ng power bar
+    if (powerCueImg && currentCueData) {
+        powerCueImg.src = currentCueData.imageSrc;
+    }
+    // ▲▲▲ HANGGANG DITO ANG DAGDAG ▲▲▲
 }
 
 function setCueForCurrentTurn() {
@@ -10743,16 +10777,96 @@ async function cancelOnlineGame() {
     // DITO ANG FIX: TINANGGAL KO YUNG 'finally { listenToGameUpdates... }' 
     // Kasi active pa ang listener, hindi kailangan ulitin.
 }
-        function sendLiveAimData() { if (!isOnlineGame || !isMyTurnOnline || !gameId || table.width === 0) return; const now = Date.now(); if (now - lastAimUpdateTime < AIM_UPDATE_INTERVAL) return; lastAimUpdateTime = now; const cueChip = chips.find(c => c.id === 0); if (!cueChip) return; const dataToSend = { angle: cueStick.angle, cueBallX: cueChip.x/canvas.width, cueBallY: cueChip.y/canvas.height, pektusX: pektusOffset.x, pektusY: pektusOffset.y, sender: localPlayerUid }; updateDoc(doc(db, "games", gameId), { liveAimData: dataToSend }).catch(() => {}); }
-        // ▼▼▼ FINAL LISTENER (FORCE GAME OVER FIX) ▼▼▼
+        function sendLiveAimData() {
+    // 1. Safety Checks (Wag galawin - ito yung dati)
+    if (!isOnlineGame || !isMyTurnOnline || !gameId || table.width === 0) return;
 
-// ▼▼▼ UPDATED ONLINE LISTENER (NO TEXT MESSAGES, GLOW ONLY) ▼▼▼
+    // Throttling (Para hindi bawat millisecond ay nagpapadala)
+    const now = Date.now();
+    if (now - lastAimUpdateTime < AIM_UPDATE_INTERVAL) return;
+    lastAimUpdateTime = now;
+
+    const cueChip = chips.find(c => c.id === 0);
+    if (!cueChip) return;
+
+    // 2. Ihanda ang Data (Wag galawin - ito yung dati)
+    const dataToSend = {
+        angle: cueStick.angle,
+        cueBallX: cueChip.x / canvas.width,
+        cueBallY: cueChip.y / canvas.height,
+        pektusX: pektusOffset.x,
+        pektusY: pektusOffset.y,
+        pullback: cueStick.pullback, // Sinama natin ang hatak
+        sender: localPlayerUid
+    };
+
+    // 3. PADALAHIN SA RTDB (Ito ang Bago!)
+    // Dati: updateDoc(...)
+    // Ngayon: Gagamit na tayo ng 'set' sa RTDB path na 'gameData/GAME_ID/liveAim'
+    
+    // Gumawa ng reference (address) kung saan ise-save
+    const aimRef = ref(rtdb, `gameData/${gameId}/liveAim`);
+    
+    // I-save ang data
+    set(aimRef, dataToSend).catch((err) => {
+        console.warn("Aim sync error:", err);
+    });
+}
+// Variable para pwede nating patayin ang listener pagtapos ng game
+let unsubscribeAimListener = null; 
+
+function listenToRealtimeAiming(gameId) {
+    // 1. Patayin muna ang lumang listener kung meron man (Para iwas doble)
+    if (unsubscribeAimListener) {
+        unsubscribeAimListener(); 
+        unsubscribeAimListener = null; 
+    }
+
+    // 2. Ituro kung saan makikinig (Sa parehong address na pinadalhan natin sa Step 1)
+    const aimRef = ref(rtdb, `gameData/${gameId}/liveAim`);
+
+    // 3. Simulan ang pakikinig (onValue = bawat pagbabago, basahin agad)
+    unsubscribeAimListener = onValue(aimRef, (snapshot) => {
+        const liveAim = snapshot.val();
+
+        // Safety Check: Kung walang laman o IKAW ang nagpadala, wag pansinin
+        if (!liveAim || liveAim.sender === localPlayerUid) return;
+
+        // Kung turn mo, wag mong pansinin ang galaw ng kalaban (iwas glitch)
+        if (isMyTurnOnline) return;
+
+        // --- DITO NA GAGALAW ANG TAKO NG KALABAN SA SCREEN MO ---
+        
+        // Ipakita ang tako
+        cueStick.visible = true;
+        if (cueStickElement) cueStickElement.style.display = 'block';
+
+        // Gayahin ang Angle at Hatak
+        cueStick.angle = liveAim.angle;
+        cueStick.pullback = liveAim.pullback || 0;
+
+        // Gayahin ang Pektus (Red Dot)
+        pektusOffset.x = liveAim.pektusX || 0;
+        pektusOffset.y = liveAim.pektusY || 0;
+        updatePektusUI(); // Update mo yung red dot sa screen
+
+        // Gayahin ang pwesto ng Cue Ball (Kung Ball-in-hand sila)
+        if (canMoveCueBall) {
+            const cueChip = chips.find(c => c.id === 0);
+            if (cueChip) {
+                cueChip.x = liveAim.cueBallX * canvas.width;
+                cueChip.y = liveAim.cueBallY * canvas.height;
+            }
+        }
+    });
+}
 
 function listenToGameUpdates(gameId) { 
     let lastShotTimestamp = 0; 
     let previousGameState = null; 
 
     setupChatListener(gameId);
+    listenToRealtimeAiming(gameId);
     
     // --- PRESENCE SYSTEM (Online/Offline Status) ---
     if (rtdb && localPlayerUid) {
@@ -10879,48 +10993,7 @@ function listenToGameUpdates(gameId) {
     }); 
 }
         async function leaveOnlineGame(isForfeit) { if (!isOnlineGame || !gameId || !localPlayerId) return; const gameDocRef = doc(db, "games", gameId); try { const docSnap = await getDoc(gameDocRef); if (docSnap.exists() && docSnap.data().gameState !== 'finished') { const opponentId = localPlayerId === 'player1' ? 'player2' : 'player1'; const winnerUid = docSnap.data().players[opponentId]?.uid; if (isForfeit && winnerUid) { await updateDoc(gameDocRef, { gameState: 'finished', winner: winnerUid, [`players.${localPlayerId}.status`]: 'disconnected' }); } else { await updateDoc(gameDocRef, { [`players.${localPlayerId}.status`]: 'disconnected' }); } } } catch (error) { console.error("Error leaving/forfeiting game:", error); } }
-        function isPathObstructed(startObj, endObj, ignoreChipIds = []) {
-    // Kunin lahat ng bola na pwedeng makaharang (buhay at hindi kasama sa ignore list)
-    const allObstacles = chips.filter(c => c.inPlay && !ignoreChipIds.includes(c.id));
-    
-    // Vector ng daan (Path Vector)
-    const pathVec = { x: endObj.x - startObj.x, y: endObj.y - startObj.y };
-    const pathLen = Math.hypot(pathVec.x, pathVec.y);
-    
-    // Normalize (Direction only)
-    const pathDir = { x: pathVec.x / pathLen, y: pathVec.y / pathLen };
-
-    for (const obstacle of allObstacles) {
-        // Vector mula start papunta sa obstacle
-        const toObstacle = { x: obstacle.x - startObj.x, y: obstacle.y - startObj.y };
-        
-        // Project obstacle position sa path line (Dot Product)
-        const projection = toObstacle.x * pathDir.x + toObstacle.y * pathDir.y;
-
-        // 1. Check kung ang obstacle ay nasa likod o lampas sa target
-        // Dapat nasa pagitan lang siya ng Start at End point
-        if (projection < 0 || projection > pathLen) continue;
-
-        // 2. Kalkulahin ang layo ng obstacle mula sa gitna ng daan (Perpendicular Distance)
-        // Ito ang pinakamalapit na distansya ng sentro ng obstacle sa linya ng tira
-        const closestPoint = {
-            x: startObj.x + pathDir.x * projection,
-            y: startObj.y + pathDir.y * projection
-        };
-        
-        const distToLine = Math.hypot(obstacle.x - closestPoint.x, obstacle.y - closestPoint.y);
-
-        // 3. COLLISION CHECK (Dito ang higpit)
-        // Obstacle Radius + Cue Ball Radius + SAFETY GAP
-        // Tinaasan ko ang safety gap (mula 4 -> 6) para siguradong di sasabit
-        const minClearance = obstacle.radius + (startObj.radius || BALL_RADIUS * scale) + (6 * scale);
-
-        if (distToLine < minClearance) {
-            return true; // HARANG!
-        }
-    }
-    return false; // CLEAR!
-}
+        function isPathObstructed(startObj, endObj, ignoreChipIds = []) { const allObstacles = chips.filter(c => c.inPlay && !ignoreChipIds.includes(c.id)); for (const obstacle of allObstacles) { const dist = Math.abs((endObj.y - startObj.y) * obstacle.x - (endObj.x - startObj.x) * obstacle.y + endObj.x * startObj.y - endObj.y * startObj.x) / Math.hypot(endObj.y - startObj.y, endObj.x - startObj.x); const safetyMargin = 4 * scale; const effectiveRadius = obstacle.radius + (startObj.radius || 0) + safetyMargin; if (dist < effectiveRadius) { const dotProduct = (obstacle.x - startObj.x) * (endObj.x - startObj.x) + (obstacle.y - startObj.y) * (endObj.y - startObj.y); const squaredLength = Math.pow(Math.hypot(endObj.x - startObj.x, endObj.y - startObj.y), 2); if (dotProduct > 0 && dotProduct < squaredLength) { return true; } } } return false; }
         function isAnyDirectPathClear(cueChip, legalTargets) { if (!legalTargets || legalTargets.length === 0) return false; for (const target of legalTargets) { if (!isPathObstructed(cueChip, target, [])) return true; } return false; }
         function evaluateShot(cueChip, targetChip, hole, allLegalTargets, difficulty, isCombination = false) {
     let firstContactTarget = isCombination ? allLegalTargets[0] : targetChip;
@@ -11092,7 +11165,125 @@ function findBestBankShot(cueChip, legalTargets) {
     return bestBank;
 }
   
- 
+ function aiTurn() {
+    if (gameState !== 'aiming' || chipsMoving || !chips[0]?.inPlay) return;
+    const cueChip = chips[0];
+
+    // 1. BREAK SHOT (Super Break)
+    if (isBreakShot) {
+        showMessage("Opponent performing Power Break!", 2000);
+        let apexBall;
+        if (gameMode.includes('61-ball')) {
+            apexBall = chips.find(c => c.inPlay && c.id === 1);
+        } else {
+            let frontMostX = canvas.width;
+            chips.forEach(c => {
+                if (c.inPlay && c.id !== 0 && c.x < frontMostX) {
+                    frontMostX = c.x;
+                    apexBall = c;
+                }
+            });
+        }
+        if (!apexBall) apexBall = { x: canvas.width * 0.7, y: canvas.height / 2 };
+        const breakAngle = Math.atan2(apexBall.y - cueChip.y, apexBall.x - cueChip.x);
+        animateAiAiming(breakAngle, 1.0, { DURATION_ALIGN: 1000, DURATION_FEATHER: 1000 }, { x: 0, y: -0.5 });
+        return;
+    }
+
+    // 2. TARGET IDENTIFICATION
+    let allLegalTargets = [], allPocketableChips = [];
+    if (gameMode.includes('poker')) {
+        allLegalTargets = chips.filter(c => c.inPlay && opponentHand.some(card => card.value === c.id));
+        allPocketableChips = allLegalTargets;
+    } else if (gameMode.includes('61-ball')) {
+        const lowestChip = chips.find(c => c.id === lowestChipNumber);
+        if (!lowestChip) { setTimeout(handleTurnEnd, 500); return; }
+        allLegalTargets = [lowestChip];
+        allPocketableChips = chips.filter(c => c.inPlay && c.id !== 0);
+    } else {
+        if (colorsAssigned && opponentChipsType) allLegalTargets = chips.filter(c => c.inPlay && c.type === opponentChipsType);
+        else allLegalTargets = chips.filter(c => c.inPlay && (c.type === 'red' || c.type === 'blue'));
+        allPocketableChips = allLegalTargets;
+    }
+
+    // 3. EVALUATE DIRECT SHOTS (Pina)
+    let bestDirectShot = null;
+    let highestDirectScore = -Infinity;
+
+    for (const target of allLegalTargets) {
+        for (const hole of holes) {
+            const evalShot = evaluateShot(cueChip, target, hole, allLegalTargets, 'hard', false);
+            if (evalShot && evalShot.score > highestDirectScore) {
+                highestDirectScore = evalShot.score;
+                bestDirectShot = evalShot;
+            }
+        }
+    }
+
+    // 4. DECISION MAKING (Dito ang talino ng AI)
+    let finalShot = null;
+    let shotType = "normal";
+
+    // A. Check kung "Alanganin" ang Direct Shot
+    // Ang score sa evaluateShot ay (1000 - distance). 
+    // Kung mababa sa 600, ibig sabihin malayo o mahirap ang anggulo.
+    const isDirectRisky = !bestDirectShot || highestDirectScore < 600;
+
+    if (isDirectRisky) {
+        // B. Kung alanganin, hanap ng DOBLETE (Bank Shot)
+        const bestBank = findBestBankShot(cueChip, allLegalTargets);
+        
+        if (bestBank) {
+            // Kung mas maganda ang score ng Doblete o kaya wala talagang Direct Shot
+            if (!bestDirectShot || bestBank.score > (highestDirectScore - 100)) { 
+                // Note: Minus 100 kasi mas prefer pa rin natin direct pag konti lang diperensya
+                finalShot = bestBank;
+                shotType = "doblete";
+            }
+        }
+    }
+
+    // C. Kung wala pa ring napili (so pwedeng Direct Shot ang best)
+    if (!finalShot && bestDirectShot) {
+        finalShot = bestDirectShot;
+        shotType = "direct";
+    }
+
+    // D. Kung "Walang Kita" (Blocked lahat), hanap ng BANDA (Kick Shot)
+    if (!finalShot) {
+        // Ito yung logic na binigay ko dati (Mirror Logic)
+        const bestKick = findBestKickShot(cueChip, allLegalTargets);
+        if (bestKick) {
+            finalShot = bestKick;
+            shotType = "banda";
+        }
+    }
+
+    // E. Kung wala talagang magawa, SAFETY / DEFENSIVE na lang
+    if (!finalShot) {
+        shotType = "safety";
+        showMessage("opponent playing Safe...", 1500);
+        const target = allLegalTargets[0];
+        if (target) {
+            finalShot = { 
+                angle: Math.atan2(target.y - cueChip.y, target.x - cueChip.x), 
+                power: 0.3, 
+                pektus: {x:0, y:0} 
+            };
+        } else {
+            setTimeout(handleTurnEnd, 500);
+            return;
+        }
+    }
+
+    // 5. MESSAGE & EXECUTE
+    if (shotType === "doblete") showMessage("opponent attempting Bank Shot (Doblete)!", 2000);
+    if (shotType === "banda") showMessage("opponent calculating Kick Shot (Banda)...", 2000);
+    if (shotType === "direct" && highestDirectScore > 900) showMessage("opponent aiming Sureball...", 1500);
+
+    // I-lock ang tira
+    animateAiAiming(finalShot.angle, finalShot.power, { DURATION_ALIGN: 800, DURATION_FEATHER: 1500 }, finalShot.pektus || { x: 0, y: 0 });
+}
         
         function findBestKickShot(cueChip, legalTargets) {
     if (!legalTargets || legalTargets.length === 0) return null;
@@ -11603,17 +11794,29 @@ function placeChipOnSpot(chipToPlace) {
         }
     }
 
-    if (isPoweringUp) {
-        isPoweringUp = false;
-        stopPowerSound(); 
-        if (cueStick.power > 0.05) {
-            shoot(cueStick.power * 40 + 2);
-        } else {
-            cueStick.power = 0;
-            powerBar.style.height = '0%';
-            cueStick.pullback = 0;
-        }
+    // Sa loob ng handlePointerUp...
+if (isPoweringUp) {
+    isPoweringUp = false;
+    stopPowerSound(); 
+    
+    if (cueStick.power > 0.05) {
+        shoot(cueStick.power * 40 + 2);
+        
+        // ANIMATION: Ibalik sa GITNA (parang tumira)
+        const cueImg = document.getElementById('power-cue-img');
+        if(cueImg) cueImg.style.top = '50%'; 
+
+    } else {
+        // Cancel shot: Reset lahat
+        cueStick.power = 0;
+        powerBar.style.height = '0%';
+        cueStick.pullback = 0;
+        
+        // RESET VISUALS: Balik sa GITNA
+        const cueImg = document.getElementById('power-cue-img');
+        if(cueImg) cueImg.style.top = '50%';
     }
+}
     
     isAimingOnCanvas = false;
     
@@ -11675,16 +11878,32 @@ function getCanvasPos(e, relativeTo) {
     };
 }
 
-// ▲▲▲ HANGGANG DITO ▲▲▲
-
-        // ▼▼▼ IPALIT MO ITONG BUONG APAT (4) NA FUNCTIONS ▼▼▼
-
 function updatePower(e) {
-    const pos = getUIPos(e, powerControl); // <-- Pinalitan na natin
+    // 1. Kunin ang touch position
+    const pos = getUIPos(e, powerControl);
     let p = pos.y / powerControl.clientHeight;
+    
+    // 2. Limitahan sa 0 hanggang 1
     cueStick.power = Math.max(0, Math.min(1, p));
+    
+    // 3. Galawin ang kulay ng Bar
     powerBar.style.height = `${cueStick.power * 100}%`;
-    cueStick.pullback = cueStick.power * (150 * scale); // scale=1 na 'to, OK lang
+    
+    // 4. Set Pullback sa laro
+    cueStick.pullback = cueStick.power * (150 * scale);
+    
+    // --- 5. VISUAL UPDATE: PAGALAWIN ANG TAKO ---
+const cueImg = document.getElementById('power-cue-img');
+if (cueImg) {
+    // Logic: Start sa 50% (gitna). 
+    // Magdadagdag tayo ng hanggang 35% pababa base sa lakas.
+    // (50% + 35% = 85% max baba, para di lumagpas sa box)
+    const newTop = 50 + (cueStick.power * 35); 
+    
+    cueImg.style.top = `${newTop}%`;
+}
+    
+    // 6. Sound Effect
     playPowerSound(cueStick.power);
 }
 
