@@ -8706,41 +8706,50 @@ async function showLeaderboard() {
 }
 
 function showVsScreen(player1, player2, gameType) {
-    const modal = document.getElementById('vs-screen-modal');
-    if (!modal) return; // Safety check
+    const modal = document.getElementById('vs-screen-modal');
+    if (!modal) return;
 
-    // I-populate ang data para kay Player 1 (Ikaw)
-    document.getElementById('vs-player-1-name').textContent = player1.name;
-    document.getElementById('vs-player-1-rank').textContent = `[${player1.rankInfo.name}]`;
-    document.getElementById('vs-player-1-rank').style.color = player1.rankInfo.color;
+    // --- HELPER PARA SA IMAGE ---
+    // Kung may photo, gamitin. Kung wala, UI Avatar (Letters).
+    const getAvatarHTML = (playerData) => {
+        if (playerData.photo) {
+            return `<img src="${playerData.photo}" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid ${playerData.rankInfo.color || '#fff'}; object-fit: cover; box-shadow: 0 0 20px ${playerData.rankInfo.color};">`;
+        } else {
+            // Fallback sa dating initials
+            return `<div style="font-size: 4em;">${playerData.rankInfo.icon || '👤'}</div>`;
+        }
+    };
 
-    // I-populate ang data para kay Player 2 (Kalaban)
-    document.getElementById('vs-player-2-name').textContent = player2.name;
-    document.getElementById('vs-player-2-rank').textContent = `[${player2.rankInfo.name}]`;
-    document.getElementById('vs-player-2-rank').style.color = player2.rankInfo.color;
+    // 1. UPDATE PLAYER 1 (LEFT SIDE)
+    // Sa HTML mo, hanapin ang avatar container. Kung wala, i-inject natin sa loob ng box.
+    const p1Box = document.getElementById('vs-player-1-box');
+    // I-reset ang laman para fresh draw
+    p1Box.innerHTML = `
+        ${getAvatarHTML(player1)}
+        <div class="vs-player-rank" style="color: ${player1.rankInfo.color}; margin-top: 10px;">[${player1.rankInfo.name}]</div>
+        <div class="vs-player-name">${player1.name}</div>
+    `;
 
-    // I-populate ang game mode
-    let gameModeText = "UNKNOWN GAME";
-    if (gameType === 'poker') gameModeText = "POKER POOL";
-    else if (gameType === 'straight-ball') gameModeText = "STRAIGHT BALL";
-    else if (gameType === '61-ball') gameModeText = "61 BALL";
-    document.getElementById('vs-game-mode').textContent = gameModeText;
+    // 2. UPDATE PLAYER 2 (RIGHT SIDE)
+    const p2Box = document.getElementById('vs-player-2-box');
+    p2Box.innerHTML = `
+        ${getAvatarHTML(player2)}
+        <div class="vs-player-rank" style="color: ${player2.rankInfo.color}; margin-top: 10px;">[${player2.rankInfo.name}]</div>
+        <div class="vs-player-name">${player2.name}</div>
+    `;
 
-    // Ipakita ang modal!
-    modal.classList.add('show');
+    // 3. GAME MODE TEXT
+    let gameModeText = "UNKNOWN GAME";
+    if (gameType === 'poker') gameModeText = "POKER POOL";
+    else if (gameType === 'straight-ball') gameModeText = "STRAIGHT BALL";
+    else if (gameType === '61-ball') gameModeText = "61 BALL";
+    document.getElementById('vs-game-mode').textContent = gameModeText;
 
-    // Awtomatikong itatago ang modal pagkatapos ng 4 na segundo
-    // (3.5s delay + 0.5s fade-out animation = 4s total time)
-    setTimeout(() => {
-        modal.classList.remove('show');
-    }, 4000); 
+    modal.classList.add('show');
+    setTimeout(() => {
+        modal.classList.remove('show');
+    }, 4000);
 }
-
-// ▼▼▼ KUMPLETONG STATS, RANKING, & UI ENGINE (COPY-PASTE MO ITO LAHAT) ▼▼▼
-
-/**
- * 1. Load Stats: Kinukuha ang data pagbukas ng game.
- */
 function loadPlayerStats() {
     const savedLevel = localStorage.getItem('pinoyPoolPlayerLevel');
     const savedXP = localStorage.getItem('pinoyPoolPlayerXP');
@@ -8757,19 +8766,12 @@ function loadPlayerStats() {
     updateXPDisplay(); 
 }
 
-/**
- * 2. Save Stats: Sine-save ang progress.
- */
 function savePlayerStats() {
     localStorage.setItem('pinoyPoolPlayerLevel', playerLevel.toString());
     localStorage.setItem('pinoyPoolPlayerXP', playerXP.toString());
     localStorage.setItem('pinoyPoolPlayerTrophies', playerTrophies.toString());
 }
 
-/**
- * 3. Math Helper: Mas mahirap mag-level up habang tumataas.
- * Pinalitan ang multiplier: 100 -> 200, at power 1.2 -> 1.5
- */
 function calculateXPForLevel(level) {
     // Dati: 100 * Math.pow(level, 1.2)
     // Ngayon: Mas matarik na ang curve. Matagal bago mag Level 10+.
@@ -8777,10 +8779,6 @@ function calculateXPForLevel(level) {
 }
 
 
-/**
- * 4. Popup Helper: Ipinapakita ang "LEVEL UP!" message.
- * (KASAMA NA ITO NGAYON PARA HINDI MAG-ERROR)
- */
 function showLevelUpPopup(newLevel, coinReward) {
     const popup = document.createElement('div');
     popup.innerHTML = `LEVEL UP!<br>You are now Level ${newLevel}<br>+${coinReward} Coins!`;
