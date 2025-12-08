@@ -12604,15 +12604,18 @@ async function showProfile(target) {
         // --- SARILI MONG PROFILE ---
         const rankInfo = getPlayerRank(playerTrophies);
         
-        // Ipakita ang Upload Button kapag profile mo
-        if(uploadBtn) uploadBtn.style.display = 'flex';
+        // IPALITAW ANG UPLOAD BUTTON (CAMERA ICON)
+        if(uploadBtn) {
+            uploadBtn.style.display = 'flex';
+            // Siguraduhing nasa ibabaw ang camera button
+            uploadBtn.style.zIndex = '200'; 
+        }
 
-        // Check kung may naka-save na photo sa LocalStorage (Initial)
         let myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
 
         playerData = {
             name: localPlayerName,
-            photo: myPhoto, // Gamitin ang local photo muna
+            photo: myPhoto, 
             rankName: rankInfo.name,
             rankColor: rankInfo.color,
             wins: "My Stats", 
@@ -12620,21 +12623,20 @@ async function showProfile(target) {
             cueId: equippedItems.cue
         };
 
-        // Fetch real data from DB (para makuha ang fresh photo)
+        // Fetch real data from DB
         if (localPlayerUid && db) {
              getDoc(doc(db, "players", localPlayerUid)).then(snap => {
                  if(snap.exists()) {
                      const data = snap.data();
-                     winsEl.textContent = data.wins || 0;
-                     
-                     // Update photo kung meron sa database
+                     if (winsEl) winsEl.textContent = data.wins || 0;
                      if (data.photo) {
                          if(avatarImg) {
                              avatarImg.src = data.photo;
                              avatarImg.style.display = 'block';
+                             // Dito natin ilalagay ang Zoom sa loob ng Profile Modal
+                             avatarImg.onclick = () => window.viewFullPhoto(data.photo);
                          }
                          if(defaultAvatar) defaultAvatar.style.display = 'none';
-                         // Save latest to local
                          localStorage.setItem('pinoyPoolPlayerPhoto', data.photo);
                      }
                  }
@@ -12643,15 +12645,14 @@ async function showProfile(target) {
 
     } else {
         // --- PROFILE NG KALABAN ---
-        // Itago ang Upload Button
-        if(uploadBtn) uploadBtn.style.display = 'none';
+        if(uploadBtn) uploadBtn.style.display = 'none'; // Tago upload button
 
         if (!isOnlineGame) {
             // AI
             const botNameDisplay = (opponentPlayerName && opponentPlayerName !== "Opponent") ? opponentPlayerName : "AI Bot";
             playerData = {
                 name: botNameDisplay,
-                photo: null, // Walang photo ang AI
+                photo: null,
                 rankName: "Computer",
                 rankColor: "#aaa",
                 wins: "∞",
@@ -12661,12 +12662,9 @@ async function showProfile(target) {
         } else {
             // ONLINE OPPONENT
             const oppRankInfo = RANKS[opponentRankIndex] || RANKS[0];
-            
-            // Note: Sa ngayon, hindi pa natin sine-send ang photo ng kalaban sa 'syncGameState'.
-            // Sa susunod na update pwede natin idagdag yun. Sa ngayon, default muna sila.
             playerData = {
                 name: opponentPlayerName,
-                photo: null, 
+                photo: window.opponentPhotoUrl || null, 
                 rankName: oppRankInfo.name,
                 rankColor: oppRankInfo.color,
                 wins: "?", 
@@ -12677,38 +12675,39 @@ async function showProfile(target) {
     }
 
     // --- RENDER TEXT ---
-    nameEl.textContent = playerData.name;
-    rankEl.textContent = `[${playerData.rankName}]`;
-    rankEl.style.color = playerData.rankColor;
-    winsEl.textContent = playerData.wins;
-    levelEl.textContent = playerData.level;
+    if(nameEl) nameEl.textContent = playerData.name;
+    if(rankEl) {
+        rankEl.textContent = `[${playerData.rankName}]`;
+        rankEl.style.color = playerData.rankColor;
+    }
+    if(winsEl) winsEl.textContent = playerData.wins;
+    if(levelEl) levelEl.textContent = playerData.level;
 
     // --- RENDER PHOTO ---
-    // Kung may photo, ipakita ang IMG tag. Kung wala, ipakita ang Default Div.
     if (playerData.photo) {
         if(avatarImg) {
             avatarImg.src = playerData.photo;
             avatarImg.style.display = 'block';
+            // Enable Zoom pag pinindot ang picture mismo
+            avatarImg.onclick = () => window.viewFullPhoto(playerData.photo);
         }
         if(defaultAvatar) defaultAvatar.style.display = 'none';
     } else {
         if(avatarImg) avatarImg.style.display = 'none';
         if(defaultAvatar) {
             defaultAvatar.style.display = 'flex';
-            // Kung AI, lagyan ng Robot emoji, kung tao, Tao emoji
             defaultAvatar.innerHTML = (target !== 'player' && !isOnlineGame) ? "🤖" : "👤";
         }
     }
 
     // --- RENDER CUE ---
     const cueItem = SHOP_ITEMS.cues.find(c => c.id === playerData.cueId) || SHOP_ITEMS.cues[0];
-    cueImgEl.style.backgroundImage = `url('${cueItem.imageSrc}')`;
-    cueNameEl.textContent = cueItem.name;
+    if(cueImgEl) cueImgEl.style.backgroundImage = `url('${cueItem.imageSrc}')`;
+    if(cueNameEl) cueNameEl.textContent = cueItem.name;
 
     modal.classList.add('show');
     history.pushState({ modal: 'profileModal' }, 'Profile', '#profile');
 }
-
 function triggerFireworks() {
     // Mag-spawn ng fireworks sa random locations
     for (let i = 0; i < 5; i++) {
