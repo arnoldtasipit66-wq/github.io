@@ -4471,6 +4471,40 @@ div#opponent-info.hud-active {
     transform: scale(1.05); /* Lumaki konti pag tinutok mouse */
     filter: brightness(1.1);
 }
+
+        /* === ULTIMATE CLARITY OVERRIDE === */
+
+/* Targetin lahat ng avatar images sa Friends, Leaderboard, HUD, at Profile */
+.friend-info img, 
+.hud-avatar img, 
+#leaderboard-body img, 
+#profile-avatar-img,
+.vs-player-box img,
+.avatar-circle img {
+    /* Siguraduhing hindi nai-stretch */
+    object-fit: cover !important;
+    
+    /* Pilitin ang browser na gumamit ng High Quality rendering */
+    image-rendering: -webkit-optimize-contrast !important; /* Para sa Chrome/Safari mobile */
+    image-rendering: high-quality !important; /* Modern Browsers */
+    
+    /* Tanggalin ang blur effects kung meron man */
+    filter: none !important; 
+    backdrop-filter: none !important;
+    
+    /* Siguraduhing bilog na bilog at walang putol */
+    border-radius: 50% !important;
+    
+    /* Hardware acceleration para mas smooth */
+    transform: translateZ(0);
+}
+
+/* Special fix para sa Friends List at Leaderboard thumbnails */
+.friend-info img, #leaderboard-body img {
+    background-color: #333; /* Background habang loading */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+}
         
 </style>
 </head>
