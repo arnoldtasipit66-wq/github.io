@@ -12464,55 +12464,50 @@ function showLobbyUI() {
     const nameEl = document.getElementById('lobby-player-name');
     const levelEl = document.getElementById('lobby-level-badge');
     
-    // --- AVATAR UPDATE (FIXED LOGIC) ---
+    // --- AVATAR UPDATE (TARGET: OPEN PROFILE MODAL) ---
     const avatarContainer = document.querySelector('.avatar-circle'); 
     const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
     
     if (avatarContainer) {
-        // Reset styles para sigurado
+        // 1. Gawing laging clickable (may picture man o wala)
         avatarContainer.style.pointerEvents = 'auto'; 
         avatarContainer.style.zIndex = '100'; 
+        avatarContainer.style.cursor = 'pointer'; // Hand cursor
 
-        if (myPhoto) {
-            // === CASE 1: MERONG PICTURE (Gawing Clickable) ===
+        // 2. I-set ang itsura (Picture o Emoji)
+        if (myPhoto && myPhoto !== 'null' && myPhoto !== 'undefined') {
+            // MAY PICTURE
             avatarContainer.style.backgroundImage = `url('${myPhoto}')`;
             avatarContainer.style.backgroundSize = 'cover';
             avatarContainer.style.backgroundPosition = 'center';
             avatarContainer.innerHTML = ''; // Tanggalin ang emoji
-            avatarContainer.style.border = '2px solid #FFD700'; 
-            avatarContainer.style.cursor = 'pointer'; // Gawing 'hand' ang cursor
-
-            // DIRECT ONCLICK EVENT
-            avatarContainer.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation(); // Pigilan ang ibang elements na humarang
-                
-                const fullImageModal = document.getElementById('full-image-modal');
-                const fullImageDisplay = document.getElementById('full-image-display');
-                
-                if (fullImageModal && fullImageDisplay) {
-                    playButtonSound(); // Patunugin
-                    fullImageDisplay.src = myPhoto; // I-set ang image source
-                    fullImageModal.classList.add('show'); // Ipakita ang modal
-                    
-                    // Add history state para sa Back button ng phone
-                    history.pushState({ modal: 'fullImage' }, 'View Image', '#view-image');
-                }
-            };
-
+            avatarContainer.style.border = '2px solid #FFD700'; // Gold border
         } else {
-            // === CASE 2: WALANG PICTURE (Default Emoji, BAWAL PINDUTIN) ===
+            // WALANG PICTURE (Default)
             avatarContainer.style.backgroundImage = 'none';
             avatarContainer.innerHTML = '👤';
             avatarContainer.style.border = '2px solid #fff';
-            avatarContainer.style.cursor = 'default'; // Gawing arrow lang ang cursor
-            
-            // TANGGALIN ang click function
-            avatarContainer.onclick = null; 
         }
+
+        // 3. ONCLICK EVENT: BUKSAN ANG PROFILE SETTINGS
+        // Dito mo makikita ang Camera/Upload button
+        avatarContainer.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (typeof playButtonSound === 'function') playButtonSound();
+            
+            // Tawagin ang function na nagbubukas ng Profile Modal
+            if (typeof showProfile === 'function') {
+                showProfile('player'); 
+            } else {
+                console.error("Error: showProfile function is missing!");
+            }
+        };
     }
     // ---------------------------------------------
 
+    // Update Name & Level Text
     if (nameEl) nameEl.textContent = localPlayerName || "Guest";
     if (levelEl) {
         const rankInfo = getPlayerRank(playerTrophies);
@@ -12520,11 +12515,12 @@ function showLobbyUI() {
         levelEl.style.color = rankInfo.color;
     }
 
+    // Update Buttons & Currency
     updateDailyRewardButtonState(); 
     setCueForCurrentTurn(); 
     updateCurrencyDisplay();
     
-    // Update din ang Rank Card kung meron
+    // Update Rank Card kung meron
     if (typeof updateLobbyRankDisplay === 'function') {
         updateLobbyRankDisplay();
     }
