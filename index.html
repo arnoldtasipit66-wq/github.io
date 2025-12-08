@@ -13418,7 +13418,7 @@ function handleProfileUpload(event) {
     reader.readAsDataURL(file);
 } 
 
-// --- UNIVERSAL FULL IMAGE VIEWER ---
+// --- UNIVERSAL FULL IMAGE VIEWER (UPDATED) ---
 document.addEventListener('DOMContentLoaded', () => {
     const fullImageModal = document.getElementById('full-image-modal');
     const fullImageDisplay = document.getElementById('full-image-display');
@@ -13428,13 +13428,31 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', (e) => {
         // Kapag ang pinindot ay may class na 'viewable-img'
         if (e.target.classList.contains('viewable-img')) {
-            const src = e.target.src;
+            let src = '';
+
+            // CASE A: Kung ito ay IMG tag (tulad sa Profile Modal / Leaderboard)
+            if (e.target.tagName === 'IMG') {
+                src = e.target.src;
+            } 
+            // CASE B: Kung ito ay DIV na may Background Image (tulad sa Lobby Avatar)
+            else {
+                const style = window.getComputedStyle(e.target);
+                const bgImage = style.backgroundImage;
+                // Linisin ang URL string: url("link") -> link
+                if (bgImage && bgImage !== 'none') {
+                    src = bgImage.replace(/url\(['"]?(.*?)['"]?\)/i, "$1");
+                }
+            }
             
-            // Siguraduhing may laman ang picture at hindi default/broken
-            if (src && src.includes('http')) { 
+            // Check kung valid ang image bago buksan
+            if (src && src !== 'none' && src.includes('http')) { 
                 playButtonSound();
                 fullImageDisplay.src = src;
+                
+                // Ipakita ang modal (Magti-trigger ang CSS animation)
                 fullImageModal.classList.add('show');
+                
+                // Set history state para gumana ang Back button ng phone
                 history.pushState({ modal: 'fullImage' }, 'View Image', '#view-image');
             }
         }
@@ -13449,10 +13467,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Close on Background Click
+    // 3. Close on Background Click (Yung itim sa gilid)
     if (fullImageModal) {
         fullImageModal.addEventListener('click', (e) => {
-            if (e.target === fullImageModal || e.target.parentNode === fullImageModal) {
+            // Kung ang pinindot ay yung background mismo at hindi ang picture
+            if (e.target === fullImageModal || e.target.classList.contains('full-image-content')) {
                 fullImageModal.classList.remove('show');
                 if (history.state && history.state.modal === 'fullImage') history.back();
             }
