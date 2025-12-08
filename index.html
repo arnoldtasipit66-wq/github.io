@@ -12466,31 +12466,51 @@ function showLobbyUI() {
     const nameEl = document.getElementById('lobby-player-name');
     const levelEl = document.getElementById('lobby-level-badge');
     
-    // --- AVATAR UPDATE (ITO ANG BINAGO NATIN) ---
-    const avatarContainer = document.querySelector('.avatar-circle'); // Hanapin ang bilog sa lobby
+    // --- AVATAR UPDATE (FIXED LOGIC) ---
+    const avatarContainer = document.querySelector('.avatar-circle'); 
     const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
     
     if (avatarContainer) {
-        if (myPhoto) {
-            // 1. Kung may picture, lagyan ng class na 'viewable-img' para ma-zoom
-            avatarContainer.classList.add('viewable-img');
-            avatarContainer.style.cursor = 'pointer'; // Gawing 'hand' ang cursor
+        // Reset styles para sigurado
+        avatarContainer.style.pointerEvents = 'auto'; 
+        avatarContainer.style.zIndex = '100'; 
 
-            // 2. I-set ang image
+        if (myPhoto) {
+            // === CASE 1: MERONG PICTURE (Gawing Clickable) ===
             avatarContainer.style.backgroundImage = `url('${myPhoto}')`;
             avatarContainer.style.backgroundSize = 'cover';
             avatarContainer.style.backgroundPosition = 'center';
             avatarContainer.innerHTML = ''; // Tanggalin ang emoji
-            avatarContainer.style.border = '2px solid #FFD700'; // Gold border
-        } else {
-            // 3. Kung walang picture, TANGGALIN ang class para hindi mapindot
-            avatarContainer.classList.remove('viewable-img');
-            avatarContainer.style.cursor = 'default';
+            avatarContainer.style.border = '2px solid #FFD700'; 
+            avatarContainer.style.cursor = 'pointer'; // Gawing 'hand' ang cursor
 
-            // Balik sa default na tao emoji
+            // DIRECT ONCLICK EVENT
+            avatarContainer.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation(); // Pigilan ang ibang elements na humarang
+                
+                const fullImageModal = document.getElementById('full-image-modal');
+                const fullImageDisplay = document.getElementById('full-image-display');
+                
+                if (fullImageModal && fullImageDisplay) {
+                    playButtonSound(); // Patunugin
+                    fullImageDisplay.src = myPhoto; // I-set ang image source
+                    fullImageModal.classList.add('show'); // Ipakita ang modal
+                    
+                    // Add history state para sa Back button ng phone
+                    history.pushState({ modal: 'fullImage' }, 'View Image', '#view-image');
+                }
+            };
+
+        } else {
+            // === CASE 2: WALANG PICTURE (Default Emoji, BAWAL PINDUTIN) ===
             avatarContainer.style.backgroundImage = 'none';
             avatarContainer.innerHTML = '👤';
             avatarContainer.style.border = '2px solid #fff';
+            avatarContainer.style.cursor = 'default'; // Gawing arrow lang ang cursor
+            
+            // TANGGALIN ang click function
+            avatarContainer.onclick = null; 
         }
     }
     // ---------------------------------------------
@@ -12511,7 +12531,6 @@ function showLobbyUI() {
         updateLobbyRankDisplay();
     }
 }
-
 function hideLobbyUI() {
     const lobbyScreen = document.getElementById('lobby-screen');
     if (lobbyScreen) lobbyScreen.style.display = 'none';
