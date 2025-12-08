@@ -5023,6 +5023,30 @@ div#opponent-info.hud-active {
         <img id="full-image-display" src="" style="max-width: 90%; max-height: 80vh; border: 3px solid #FFD700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); border-radius: 10px; object-fit: contain;">
     </div>
     </div>
+
+    <div id="vs-screen-new" style="display: none;">
+    <div class="vs-background"></div>
+    
+    <div class="vs-player-container left" id="vs-p1-container-new">
+        <div class="vs-avatar-glow">
+            <img id="vs-p1-img-new" src="" alt="P1">
+        </div>
+        <h2 id="vs-p1-name-new">YOU</h2>
+        <div class="vs-badge">OWNER</div>
+    </div>
+
+    <div class="vs-logo-container-new">
+        <h1 class="vs-text">V<span style="color: #ff0055">S</span></h1>
+    </div>
+
+    <div class="vs-player-container right" id="vs-p2-container-new">
+        <div class="vs-avatar-glow">
+            <img id="vs-p2-img-new" src="" alt="P2">
+        </div>
+        <h2 id="vs-p2-name-new">OPPONENT</h2>
+        <div class="vs-badge" style="background: #ff0055;">CHALLENGER</div>
+    </div>
+    </div>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
