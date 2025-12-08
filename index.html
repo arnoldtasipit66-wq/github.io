@@ -13314,7 +13314,49 @@ function handleProfileUpload(event) {
         }
     };
     reader.readAsDataURL(file);
-}       
+} 
+
+// --- UNIVERSAL FULL IMAGE VIEWER ---
+document.addEventListener('DOMContentLoaded', () => {
+    const fullImageModal = document.getElementById('full-image-modal');
+    const fullImageDisplay = document.getElementById('full-image-display');
+    const fullImageClose = document.getElementById('full-image-close-btn');
+
+    // 1. GLOBAL LISTENER: Nakikinig sa lahat ng click sa screen
+    document.body.addEventListener('click', (e) => {
+        // Kapag ang pinindot ay may class na 'viewable-img'
+        if (e.target.classList.contains('viewable-img')) {
+            const src = e.target.src;
+            
+            // Siguraduhing may laman ang picture at hindi default/broken
+            if (src && src.includes('http')) { 
+                playButtonSound();
+                fullImageDisplay.src = src;
+                fullImageModal.classList.add('show');
+                history.pushState({ modal: 'fullImage' }, 'View Image', '#view-image');
+            }
+        }
+    });
+
+    // 2. Close Button Logic
+    if (fullImageClose) {
+        fullImageClose.addEventListener('click', () => {
+            playButtonSound();
+            fullImageModal.classList.remove('show');
+            if (history.state && history.state.modal === 'fullImage') history.back();
+        });
+    }
+
+    // 3. Close on Background Click
+    if (fullImageModal) {
+        fullImageModal.addEventListener('click', (e) => {
+            if (e.target === fullImageModal || e.target.parentNode === fullImageModal) {
+                fullImageModal.classList.remove('show');
+                if (history.state && history.state.modal === 'fullImage') history.back();
+            }
+        });
+    }
+});        
     </script>
 </body>
 </html>
