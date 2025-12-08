@@ -13445,59 +13445,31 @@ const fullImageModal = document.getElementById('full-image-modal');
 const fullImageDisplay = document.getElementById('full-image-display');
 const fullImageClose = document.getElementById('full-image-close-btn');
 
-// 1. GLOBAL LISTENER (Improved)
-document.body.addEventListener('click', (e) => {
-    // Gamitin ang .closest() para kahit sa border o gitna pindutin, gagana
-    const target = e.target.closest('.viewable-img');
-
-    if (target) {
-        console.log("Avatar clicked!"); // Debug message sa console
-        let src = '';
-
-        // CASE A: Kung ito ay IMG tag (Profile Modal / Leaderboard)
-        if (target.tagName === 'IMG') {
-            src = target.src;
-        } 
-        // CASE B: Kung ito ay DIV (Lobby Avatar)
-        else {
-            const style = window.getComputedStyle(target);
-            const bgImage = style.backgroundImage;
-            // Linisin ang URL string: url("link") -> link
-            if (bgImage && bgImage !== 'none') {
-                src = bgImage.replace(/url\(['"]?(.*?)['"]?\)/i, "$1");
-            }
-        }
-        
-        // Check kung valid ang image bago buksan
-        if (src && src !== 'none' && src.includes('http')) { 
-            // playButtonSound(); // Pwede mong i-uncomment kung gusto mo may tunog
-            if (fullImageDisplay) fullImageDisplay.src = src;
-            
-            // Ipakita ang modal
-            if (fullImageModal) fullImageModal.classList.add('show');
-            
-            // History state para sa Back button ng phone
-            history.pushState({ modal: 'fullImage' }, 'View Image', '#view-image');
-        }
+// --- NEW GLOBAL IMAGE VIEWER (FINAL FIX) ---
+// Ito ang tatawagin ng lahat (Friends, Leaderboard, Game)
+window.viewFullPhoto = function(src) {
+    if (!src || src === 'null' || src.includes('ui-avatars.com')) {
+        console.log("Invalid image, ignoring.");
+        return; // Huwag buksan pag walang picture o default avatar
     }
-});
 
-// 2. Close Button Logic
+    const fullImageModal = document.getElementById('full-image-modal');
+    const fullImageDisplay = document.getElementById('full-image-display');
+
+    if (fullImageModal && fullImageDisplay) {
+        // playButtonSound(); // Optional: I-uncomment kung gusto mo may tunog
+        fullImageDisplay.src = src;
+        fullImageModal.classList.add('show');
+        history.pushState({ modal: 'fullImage' }, 'View Image', '#view-image');
+    }
+};
+
+// Close Button Logic
+const fullImageClose = document.getElementById('full-image-close-btn');
 if (fullImageClose) {
     fullImageClose.addEventListener('click', () => {
-        if (fullImageModal) fullImageModal.classList.remove('show');
+        document.getElementById('full-image-modal').classList.remove('show');
         if (history.state && history.state.modal === 'fullImage') history.back();
-    });
-}
-
-// 3. Close on Background Click (Yung itim sa gilid)
-if (fullImageModal) {
-    fullImageModal.addEventListener('click', (e) => {
-        // Kung ang pinindot ay yung background mismo at hindi ang picture
-        if (e.target === fullImageModal || e.target.classList.contains('full-image-content')) {
-            if (fullImageModal) fullImageModal.classList.remove('show');
-            if (history.state && history.state.modal === 'fullImage') history.back();
-        }
     });
 }
 </script>
