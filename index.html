@@ -9232,23 +9232,29 @@ function renderFriendItem(listElement, docId, data, type) {
     itemDiv.id = `friend-item-${docId}`;
     itemDiv.setAttribute('data-friend-uid', friendUid);
 
-    // --- IMAGE LOADING TRICK ---
-    const imgId = `friend-img-${friendUid}`;
-    // Default muna (Avatar API)
-    const defaultImg = `https://ui-avatars.com/api/?name=${friendName}&background=random&color=fff&size=64`;
-    
-    // Fetch REAL Photo sa background
-    if (db) {
-        getDoc(doc(db, "players", friendUid)).then(snap => {
-            if (snap.exists() && snap.data().photo) {
-                const imgEl = document.getElementById(imgId);
-                if (imgEl) imgEl.src = snap.data().photo;
-            }
-        });
-    }
+    // Hanapin ang part na ito sa loob ng renderFriendItem function
+// at palitan ng code sa baba:
 
-    const imageHTML = `<img id="${imgId}" src="${defaultImg}" onclick="window.viewFullPhoto(this.src)" style="width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; border: 1px solid rgba(255,255,255,0.2); object-fit: cover; cursor: pointer;">`;
-    // --- BUTTONS (Keep existing logic) ---
+// --- OPTIMIZED IMAGE LOADING ---
+const imgId = `friend-img-${friendUid}`;
+// Default Placeholder (Mataas ang resolution: size=128)
+const defaultImg = `https://ui-avatars.com/api/?name=${friendName}&background=random&color=fff&size=128`;
+
+// Fetch REAL Photo sa background
+if (db) {
+    getDoc(doc(db, "players", friendUid)).then(snap => {
+        if (snap.exists() && snap.data().photo) {
+            const imgEl = document.getElementById(imgId);
+            if (imgEl) {
+                // I-load ang HD photo
+                imgEl.src = snap.data().photo;
+            }
+        }
+    });
+}
+
+// Dito ang pagbabago: Tinaasan ko ang width/height sa 40px at naglagay ng onclick para ma-view ng malaki
+const imageHTML = `<img id="${imgId}" src="${defaultImg}" onclick="window.viewFullPhoto(this.src)" style="width: 40px; height: 40px; min-width: 40px; border-radius: 50%; margin-right: 12px; object-fit: cover; cursor: pointer; background-color: #222;">`;
     let buttonsHtml = '';
     if (type === "pending") {
         buttonsHtml = `<button class="menu-button lobby-button accept-btn" data-doc-id="${docId}">Accept</button><button class="menu-button lobby-button decline-btn" data-doc-id="${docId}">Decline</button>`;
