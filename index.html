@@ -9212,8 +9212,7 @@ function renderFriendItem(listElement, docId, data, type) {
         });
     }
 
-    const imageHTML = `<img id="${imgId}" src="${defaultImg}" class="viewable-img" style="width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; border: 1px solid rgba(255,255,255,0.2); object-fit: cover; cursor: pointer;">`;
-
+    const imageHTML = `<img id="${imgId}" src="${defaultImg}" onclick="window.viewFullPhoto(this.src)" style="width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; border: 1px solid rgba(255,255,255,0.2); object-fit: cover; cursor: pointer;">`;
     // --- BUTTONS (Keep existing logic) ---
     let buttonsHtml = '';
     if (type === "pending") {
