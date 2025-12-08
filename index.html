@@ -13435,42 +13435,56 @@ function handleProfileUpload(event) {
     reader.readAsDataURL(file);
 } 
 
-// --- UNIVERSAL FULL IMAGE VIEWER (FINAL FIX) ---
-// Tinanggal na natin ang 'DOMContentLoaded' wrapper dahil nasa loob ito ng type="module".
-// Ito ang dahilan kaya hindi gumagana ang click dati.
+// --- FINAL & SAFE GLOBAL IMAGE VIEWER ---
 
-const fullImageModal = document.getElementById('full-image-modal');
-const fullImageDisplay = document.getElementById('full-image-display');
-const fullImageClose = document.getElementById('full-image-close-btn');
-
-// --- NEW GLOBAL IMAGE VIEWER (FINAL FIX) ---
-// Ito ang tatawagin ng lahat (Friends, Leaderboard, Game)
+// 1. I-define ang Global Function (Para matawag ng Friends at Leaderboard)
 window.viewFullPhoto = function(src) {
-    if (!src || src === 'null' || src.includes('ui-avatars.com')) {
-        console.log("Invalid image, ignoring.");
-        return; // Huwag buksan pag walang picture o default avatar
+    // Basic checks
+    if (!src || src === 'null' || src === 'undefined' || src === '') {
+        console.log("Walang valid photo.");
+        return;
+    }
+    // Huwag buksan kung default avatar lang (galing UI Avatars)
+    if (src.includes('ui-avatars.com')) {
+        return;
     }
 
-    const fullImageModal = document.getElementById('full-image-modal');
-    const fullImageDisplay = document.getElementById('full-image-display');
+    const modal = document.getElementById('full-image-modal');
+    const display = document.getElementById('full-image-display');
 
-    if (fullImageModal && fullImageDisplay) {
-        // playButtonSound(); // Optional: I-uncomment kung gusto mo may tunog
-        fullImageDisplay.src = src;
-        fullImageModal.classList.add('show');
+    if (modal && display) {
+        // I-set ang image source
+        display.src = src;
+        // Ipakita ang modal
+        modal.classList.add('show');
+        // Mag-add ng history para gumana ang Back button ng phone
         history.pushState({ modal: 'fullImage' }, 'View Image', '#view-image');
     }
 };
 
-// Close Button Logic
-const fullImageClose = document.getElementById('full-image-close-btn');
-if (fullImageClose) {
-    fullImageClose.addEventListener('click', () => {
-        document.getElementById('full-image-modal').classList.remove('show');
-        if (history.state && history.state.modal === 'fullImage') history.back();
-    });
-}
-</script>
+// 2. Setup Close Buttons (Naka-isolate sa loob ng Block {} para iwas error)
+{
+    const modal = document.getElementById('full-image-modal');
+    const closeBtn = document.getElementById('full-image-close-btn');
+
+    // Close Button Logic
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            if (modal) modal.classList.remove('show');
+            if (history.state && history.state.modal === 'fullImage') history.back();
+        };
+    }
+
+    // Background Click Logic (Pag pinindot ang itim sa gilid)
+    if (modal) {
+        modal.onclick = function(e) {
+            if (e.target === modal || e.target.classList.contains('full-image-content')) {
+                modal.classList.remove('show');
+                if (history.state && history.state.modal === 'fullImage') history.back();
+            }
+        };
+    }
+}</script>
 
 <div id="full-image-modal" class="modal-overlay">
     <span class="modal-close-btn" id="full-image-close-btn">&times;</span>
