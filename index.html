@@ -13398,10 +13398,10 @@ function handleProfileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Loading indicator (Simpleng opacity change muna)
+    // Loading indicator
     const avatarImg = document.getElementById('profile-avatar-img');
     const defaultAvatar = document.getElementById('profile-avatar-default');
-    if(defaultAvatar) defaultAvatar.innerHTML = "⏳"; // Hourglass
+    if(defaultAvatar) defaultAvatar.innerHTML = "⏳"; 
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -13409,16 +13409,16 @@ function handleProfileUpload(event) {
         img.src = e.target.result;
 
         img.onload = function() {
-            // --- IMAGE COMPRESSION MAGIC ---
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
-            // I-set ang max size (150px ay sapat na para sa avatar)
-            const MAX_SIZE = 150;
+            // --- ULTRA CLEAR SETTINGS ---
+            // Tinaasan natin from 512 -> 1024 (HD na ito)
+            const MAX_SIZE = 1024; 
             let width = img.width;
             let height = img.height;
 
-            // Kalkulahin ang bagong size habang pinapanatili ang aspect ratio
+            // Resize logic (Maintain aspect ratio)
             if (width > height) {
                 if (width > MAX_SIZE) {
                     height *= MAX_SIZE / width;
@@ -13433,44 +13433,59 @@ function handleProfileUpload(event) {
 
             canvas.width = width;
             canvas.height = height;
+            
+            // --- CRITICAL: FORCE HIGH QUALITY RENDERING ---
+            // Ito ang nagpapakinis ng pixels
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Kunin ang compressed base64 string (JPEG, 70% quality)
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            // --- QUALITY CONTROL ---
+            // 0.98 = 98% Quality (Halos Original na)
+            // Huwag nating gawing 1.0 (100%) dahil baka sumabog ang database limit.
+            let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.98);
 
-            // --- SAVE TO FIREBASE FIRESTORE ---
+            // --- SAFETY CHECK: 1MB LIMIT (Firestore Restriction) ---
+            // Kung sobra sa 1MB ang HD picture, babawasan natin konti ang quality
+            // para pumasok sa database, pero malinaw pa rin.
+            let quality = 0.98;
+            while (compressedDataUrl.length > 1000000 && quality > 0.5) {
+                quality -= 0.05;
+                compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                console.log("Adjusting quality to fit database...", quality);
+            }
+
+            // --- SAVE STEP ---
             if (localPlayerUid && db) {
                 const playerRef = doc(db, "players", localPlayerUid);
                 
-                // Update ang field na "photo"
                 updateDoc(playerRef, {
                     photo: compressedDataUrl
                 }).then(() => {
-                    showMessage("Profile picture updated!", 2000);
+                    showMessage("HD Photo Updated!", 2000);
                     
-                    // Update UI agad para makita ang pagbabago
                     if(avatarImg) {
                         avatarImg.src = compressedDataUrl;
                         avatarImg.style.display = 'block';
                     }
                     if(defaultAvatar) defaultAvatar.style.display = 'none';
                     
-                    // Update Local Storage (Optional, para mabilis load sa susunod)
                     localStorage.setItem('pinoyPoolPlayerPhoto', compressedDataUrl);
                     
-                    // Refresh Lobby UI
-                    showLobbyUI(); 
+                    // Force Refresh Lobby
+                    if (typeof showLobbyUI === 'function') showLobbyUI(); 
 
                 }).catch((error) => {
                     console.error("Upload failed:", error);
-                    showMessage("Upload failed. Try a smaller image.", 3000);
+                    showMessage("Error saving. Try a different photo.", 3000);
                     if(defaultAvatar) defaultAvatar.innerHTML = "👤";
                 });
             }
         }
     };
     reader.readAsDataURL(file);
-} 
+}
 
 // --- FINAL & SAFE GLOBAL IMAGE VIEWER ---
 
