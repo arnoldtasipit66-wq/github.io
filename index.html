@@ -8946,20 +8946,19 @@ function updateInfoBox() {
     let player2Name = opponentPlayerName || 'Opponent'; 
     
     // --- SETUP AVATARS ---
-    // 1. My Avatar
+    // 1. My Avatar (FIXED)
     const myLocalPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
     let myAvatarHTML = myRank.icon; 
     if (myLocalPhoto) {
-        myAvatarHTML = `<img src="${myLocalPhoto}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        // Lagyan ng onclick="window.viewFullPhoto(...)" at stopPropagation para di ma-trigger ang profile modal
+        myAvatarHTML = `<img src="${myLocalPhoto}" onclick="event.stopPropagation(); window.viewFullPhoto('${myLocalPhoto}')" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; cursor: pointer;">`;
     }
 
-    // 2. Opponent Avatar
+    // 2. Opponent Avatar (FIXED)
     let opponentAvatarHTML = opponentRank.icon;
     
-    // Logic: Kung Online at may photo data, gamitin. Kung AI, Robot emoji.
-    // (Note: Kailangan nating i-save ang photo ng kalaban sa global var 'window.opponentPhoto' sa syncGameState)
     if (isOnlineGame && window.opponentPhoto) {
-        opponentAvatarHTML = `<img src="${window.opponentPhoto}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        opponentAvatarHTML = `<img src="${window.opponentPhoto}" onclick="event.stopPropagation(); window.viewFullPhoto('${window.opponentPhoto}')" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; cursor: pointer;">`;
     } else if (!isOnlineGame) {
         opponentAvatarHTML = "🤖";
         if (opponentPlayerName && opponentPlayerName !== "Opponent") player2Name = opponentPlayerName; 
