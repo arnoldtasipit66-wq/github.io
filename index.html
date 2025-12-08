@@ -12394,28 +12394,34 @@ function showLobbyUI() {
     const nameEl = document.getElementById('lobby-player-name');
     const levelEl = document.getElementById('lobby-level-badge');
     
-    // --- AVATAR UPDATE ---
+    // --- AVATAR UPDATE (ITO ANG BINAGO NATIN) ---
     const avatarContainer = document.querySelector('.avatar-circle'); // Hanapin ang bilog sa lobby
-    
-    // Check local storage for photo
     const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
     
     if (avatarContainer) {
         if (myPhoto) {
-            // Kung may picture, gawin itong background image ng div
+            // 1. Kung may picture, lagyan ng class na 'viewable-img' para ma-zoom
+            avatarContainer.classList.add('viewable-img');
+            avatarContainer.style.cursor = 'pointer'; // Gawing 'hand' ang cursor
+
+            // 2. I-set ang image
             avatarContainer.style.backgroundImage = `url('${myPhoto}')`;
             avatarContainer.style.backgroundSize = 'cover';
             avatarContainer.style.backgroundPosition = 'center';
             avatarContainer.innerHTML = ''; // Tanggalin ang emoji
             avatarContainer.style.border = '2px solid #FFD700'; // Gold border
         } else {
-            // Kung wala, balik sa default
+            // 3. Kung walang picture, TANGGALIN ang class para hindi mapindot
+            avatarContainer.classList.remove('viewable-img');
+            avatarContainer.style.cursor = 'default';
+
+            // Balik sa default na tao emoji
             avatarContainer.style.backgroundImage = 'none';
             avatarContainer.innerHTML = '👤';
             avatarContainer.style.border = '2px solid #fff';
         }
     }
-    // ---------------------
+    // ---------------------------------------------
 
     if (nameEl) nameEl.textContent = localPlayerName || "Guest";
     if (levelEl) {
@@ -12424,11 +12430,14 @@ function showLobbyUI() {
         levelEl.style.color = rankInfo.color;
     }
 
-    // ... (rest of the function remains the same) ...
     updateDailyRewardButtonState(); 
     setCueForCurrentTurn(); 
     updateCurrencyDisplay();
-    // ...
+    
+    // Update din ang Rank Card kung meron
+    if (typeof updateLobbyRankDisplay === 'function') {
+        updateLobbyRankDisplay();
+    }
 }
 
 function hideLobbyUI() {
