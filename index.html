@@ -13418,66 +13418,69 @@ function handleProfileUpload(event) {
     reader.readAsDataURL(file);
 } 
 
-// --- UNIVERSAL FULL IMAGE VIEWER (UPDATED) ---
-document.addEventListener('DOMContentLoaded', () => {
-    const fullImageModal = document.getElementById('full-image-modal');
-    const fullImageDisplay = document.getElementById('full-image-display');
-    const fullImageClose = document.getElementById('full-image-close-btn');
+// --- UNIVERSAL FULL IMAGE VIEWER (FINAL FIX) ---
+// Tinanggal na natin ang 'DOMContentLoaded' wrapper dahil nasa loob ito ng type="module".
+// Ito ang dahilan kaya hindi gumagana ang click dati.
 
-    // 1. GLOBAL LISTENER: Nakikinig sa lahat ng click sa screen
-    document.body.addEventListener('click', (e) => {
-        // Kapag ang pinindot ay may class na 'viewable-img'
-        if (e.target.classList.contains('viewable-img')) {
-            let src = '';
+const fullImageModal = document.getElementById('full-image-modal');
+const fullImageDisplay = document.getElementById('full-image-display');
+const fullImageClose = document.getElementById('full-image-close-btn');
 
-            // CASE A: Kung ito ay IMG tag (tulad sa Profile Modal / Leaderboard)
-            if (e.target.tagName === 'IMG') {
-                src = e.target.src;
-            } 
-            // CASE B: Kung ito ay DIV na may Background Image (tulad sa Lobby Avatar)
-            else {
-                const style = window.getComputedStyle(e.target);
-                const bgImage = style.backgroundImage;
-                // Linisin ang URL string: url("link") -> link
-                if (bgImage && bgImage !== 'none') {
-                    src = bgImage.replace(/url\(['"]?(.*?)['"]?\)/i, "$1");
-                }
-            }
-            
-            // Check kung valid ang image bago buksan
-            if (src && src !== 'none' && src.includes('http')) { 
-                playButtonSound();
-                fullImageDisplay.src = src;
-                
-                // Ipakita ang modal (Magti-trigger ang CSS animation)
-                fullImageModal.classList.add('show');
-                
-                // Set history state para gumana ang Back button ng phone
-                history.pushState({ modal: 'fullImage' }, 'View Image', '#view-image');
+// 1. GLOBAL LISTENER (Improved)
+document.body.addEventListener('click', (e) => {
+    // Gamitin ang .closest() para kahit sa border o gitna pindutin, gagana
+    const target = e.target.closest('.viewable-img');
+
+    if (target) {
+        console.log("Avatar clicked!"); // Debug message sa console
+        let src = '';
+
+        // CASE A: Kung ito ay IMG tag (Profile Modal / Leaderboard)
+        if (target.tagName === 'IMG') {
+            src = target.src;
+        } 
+        // CASE B: Kung ito ay DIV (Lobby Avatar)
+        else {
+            const style = window.getComputedStyle(target);
+            const bgImage = style.backgroundImage;
+            // Linisin ang URL string: url("link") -> link
+            if (bgImage && bgImage !== 'none') {
+                src = bgImage.replace(/url\(['"]?(.*?)['"]?\)/i, "$1");
             }
         }
-    });
-
-    // 2. Close Button Logic
-    if (fullImageClose) {
-        fullImageClose.addEventListener('click', () => {
-            playButtonSound();
-            fullImageModal.classList.remove('show');
-            if (history.state && history.state.modal === 'fullImage') history.back();
-        });
-    }
-
-// 3. Close on Background Click (Yung itim sa gilid)
-    if (fullImageModal) {
-        fullImageModal.addEventListener('click', (e) => {
-            // Kung ang pinindot ay yung background mismo at hindi ang picture
-            if (e.target === fullImageModal || e.target.classList.contains('full-image-content')) {
-                fullImageModal.classList.remove('show');
-                if (history.state && history.state.modal === 'fullImage') history.back();
-            }
-        });
+        
+        // Check kung valid ang image bago buksan
+        if (src && src !== 'none' && src.includes('http')) { 
+            // playButtonSound(); // Pwede mong i-uncomment kung gusto mo may tunog
+            if (fullImageDisplay) fullImageDisplay.src = src;
+            
+            // Ipakita ang modal
+            if (fullImageModal) fullImageModal.classList.add('show');
+            
+            // History state para sa Back button ng phone
+            history.pushState({ modal: 'fullImage' }, 'View Image', '#view-image');
+        }
     }
 });
+
+// 2. Close Button Logic
+if (fullImageClose) {
+    fullImageClose.addEventListener('click', () => {
+        if (fullImageModal) fullImageModal.classList.remove('show');
+        if (history.state && history.state.modal === 'fullImage') history.back();
+    });
+}
+
+// 3. Close on Background Click (Yung itim sa gilid)
+if (fullImageModal) {
+    fullImageModal.addEventListener('click', (e) => {
+        // Kung ang pinindot ay yung background mismo at hindi ang picture
+        if (e.target === fullImageModal || e.target.classList.contains('full-image-content')) {
+            if (fullImageModal) fullImageModal.classList.remove('show');
+            if (history.state && history.state.modal === 'fullImage') history.back();
+        }
+    });
+}
 </script>
 
 <div id="full-image-modal" class="modal-overlay">
