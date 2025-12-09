@@ -10802,28 +10802,29 @@ async function joinOnlineGame() {
             return;
         }
 
-        // ▼▼▼ DITO ANG CRITICAL PART: BAWAS PERA ▼▼▼
-        const requiredBet = data.betAmount || 0; // Kunin ang presyo na set ng Host
+        // Bawas Pera Logic
+        const requiredBet = data.betAmount || 0; 
         
-        // A. Check kung may pambayad
         if (playerTotalCurrency < requiredBet) {
             showMessage(`Can't join! Bet is ${formatCurrencyShort(requiredBet)}. You only have ${formatCurrencyShort(playerTotalCurrency)}.`, 4000);
-            return; // Bawal pumasok
+            return; 
         }
 
-        // B. KALTAS AGAD AT SAVE
         if (requiredBet > 0) {
             playerTotalCurrency -= requiredBet;
-            saveCurrency(); // <--- ETO ANG MISSING KANINA! SAVE AGAD SA MEMORY.
+            saveCurrency(); 
             updateCurrencyDisplay(); 
             console.log(`Paid ${requiredBet} coins. New Balance: ${playerTotalCurrency}`);
         }
-        // ▲▲▲ ▲▲▲
 
         // 4. Ihanda ang data mo para sa database
         const myCue = equippedItems.cue || 'default';
         const myRank = getPlayerRank(playerLevel).index;
         const startingPlayerUid = Math.random() < 0.5 ? data.players.player1.uid : localPlayerUid;
+
+        // ▼▼▼ DAGDAG MO ITONG LINE NA ITO: ▼▼▼
+        const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
+        // ▲▲▲ ▲▲▲
 
         // 5. I-update ang Database (Pumasok sa room)
         await updateDoc(gameDocRef, {
@@ -10833,7 +10834,7 @@ async function joinOnlineGame() {
                 displayName: displayName,
                 equippedCueId: myCue,
                 rankIndex: myRank,
-                photo: myPhoto
+                photo: myPhoto // <--- Ngayon defined na ito!
             },
             'gameState': 'playing',
             'currentTurnUid': startingPlayerUid,
@@ -10851,7 +10852,6 @@ async function joinOnlineGame() {
         
         listenToGameUpdates(gameId);
         
-        // Message confirmation
         if (requiredBet > 0) {
             showMessage(`Joined! You paid ${formatCurrencyShort(requiredBet)}.`, 3000);
         } else {
@@ -10861,9 +10861,7 @@ async function joinOnlineGame() {
     } catch (error) {
         console.error("Join Error:", error);
         
-        // SAFETY NET: Ibalik ang pera kung nag-error ang pagpasok sa database
-        // (Pero kung nakapasok ka na at natalo, wala nang refund 'to)
-        if (docSnap && docSnap.exists()) { // Check kung nakuha ang data bago nag-error
+        if (docSnap && docSnap.exists()) { 
              const data = docSnap.data();
              const requiredBet = data.betAmount || 0;
              if (requiredBet > 0) {
