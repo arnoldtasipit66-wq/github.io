@@ -4626,13 +4626,11 @@ div#opponent-info.hud-active {
     <div class="profile-section">
         
         <div class="avatar-circle" 
-             style="cursor: pointer; pointer-events: auto; z-index: 500; position: relative; overflow: hidden;" 
-             onclick="document.getElementById('profile-modal').style.display='flex'">
-            
-            <div id="profile-avatar-default" style="font-size: 2em; line-height: 1;">👤</div>
+     style="cursor: pointer; pointer-events: auto; z-index: 500; position: relative; overflow: hidden;" 
+     onclick="handleAvatarClick()">  <div id="profile-avatar-default" style="font-size: 2em; line-height: 1;">👤</div>
 
-            <img id="profile-avatar-img" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
-        </div>
+    <img id="profile-avatar-img" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+</div>
         <div class="profile-details">
             <div id="lobby-player-name" class="player-name-display">Loading...</div>
             <div id="lobby-level-badge" class="level-badge">Lv. 1</div>
