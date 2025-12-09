@@ -10664,13 +10664,12 @@ async function createOnlineGame() {
     const displayName = localPlayerName || "Guest";
     if (!isAuthReady || !localPlayerUid) { showMessage("Connecting to server..."); return; }
 
-    // 1. CHECK BALANCE MUNA (Kaya ba tapatan ang sariling taya?)
+    // 1. CHECK BALANCE MUNA
     if (playerTotalCurrency < selectedBetAmount) {
         showMessage(`Kulang ang coins mo! Need: ${formatCurrencyShort(selectedBetAmount)}`, 3000);
         return;
     }
 
-    // I-reset ang UI
     onlineMenu.classList.remove('show');
     resizeCanvas();
     setupChips();
@@ -10680,10 +10679,10 @@ async function createOnlineGame() {
     localPlayerId = 'player1';
     gameMode = `online-${selectedOnlineGameType}`;
     
-    // ... (code kung saan binawas ang pera)
+    // Bawas Pera Logic
     if (selectedBetAmount > 0) {
         playerTotalCurrency -= selectedBetAmount;
-        currentMatchBet = selectedBetAmount; // <--- ISINGIT ITO!
+        currentMatchBet = selectedBetAmount;
         saveCurrency();
         updateCurrencyDisplay();
     }
@@ -10693,12 +10692,15 @@ async function createOnlineGame() {
     const myCue = equippedItems.cue || 'default';
     const myRank = getPlayerRank(playerLevel).index;
 
+    // ▼▼▼ DAGDAG MO ITONG LINE NA ITO: ▼▼▼
+    const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto'); 
+    // ▲▲▲ ▲▲▲
+
     const gameData = { 
         gameId: gameId,
         gameType: selectedOnlineGameType, 
         gameState: 'waiting', 
         
-        // PUSTAHAN DATA
         betAmount: selectedBetAmount, 
         pot: selectedBetAmount * 2,
 
@@ -10710,7 +10712,7 @@ async function createOnlineGame() {
                 displayName: displayName, 
                 equippedCueId: myCue, 
                 rankIndex: myRank,
-                photo: myPhoto
+                photo: myPhoto // <--- Ngayon gagana na ito dahil defined na sa taas
             }, 
             player2: null 
         }, 
@@ -10722,7 +10724,8 @@ async function createOnlineGame() {
         winner: null
     };
 
-    // Game Modes Logic
+    // ... (REST OF THE CODE REMAINS THE SAME) ...
+
     if (selectedOnlineGameType === 'poker') {
         createDeck(); dealCards();
         Object.assign(gameData, { deck, player1Hand: playerHand, player2Hand: opponentHand, originalPlayer1Hand: originalPlayerHand, originalPlayer2Hand: originalOpponentHand });
@@ -10733,13 +10736,10 @@ async function createOnlineGame() {
     }
 
     try {
-        // Save to Database
         await setDoc(doc(db, "games", gameId), gameData);
         
-        // Show Waiting Room
         gameIdDisplay.textContent = gameId;
         
-        // Update Waiting Room text para alam kung magkano ang taya
         const waitTitle = document.querySelector('#waiting-room h2');
         if(selectedBetAmount > 0) {
             waitTitle.innerHTML = `Waiting for Opponent...<br><span style="color:#FFD700; font-size:0.6em;">Bet: ${formatCurrencyShort(selectedBetAmount)}</span>`;
@@ -10755,7 +10755,6 @@ async function createOnlineGame() {
 
     } catch (error) {
         console.error("Create Error:", error);
-        // Refund kung nag-fail
         if (selectedBetAmount > 0) {
             playerTotalCurrency += selectedBetAmount;
             saveCurrency();
