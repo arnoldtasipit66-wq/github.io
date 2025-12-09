@@ -4626,25 +4626,23 @@ div#opponent-info.hud-active {
     <div class="profile-section">
         
         <div class="avatar-circle" 
-     style="cursor: pointer; pointer-events: auto; z-index: 500; position: relative; overflow: hidden;" 
-     onclick="handleAvatarClick()">  <div id="profile-avatar-default" style="font-size: 2em; line-height: 1;">👤</div>
+             style="cursor: pointer; pointer-events: auto; z-index: 500; position: relative; overflow: hidden; width: 50px; height: 50px; background: #333; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center;" 
+             onclick="handleAvatarClick()"> <div id="lobby-avatar-default" style="font-size: 2em; line-height: 1;">👤</div>
 
-    <img id="profile-avatar-img" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
-</div>
-        <div class="profile-details">
+            <img id="lobby-avatar-img" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="profile-details" style="margin-left: 10px;">
             <div id="lobby-player-name" class="player-name-display">Loading...</div>
             <div id="lobby-level-badge" class="level-badge">Lv. 1</div>
         </div>
     </div>
-</div>
-        
-        <div class="currency-section">
-            <div class="coin-pill">
-                💰 <span class="coin-balance-display">0</span>
-            </div>
+    
+    <div class="currency-section">
+        <div class="coin-pill">
+            💰 <span class="coin-balance-display">0</span>
         </div>
     </div>
-
+</div>
     <div class="lobby-main">
         <div id="online-button" class="game-card primary-card">
             <div class="card-bg"></div>
@@ -13318,29 +13316,31 @@ startBtn.addEventListener('click', async () => {
     </div>
 
     <script>
-    // A. ETO ANG BAGONG FUNCTION: "Smart Click"
+    // A. "SMART CLICK" FUNCTION (Ito ang solusyon sa Freeze)
     window.handleAvatarClick = function() {
         const avatarImg = document.getElementById('profile-avatar-img');
         const settingsModal = document.getElementById('profile-modal'); 
         
-        // Check natin: Visible ba ang picture? May laman ba ang src?
-        if (avatarImg && avatarImg.style.display !== 'none' && avatarImg.src !== "" && avatarImg.src.length > 50) {
-            // KUNG MAY PICTURE: I-zoom natin
+        // Check natin: May laman ba ang picture? (Hindi blanko at hindi hidden)
+        if (avatarImg && avatarImg.style.display !== 'none' && avatarImg.src && avatarImg.src !== "" && avatarImg.src.length > 100) {
+            // MERON PICTURE: I-zoom natin
             viewFullPhoto(avatarImg.src);
         } else {
-            // KUNG WALANG PICTURE: Buksan ang Upload Settings
+            // WALA PICTURE: Buksan ang Upload Settings
             if(settingsModal) {
-                settingsModal.style.display = 'flex';
-            } else {
-                alert("Profile modal not found!"); // Error check lang
+                playButtonSound(); // Tunog muna
+                settingsModal.classList.add('show');
             }
         }
     };
 
-    // B. Zoom Function
+    // B. Zoom Function (May Safety Check na)
     window.viewFullPhoto = function(src) {
+        if(!src || src === "") return; // Iwas Freeze: Kapag walang src, wag ituloy
+        
         const modal = document.getElementById('full-image-modal');
         const display = document.getElementById('full-image-display');
+        
         if(modal && display) {
             display.src = src;
             modal.style.display = 'flex';
@@ -13351,6 +13351,75 @@ startBtn.addEventListener('click', async () => {
     const closeBtn = document.getElementById('full-image-close-btn');
     if(closeBtn) {
         closeBtn.onclick = function() {
+            document.getElementById('full-image-modal').style.display = 'none';
+        };
+    }
+
+    // D. Upload Logic
+    const profileInput = document.getElementById('profile-file-input');
+    if(profileInput) {
+        profileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) { alert("File too large! Max 2MB."); return; }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_SIZE = 512; 
+                    let width = img.width; let height = img.height;
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    canvas.width = width; canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const compressed = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    // Save and Update
+                    localStorage.setItem('pinoyPoolPlayerPhoto', compressed);
+                    updateAllAvatars(compressed);
+                    alert("Profile Picture Saved!");
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // E. Helper: Update lahat ng avatar sa screen
+    function updateAllAvatars(src) {
+        // Update Modal Avatar
+        const modalImg = document.getElementById('profile-avatar-img');
+        const modalDefault = document.getElementById('profile-avatar-default');
+        if(modalImg && modalDefault) {
+            modalImg.src = src;
+            modalImg.style.display = 'block';
+            modalDefault.style.display = 'none';
+        }
+
+        // Update Lobby Avatar
+        const lobbyImg = document.getElementById('lobby-avatar-img');
+        const lobbyDefault = document.getElementById('lobby-avatar-default');
+        if(lobbyImg && lobbyDefault) {
+            lobbyImg.src = src;
+            lobbyImg.style.display = 'block';
+            lobbyDefault.style.display = 'none';
+        }
+    }
+
+    // F. Auto-Load on Start
+    window.addEventListener('load', () => {
+        const saved = localStorage.getItem('pinoyPoolPlayerPhoto');
+        if(saved) {
+            updateAllAvatars(saved);
+        }
+    });
+    </script>
+</body>
+</html>
             document.getElementById('full-image-modal').style.display = 'none';
         };
     }
