@@ -13235,26 +13235,29 @@ startBtn.addEventListener('click', async () => {
 // Simulan ang proseso
 startPreloading();
 
-// --- NEW HD PROFILE UPLOAD SETUP ---
+/* =========================================
+   PINOY POOL: HD PROFILE SYSTEM (COMPLETE)
+   ========================================= */
 
-// 1. Ikonekta ang button sa function
+// 1. SETUP LISTENER (Ikonekta ang button)
 const uploadInput = document.getElementById('profile-upload');
 if (uploadInput) {
-    // Tanggalin muna ang lumang listener para iwas doble
-    uploadInput.removeEventListener('change', handleProfileUpload); 
-    // Ikabit ang bago
+    uploadInput.removeEventListener('change', handleProfileUpload);
     uploadInput.addEventListener('change', handleProfileUpload);
 }
 
-// 2. Ito ang Function mismo (Yung HD logic)
+// Tawagin ito agad para lumabas ang saved picture pag-load ng game
+refreshProfileUI(); 
+
+// 2. UPLOAD FUNCTION (HD Logic + Compression)
 function handleProfileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Loading indicator
+    // Loading State
     const avatarImg = document.getElementById('profile-avatar-img');
     const defaultAvatar = document.getElementById('profile-avatar-default');
-    if(defaultAvatar) defaultAvatar.innerHTML = "⏳"; 
+    if(defaultAvatar) defaultAvatar.innerHTML = "⏳"; // Loading icon
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -13262,16 +13265,16 @@ function handleProfileUpload(event) {
         img.src = e.target.result;
 
         img.onload = function() {
+            // --- HD PROCESS START ---
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
-            // --- HD SETTINGS ---
-            // 800px para malinaw (HD)
+            // Set Max Size (800px is good for HD but fast loading)
             const MAX_SIZE = 800; 
             let width = img.width;
             let height = img.height;
 
-            // Maintain Aspect Ratio logic
+            // Maintain Aspect Ratio
             if (width > height) {
                 if (width > MAX_SIZE) {
                     height *= MAX_SIZE / width;
@@ -13287,47 +13290,36 @@ function handleProfileUpload(event) {
             canvas.width = width;
             canvas.height = height;
             
-            // High Quality Rendering
+            // High Quality Rendering Settings
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
 
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Compress to JPEG High Quality (0.90)
+            // Compress (JPEG 90% Quality)
             let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.90);
 
-            // Safety Check: Kung lagpas 800KB, paliitin konti
+            // Safety: Kung sobrang laki pa rin (>800KB), babaan ang quality
             let quality = 0.90;
             while (compressedDataUrl.length > 800000 && quality > 0.5) {
                 quality -= 0.1;
                 compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
             }
 
-            // Save to Database
+            // --- SAVE TO DATABASE ---
             if (typeof localPlayerUid !== 'undefined' && localPlayerUid && typeof db !== 'undefined') {
+                // Update Firestore
                 const playerRef = doc(db, "players", localPlayerUid);
-                
                 updateDoc(playerRef, {
                     photo: compressedDataUrl
                 }).then(() => {
                     showMessage("HD Photo Updated!", 2000);
                     
-                    if(avatarImg) {
-                        avatarImg.src = compressedDataUrl;
-                        avatarImg.style.display = 'block';
-                        // Enable Zoom functionality
-                        avatarImg.onclick = function(e) { 
-                            e.stopPropagation();
-                            if(typeof window.viewFullPhoto === 'function') {
-                                window.viewFullPhoto(compressedDataUrl);
-                            }
-                        };
-                    }
-                    if(defaultAvatar) defaultAvatar.style.display = 'none';
-                    
+                    // Update Local UI
                     localStorage.setItem('pinoyPoolPlayerPhoto', compressedDataUrl);
-                    
-                    // Force Refresh Lobby if function exists
+                    refreshProfileUI(); // Refresh agad para gumana ang zoom
+
+                    // Refresh Lobby kung nasa lobby ka
                     if (typeof showLobbyUI === 'function') showLobbyUI(); 
 
                 }).catch((error) => {
@@ -13335,10 +13327,49 @@ function handleProfileUpload(event) {
                     showMessage("Error saving. Try a smaller photo.", 3000);
                     if(defaultAvatar) defaultAvatar.innerHTML = "👤";
                 });
+            } else {
+                // Fallback kung offline / walang DB connection
+                localStorage.setItem('pinoyPoolPlayerPhoto', compressedDataUrl);
+                refreshProfileUI();
             }
         }
     };
     reader.readAsDataURL(file);
+}
+
+// 3. REFRESH UI FUNCTION (Load Saved Photo + Enable Zoom)
+function refreshProfileUI() {
+    const avatarImg = document.getElementById('profile-avatar-img');
+    const defaultAvatar = document.getElementById('profile-avatar-default');
+    
+    // Kunin ang image sa LocalStorage
+    const savedPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
+
+    if (savedPhoto) {
+        if (avatarImg) {
+            avatarImg.src = savedPhoto;
+            avatarImg.style.display = 'block';
+            
+            // Lagyan ng Click-to-Zoom Event
+            avatarImg.onclick = function(e) {
+                e.stopPropagation();
+                // Siguraduhing may viewFullPhoto function ka
+                if(typeof window.viewFullPhoto === 'function') {
+                    window.viewFullPhoto(savedPhoto);
+                } else {
+                    console.log("Zoom feature not available yet.");
+                }
+            };
+        }
+        if (defaultAvatar) defaultAvatar.style.display = 'none';
+    } else {
+        // Kung walang photo, ipakita ang default
+        if (avatarImg) avatarImg.style.display = 'none';
+        if (defaultAvatar) {
+            defaultAvatar.style.display = 'flex';
+            defaultAvatar.innerHTML = "👤";
+        }
+    }
 }
     </script>
 </body>
