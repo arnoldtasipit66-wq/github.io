@@ -4412,6 +4412,32 @@ div#opponent-info.hud-active {
     margin-bottom: 10px;
     cursor: pointer;
 }
+/* --- FIX: FORCE CLICKABLE AVATAR --- */
+#profile-avatar-img, 
+.avatar-img-small, 
+.avatar-circle img {
+    pointer-events: auto !important; /* Pilitin na pwedeng i-click */
+    cursor: pointer !important;      /* Gawing kamay ang cursor */
+    z-index: 50 !important;          /* Siguraduhing nasa ibabaw */
+    position: relative !important;   /* Para gumana ang z-index */
+}
+
+/* Upload Camera Button Fix */
+#profile-upload-btn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    z-index: 100 !important;
+}
+
+/* Siguraduhing ang Full Image Modal ay nasa pinaka-ibabaw */
+#full-image-modal {
+    z-index: 2147483647 !important; /* Max Z-Index */
+}
+
+#full-image-close-btn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
 </style>
 </head>
 <body>
@@ -13273,54 +13299,102 @@ startBtn.addEventListener('click', async () => {
     }, 600);
 });
 
-    // ... (mga code sa itaas) ...
-
-// Simulan ang proseso
+    // Simulan ang proseso
 startPreloading();
 
-</script> <div id="full-image-modal" class="modal-overlay" style="background-color: rgba(0,0,0,0.95) !important; z-index: 20000; display: none;">
-    <span class="modal-close-btn" id="full-image-close-btn" onclick="document.getElementById('full-image-modal').style.display='none'">&times;</span>
+</script> 
+
+<div id="full-image-modal" class="modal-overlay" style="background-color: rgba(0,0,0,0.95) !important; z-index: 2147483647 !important; display: none;">
+    <span class="modal-close-btn" id="full-image-close-btn" style="position: absolute; top: 20px; right: 20px; font-size: 3em; color: white; cursor: pointer; z-index: 2147483647;">&times;</span>
     <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; pointer-events: none;">
         <img id="full-image-display" src="" style="max-width: 90%; max-height: 80vh; border: 3px solid #FFD700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); border-radius: 10px; object-fit: contain; pointer-events: auto;">
     </div>
 </div>
 
 <script>
-// 1. Upload Logic
+// --- GLOBAL FUNCTIONS (Para basahin ng HTML onclick) ---
+
+// 1. Zoom Function
+window.viewFullPhoto = function(src) {
+    if(src && src !== "") {
+        const modal = document.getElementById('full-image-modal');
+        const img = document.getElementById('full-image-display');
+        if(modal && img) {
+            img.src = src;
+            modal.style.display = 'flex'; // Gamitin ang Flex para gitna
+            modal.classList.add('show');
+        }
+    }
+};
+
+// 2. Close Zoom Function
+const fullImageCloseBtn = document.getElementById('full-image-close-btn');
+if(fullImageCloseBtn) {
+    fullImageCloseBtn.onclick = function() {
+        document.getElementById('full-image-modal').style.display = 'none';
+    };
+}
+
+// 3. Upload Logic
 const profileInput = document.getElementById('profile-file-input');
 if(profileInput) {
     profileInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (!file) return;
-        if (file.size > 2 * 1024 * 1024) { alert("File too large! Max 2MB."); return; }
+        
+        // Size Limit: 2MB
+        if (file.size > 2 * 1024 * 1024) { 
+            alert("File too large! Max 2MB."); 
+            return; 
+        }
 
         const reader = new FileReader();
         reader.onload = function(e) {
             const img = new Image();
             img.src = e.target.result;
             img.onload = function() {
-                // Compress Image
+                // Compress Image para hindi bumigat ang game
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                const MAX_SIZE = 512; 
-                let width = img.width; let height = img.height;
-                if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
-                else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-                canvas.width = width; canvas.height = height;
+                const MAX_SIZE = 512; // Liitan natin to 512px
+                let width = img.width; 
+                let height = img.height;
+
+                if (width > height) { 
+                    if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } 
+                } else { 
+                    if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } 
+                }
+                
+                canvas.width = width; 
+                canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
                 
                 const compressed = canvas.toDataURL('image/jpeg', 0.8);
 
-                // Save Local
+                // Save to Local Storage
                 localStorage.setItem('pinoyPoolPlayerPhoto', compressed);
                 
-                // Update Display
+                // Update Profile Modal Display
                 const avatarImg = document.getElementById('profile-avatar-img');
+                const defaultAvatar = document.getElementById('profile-avatar-default');
+                
                 if(avatarImg) {
                     avatarImg.src = compressed;
                     avatarImg.style.display = 'block';
-                    document.getElementById('profile-avatar-default').style.display = 'none';
                 }
+                if(defaultAvatar) {
+                    defaultAvatar.style.display = 'none';
+                }
+
+                // Update Lobby Display agad
+                const lobbyAvatar = document.querySelector('.avatar-circle');
+                if(lobbyAvatar) {
+                    lobbyAvatar.innerHTML = `<img src="${compressed}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" onclick="event.stopPropagation(); viewFullPhoto(this.src)">`;
+                    lobbyAvatar.style.background = 'transparent';
+                    lobbyAvatar.style.border = '2px solid #FFD700';
+                }
+
                 alert("Profile Picture Saved!");
             }
         };
@@ -13328,21 +13402,16 @@ if(profileInput) {
     });
 }
 
-// 2. Zoom Logic
-window.viewFullPhoto = function(src) {
-    if(src) {
-        document.getElementById('full-image-display').src = src;
-        document.getElementById('full-image-modal').style.display = 'block';
-    }
-};
-
-// 3. Load Saved Photo
+// 4. Auto-Load Saved Photo on Start
 window.addEventListener('load', () => {
     const saved = localStorage.getItem('pinoyPoolPlayerPhoto');
-    if(saved && document.getElementById('profile-avatar-img')) {
-        document.getElementById('profile-avatar-img').src = saved;
-        document.getElementById('profile-avatar-img').style.display = 'block';
-        document.getElementById('profile-avatar-default').style.display = 'none';
+    const avatarImg = document.getElementById('profile-avatar-img');
+    const defaultAvatar = document.getElementById('profile-avatar-default');
+
+    if(saved && avatarImg) {
+        avatarImg.src = saved;
+        avatarImg.style.display = 'block';
+        if(defaultAvatar) defaultAvatar.style.display = 'none';
     }
 });
 </script>
