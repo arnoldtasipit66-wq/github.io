@@ -12119,22 +12119,26 @@ function updatePower(e) {
     // 3. Galawin ang kulay ng Bar
     powerBar.style.height = `${cueStick.power * 100}%`;
     
-    // 4. Set Pullback sa laro
+    // 4. Set Pullback sa laro (Local only)
     cueStick.pullback = cueStick.power * (150 * scale);
     
-    // --- 5. VISUAL UPDATE: PAGALAWIN ANG TAKO ---
-const cueImg = document.getElementById('power-cue-img');
-if (cueImg) {
-    // Logic: Start sa 50% (gitna). 
-    // Magdadagdag tayo ng hanggang 35% pababa base sa lakas.
-    // (50% + 35% = 85% max baba, para di lumagpas sa box)
-    const newTop = 50 + (cueStick.power * 35); 
-    
-    cueImg.style.top = `${newTop}%`;
-}
+    // 5. VISUAL UPDATE: FIX PARA HINDI MA-STUCK SA SCREEN NIYA
+    const cueImg = document.getElementById('power-cue-img');
+    if (cueImg) {
+        // ▼▼▼ CSS FIX LANG (Walang Send Data) ▼▼▼
+        cueImg.style.transition = 'none'; // Ito ang nag-aayos ng stuck/lag sa screen niya
+        // ▲▲▲ ▲▲▲
+
+        const newTop = 50 + (cueStick.power * 35); 
+        cueImg.style.top = `${newTop}%`;
+    }
     
     // 6. Sound Effect
     playPowerSound(cueStick.power);
+
+    // ❌ TINANGGAL KO NA DITO ANG 'sendLiveAimData()'
+    // Para sa screen lang niya gumalaw ang tako habang nagpapalakas.
+    // Hindi mo ito makikita sa screen mo hanggang sa bitawan niya at tumira na.
 }
 
 function updateAimFromCanvas(e) {
