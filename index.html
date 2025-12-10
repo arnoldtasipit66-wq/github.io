@@ -12024,27 +12024,29 @@ function placeChipOnSpot(chipToPlace) {
         }
     }
 
-    if (isPoweringUp) {
-        isPoweringUp = false;
-        stopPowerSound(); 
+    // Sa loob ng handlePointerUp...
+if (isPoweringUp) {
+    isPoweringUp = false;
+    stopPowerSound(); 
+    
+    if (cueStick.power > 0.05) {
+        shoot(cueStick.power * 40 + 2);
         
-        // ▼▼▼ FIX: IBALIK ANG SMOOTH ANIMATION PAG BINITAWAN ▼▼▼
+        // ANIMATION: Ibalik sa GITNA (parang tumira)
         const cueImg = document.getElementById('power-cue-img');
-        if (cueImg) {
-            cueImg.style.transition = 'top 0.1s ease-out'; // Ibalik ang smooth effect
-            cueImg.style.top = '50%'; // Ibalik sa gitna
-        }
-        // ▲▲▲ ▲▲▲
+        if(cueImg) cueImg.style.top = '50%'; 
 
-        if (cueStick.power > 0.05) {
-            shoot(cueStick.power * 40 + 2);
-        } else {
-            // Cancel shot: Reset lahat
-            cueStick.power = 0;
-            powerBar.style.height = '0%';
-            cueStick.pullback = 0;
-        }
+    } else {
+        // Cancel shot: Reset lahat
+        cueStick.power = 0;
+        powerBar.style.height = '0%';
+        cueStick.pullback = 0;
+        
+        // RESET VISUALS: Balik sa GITNA
+        const cueImg = document.getElementById('power-cue-img');
+        if(cueImg) cueImg.style.top = '50%';
     }
+}
     
     isAimingOnCanvas = false;
     
@@ -12067,11 +12069,13 @@ function placeChipOnSpot(chipToPlace) {
         }
     }
 
+    // --- DITO ANG FIX PARA SA RED DOT ---
     if (isDraggingPektusDot) {
         isDraggingPektusDot = false;
-        // resetPektus(); <--- TINANGGAL KO ITO PARA HINDI BUMALIK SA GITNA ANG RED DOT PAG BINITAWAN
-        if (!isTutorialActive) sendLiveAimData(); 
+        resetPektus(); // <--- ITO ANG MAGBABALIK SA GITNA
+        if (!isTutorialActive) sendLiveAimData(); // Optional: Para makita ng kalaban na bumalik sa gitna
     }
+    // ------------------------------------
 
     isRotatingLeft = false;
     isRotatingRight = false;
@@ -12115,26 +12119,22 @@ function updatePower(e) {
     // 3. Galawin ang kulay ng Bar
     powerBar.style.height = `${cueStick.power * 100}%`;
     
-    // 4. Set Pullback sa laro (Local only)
+    // 4. Set Pullback sa laro
     cueStick.pullback = cueStick.power * (150 * scale);
     
-    // 5. VISUAL UPDATE: FIX PARA HINDI MA-STUCK SA SCREEN NIYA
-    const cueImg = document.getElementById('power-cue-img');
-    if (cueImg) {
-        // ▼▼▼ CSS FIX LANG (Walang Send Data) ▼▼▼
-        cueImg.style.transition = 'none'; // Ito ang nag-aayos ng stuck/lag sa screen niya
-        // ▲▲▲ ▲▲▲
-
-        const newTop = 50 + (cueStick.power * 35); 
-        cueImg.style.top = `${newTop}%`;
-    }
+    // --- 5. VISUAL UPDATE: PAGALAWIN ANG TAKO ---
+const cueImg = document.getElementById('power-cue-img');
+if (cueImg) {
+    // Logic: Start sa 50% (gitna). 
+    // Magdadagdag tayo ng hanggang 35% pababa base sa lakas.
+    // (50% + 35% = 85% max baba, para di lumagpas sa box)
+    const newTop = 50 + (cueStick.power * 35); 
+    
+    cueImg.style.top = `${newTop}%`;
+}
     
     // 6. Sound Effect
     playPowerSound(cueStick.power);
-
-    // ❌ TINANGGAL KO NA DITO ANG 'sendLiveAimData()'
-    // Para sa screen lang niya gumalaw ang tako habang nagpapalakas.
-    // Hindi mo ito makikita sa screen mo hanggang sa bitawan niya at tumira na.
 }
 
 function updateAimFromCanvas(e) {
