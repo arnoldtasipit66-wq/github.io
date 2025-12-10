@@ -8503,11 +8503,11 @@ async function cancelMatchmaking() {
         function animateAndApplyShot(shotData) { cueStick.angle = shotData.angle; cueStick.visible = true; if (cueStickElement) cueStickElement.style.display = 'block'; gameState = 'shooting_animation'; let startTime = null; const animationDuration = 100; const shotPowerNormalized = (shotData.power - 5) / 40; const startPullback = shotPowerNormalized * (150 * scale); const endPullback = -30 * scale; function animate(timestamp) { if (!startTime) startTime = timestamp; const progress = Math.min((timestamp - startTime) / animationDuration, 1); cueStick.pullback = startPullback + (endPullback - startPullback) * progress; if (progress < 1) { requestAnimationFrame(animate); } else { cueStick.visible = false; cueStick.pullback = 0; if (cueStickElement) cueStickElement.style.display = 'none'; applyShot(shotData); } } requestAnimationFrame(animate); }
         
         function syncGameState(data) {
-    // 1. Safety Checks
+    // 1. Safety Checks (Original)
     if (isSyncing || !data) return;
     isSyncing = true;
 
-    // 2. Identify Opponent Info & Status
+    // 2. Identify Opponent Info & Status (Updated with Photo)
     let opponentId = null;
     let opponentStatus = null;
     
@@ -8522,11 +8522,12 @@ async function cancelMatchmaking() {
             opponentEquippedCueId = oppData.equippedCueId || 'default';
             opponentRankIndex = oppData.rankIndex || 0;
             
-            // SAVE PHOTO para magamit sa HUD (UpdateInfoBox)
+            // ▼▼▼ NEW: SAVE PHOTO PARA SA HUD ▼▼▼
             window.opponentPhotoUrl = oppData.photo || null; 
+            // ▲▲▲ ▲▲▲
         }
     } else {
-        // Fallback defaults
+        // Fallback defaults (Original)
         opponentPlayerName = "Opponent";
         opponentEquippedCueId = 'default';
         opponentRankIndex = 0;
@@ -8542,7 +8543,7 @@ async function cancelMatchmaking() {
         gameMode = `online-${data.gameType}`;
         lastProcessedTurnId = -1;
 
-        // Hide ALL Modals/Menus
+        // Hide ALL Modals/Menus (Updated List)
         const modalsToHide = [
             winnerModal, waitingRoom, onlineMenu, 
             onlineGameSelect, invitePopupModal, gameModeSelect
@@ -8552,7 +8553,7 @@ async function cancelMatchmaking() {
         history.pushState({ modal: 'game' }, 'Game', '#game');
         if (canvas.width === 0) resizeCanvas();
 
-        // Load Initial Chips
+        // Load Initial Chips (Original)
         if (data.chips) {
             chips = data.chips.map(remoteChip => ({ ...remoteChip,
                 x: remoteChip.x * canvas.width,
@@ -8561,7 +8562,7 @@ async function cancelMatchmaking() {
             }));
         }
 
-        // Sync Specific Game Modes
+        // Sync Specific Game Modes (Original)
         if (data.gameType === 'poker') {
             deck = data.deck || [];
             playerHand = (localPlayerId === 'player1') ? data.player1Hand : data.player2Hand;
@@ -8578,7 +8579,7 @@ async function cancelMatchmaking() {
             opponentChipsType = (localPlayerId === 'player1') ? data.player2ChipsType : data.player1ChipsType;
         }
 
-        updateInfoBox(); // Update HUD (Names & Photos)
+        updateInfoBox(); // Update HUD
 
         // --- ❗ VS SCREEN DISPLAY (WITH PHOTOS) ❗ ---
         if (!vsScreenShownThisGame) {
@@ -8590,6 +8591,7 @@ async function cancelMatchmaking() {
 
             let player1Data, player2Data;
 
+            // Ayusin kung sino ang nasa kaliwa at kanan
             if (localPlayerId === 'player1') {
                 player1Data = { name: localPlayerName, rankInfo: myRankInfo, photo: myPhoto };
                 player2Data = { name: opponentPlayerName, rankInfo: opponentRankInfo, photo: window.opponentPhotoUrl };
@@ -8603,14 +8605,14 @@ async function cancelMatchmaking() {
         }
     }
 
-    // 4. GAME OVER HANDLING
+    // 4. GAME OVER HANDLING (Original)
     if (data.gameState === 'finished' && gameState !== 'gameover') {
         endGame(data.winner === localPlayerUid ? 'You Win!' : 'You Lose!', data);
         isSyncing = false;
         return;
     }
 
-    // 5. ACTIVE GAMEPLAY UPDATES
+    // 5. ACTIVE GAMEPLAY UPDATES (Original Logic + AI Takeover)
     if (gameState === 'playing') {
         
         // --- AI TAKEOVER (Disconnect Handling) ---
@@ -8621,7 +8623,7 @@ async function cancelMatchmaking() {
             updateInfoBox();
         } else if (opponentStatus === 'online' && isAiTakeoverActive) {
             isAiTakeoverActive = false;
-            // Ibalik ang tunay na pangalan
+            // Ibalik ang tunay na pangalan galing sa data
             opponentPlayerName = data.players[opponentId]?.displayName || "Opponent";
             updateInfoBox();
             showMessage("Opponent reconnected!", 3000);
@@ -8834,32 +8836,33 @@ function showVsScreen(player1, player2, gameType) {
             // Picture na may kulay ng Rank sa border
             return `<img src="${p.photo}" class="viewable-img" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid ${p.rankInfo.color || '#fff'}; object-fit: cover; box-shadow: 0 0 20px ${p.rankInfo.color}; cursor: pointer;">`;
         } else {
-            // Default na emoji/icon
+            // Default na emoji/icon (Galing sa Original Code logic)
             return `<div style="font-size: 4em;">${p.rankInfo.icon || '👤'}</div>`;
         }
     };
 
-    // 1. Player 1 (Left)
+    // 1. Player 1 (Left) - Original Logic + Photo Logic
     document.getElementById('vs-player-1-box').innerHTML = `
         ${getAvatarHTML(player1)}
         <div class="vs-player-rank" style="color: ${player1.rankInfo.color}; margin-top: 10px;">[${player1.rankInfo.name}]</div>
         <div class="vs-player-name">${player1.name}</div>
     `;
 
-    // 2. Player 2 (Right)
+    // 2. Player 2 (Right) - Original Logic + Photo Logic
     document.getElementById('vs-player-2-box').innerHTML = `
         ${getAvatarHTML(player2)}
         <div class="vs-player-rank" style="color: ${player2.rankInfo.color}; margin-top: 10px;">[${player2.rankInfo.name}]</div>
         <div class="vs-player-name">${player2.name}</div>
     `;
 
-    // 3. Game Mode Text
+    // 3. Game Mode Text (Original Logic)
     let gameModeText = "UNKNOWN GAME";
     if (gameType === 'poker') gameModeText = "POKER POOL";
     else if (gameType === 'straight-ball') gameModeText = "STRAIGHT BALL";
     else if (gameType === '61-ball') gameModeText = "61 BALL";
     document.getElementById('vs-game-mode').textContent = gameModeText;
 
+    // Show Modal
     modal.classList.add('show');
     setTimeout(() => { modal.classList.remove('show'); }, 4000);
 }
@@ -9014,6 +9017,7 @@ function updateXPDisplay() {
 }
 
 function updateInfoBox() { 
+    // 1. Kunin ang Rank Data
     const safeTrophies = (typeof playerTrophies !== 'undefined') ? playerTrophies : 0;
     const myRank = getPlayerRank(safeTrophies);
     const opponentRank = RANKS[opponentRankIndex] || RANKS[0]; 
@@ -9021,41 +9025,62 @@ function updateInfoBox() {
     const player1Name = localPlayerName || 'You'; 
     let player2Name = opponentPlayerName || 'Opponent'; 
     
-    // --- SETUP AVATARS ---
-    // 1. My Avatar (FIXED)
+    // --- SETUP AVATARS (MERGED LOGIC) ---
+
+    // A. My Avatar (Check Photo -> Fallback to Rank Icon)
     const myLocalPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
     let myAvatarHTML = myRank.icon; 
-    if (myLocalPhoto) {
-        // Lagyan ng onclick="window.viewFullPhoto(...)" at stopPropagation para di ma-trigger ang profile modal
+    
+    if (myLocalPhoto && myLocalPhoto !== 'null' && myLocalPhoto !== 'undefined') {
+        // May Picture: Ipakita na may click-to-zoom
         myAvatarHTML = `<img src="${myLocalPhoto}" onclick="event.stopPropagation(); window.viewFullPhoto('${myLocalPhoto}')" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; cursor: pointer;">`;
     }
 
-    // 2. Opponent Avatar (FIXED)
+    // B. Opponent Avatar (Check Online Photo -> Fallback to AI Robot/Rank Icon)
     let opponentAvatarHTML = opponentRank.icon;
     
-    if (isOnlineGame && window.opponentPhoto) {
-        opponentAvatarHTML = `<img src="${window.opponentPhoto}" onclick="event.stopPropagation(); window.viewFullPhoto('${window.opponentPhoto}')" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; cursor: pointer;">`;
-    } else if (!isOnlineGame) {
+    if (isOnlineGame) {
+        // ONLINE: Check kung may photo ang kalaban (naka-save sa global variable galing syncGameState)
+        if (window.opponentPhotoUrl && window.opponentPhotoUrl !== 'null') {
+            opponentAvatarHTML = `<img src="${window.opponentPhotoUrl}" onclick="event.stopPropagation(); window.viewFullPhoto('${window.opponentPhotoUrl}')" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; cursor: pointer;">`;
+        }
+    } else {
+        // AI / OFFLINE MODE
         opponentAvatarHTML = "🤖";
-        if (opponentPlayerName && opponentPlayerName !== "Opponent") player2Name = opponentPlayerName; 
-        else player2Name = "AI Bot"; 
+        if (opponentPlayerName && opponentPlayerName !== "Opponent") {
+            player2Name = opponentPlayerName; 
+        } else {
+            player2Name = "AI Bot"; 
+        }
     }
 
     // --- GAME SUBTEXT (Score/Cards) ---
-    // (Kopyahin mo lang yung logic mo para sa Cards/Score dito)
     let p1Sub = "", p2Sub = "";
     if (gameMode.includes('poker')) { 
         p1Sub = `<span style="color:#33FF57">${playerHand?.length || 0} Cards</span>`;
         p2Sub = `<span style="color:#FF6B6B">${opponentHand?.length || 0} Cards</span>`;
+    } else if (gameMode.includes('straight-ball')) { 
+        const myColor = playerChipsType ? playerChipsType.toUpperCase() : 'OPEN';
+        const oppColor = opponentChipsType ? opponentChipsType.toUpperCase() : 'OPEN';
+        const c1 = myColor === 'RED' ? '#ff6b6b' : (myColor === 'BLUE' ? '#54a0ff' : '#ddd');
+        const c2 = oppColor === 'RED' ? '#ff6b6b' : (oppColor === 'BLUE' ? '#54a0ff' : '#ddd');
+        p1Sub = `<span style="color:${c1}">${myColor}</span>`;
+        p2Sub = `<span style="color:${c2}">${oppColor}</span>`;
     } else if (gameMode.includes('61-ball')) { 
         p1Sub = `<span style="color:#FFD700">${player61Score} Pts</span>`;
         p2Sub = `<span style="color:#FFD700">${opponent61Score} Pts</span>`;
-    } else if (gameMode.includes('straight-ball')) {
-        // ... (Keep your straight ball logic here)
-        p1Sub = "Chips"; p2Sub = "Chips"; // Placeholder
+        
+        // Guide text para sa 61-ball
+        if(lowestChipNumber > 0 && gameState === 'aiming') { 
+            cueBallGuide.innerHTML = `Target: Chip #${lowestChipNumber}`; 
+            cueBallGuide.style.display = 'block'; 
+        } else { 
+            cueBallGuide.style.display = 'none'; 
+        } 
     }
 
-    // --- RENDER HTML ---
+    // --- RENDER HTML (UPDATED CSS FOR IMAGES) ---
+    // Naglagay ako ng 'overflow: hidden' at border color base sa Rank
     playerInfo.innerHTML = `
         <div class="hud-avatar" style="overflow: hidden; padding: 0; border: 2px solid ${myRank.color};">${myAvatarHTML}</div>
         <div class="hud-details">
@@ -9063,6 +9088,7 @@ function updateInfoBox() {
             <div class="hud-sub">${p1Sub}</div>
         </div>
     `;
+    playerInfo.style.cursor = 'pointer';
     playerInfo.onclick = () => showProfile('player');
 
     opponentInfo.innerHTML = `
@@ -9072,6 +9098,7 @@ function updateInfoBox() {
         </div>
         <div class="hud-avatar" style="overflow: hidden; padding: 0; border: 2px solid ${isOnlineGame ? opponentRank.color : '#aaa'};">${opponentAvatarHTML}</div>
     `;
+    opponentInfo.style.cursor = 'pointer';
     opponentInfo.onclick = () => showProfile('opponent');
 
     // Active Turn Glow
@@ -9083,6 +9110,10 @@ function updateInfoBox() {
         playerInfo.classList.remove('hud-active'); 
         opponentInfo.classList.add('hud-active'); 
     }
+    
+    // ▼▼▼ CRITICAL FIX: RING LIGHT UPDATE ▼▼▼
+    // Ito ang nawawala sa ibang version kaya nawawala ang highlight ng target
+    updateLegalTargetChips(); 
 }
 // ▲▲▲ DULO NG KUMPLETONG CODE BLOCK (STEP 3) ▲▲▲
         function initializeFirebase() { 
@@ -10658,13 +10689,11 @@ async function createPlayerDocument() {
     }
 }
 
-// ▼▼▼ PASTE MO ITO SA PAGITAN NG cancelMatchmaking AT animateAndApplyShot ▼▼▼
-
 async function createOnlineGame() {
     const displayName = localPlayerName || "Guest";
     if (!isAuthReady || !localPlayerUid) { showMessage("Connecting to server..."); return; }
 
-    // 1. CHECK BALANCE MUNA
+    // 1. CHECK BALANCE
     if (playerTotalCurrency < selectedBetAmount) {
         showMessage(`Kulang ang coins mo! Need: ${formatCurrencyShort(selectedBetAmount)}`, 3000);
         return;
@@ -10679,7 +10708,7 @@ async function createOnlineGame() {
     localPlayerId = 'player1';
     gameMode = `online-${selectedOnlineGameType}`;
     
-    // Bawas Pera Logic
+    // Bawas Pera
     if (selectedBetAmount > 0) {
         playerTotalCurrency -= selectedBetAmount;
         currentMatchBet = selectedBetAmount;
@@ -10692,7 +10721,7 @@ async function createOnlineGame() {
     const myCue = equippedItems.cue || 'default';
     const myRank = getPlayerRank(playerLevel).index;
 
-    // ▼▼▼ DAGDAG MO ITONG LINE NA ITO: ▼▼▼
+    // ▼▼▼ FIX: KUNIN ANG PHOTO MULA SA STORAGE ▼▼▼
     const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto'); 
     // ▲▲▲ ▲▲▲
 
@@ -10712,7 +10741,7 @@ async function createOnlineGame() {
                 displayName: displayName, 
                 equippedCueId: myCue, 
                 rankIndex: myRank,
-                photo: myPhoto // <--- Ngayon gagana na ito dahil defined na sa taas
+                photo: myPhoto // <--- NGAYON OKAY NA ITO KASI DEFINED NA SA TAAS
             }, 
             player2: null 
         }, 
@@ -10724,8 +10753,7 @@ async function createOnlineGame() {
         winner: null
     };
 
-    // ... (REST OF THE CODE REMAINS THE SAME) ...
-
+    // Game Modes Logic
     if (selectedOnlineGameType === 'poker') {
         createDeck(); dealCards();
         Object.assign(gameData, { deck, player1Hand: playerHand, player2Hand: opponentHand, originalPlayer1Hand: originalPlayerHand, originalPlayer2Hand: originalOpponentHand });
@@ -10764,17 +10792,38 @@ async function createOnlineGame() {
         onlineMenu.classList.add('show');
     }
 }
+async function cancelOnlineGame() { 
+    if (gameId) { 
+        try { 
+            // Kunin muna ang bet amount bago burahin gamit ang local variable
+            // REFUND HOST
+            if (localPlayerId === 'player1' && selectedBetAmount > 0) {
+                playerTotalCurrency += selectedBetAmount;
+                saveCurrency();
+                updateCurrencyDisplay();
+                showMessage(`Game Cancelled. ${formatCurrencyShort(selectedBetAmount)} refunded.`);
+            } else {
+                showMessage("Game Cancelled.");
+            }
+
+            await deleteDoc(doc(db, "games", gameId)); 
+            gameId = null; 
+        } catch (e) { 
+            console.error("Error cancelling", e); 
+        } 
+    } 
+    resetToMenu(); 
+}
+// ▲▲▲ END PASTE ▲▲▲
 
 async function joinOnlineGame() {
     const displayName = localPlayerName || "Guest";
     
-    // 1. Check kung konektado
     if (!isAuthReady || !localPlayerUid) { 
         showMessage("Connecting..."); 
         return; 
     }
     
-    // 2. Check kung may tinype na ID
     const inputId = gameIdInput.value.trim().toUpperCase();
     if (!inputId) { 
         showMessage("Enter Game ID first."); 
@@ -10786,7 +10835,6 @@ async function joinOnlineGame() {
     const gameDocRef = doc(db, "games", inputId);
 
     try {
-        // 3. Kunin ang Game Data sa Database
         const docSnap = await getDoc(gameDocRef);
         
         if (!docSnap.exists()) {
@@ -10796,13 +10844,11 @@ async function joinOnlineGame() {
         
         const data = docSnap.data();
         
-        // Check kung puno na
         if (data.gameState !== 'waiting') {
             showMessage("Game is already full/started.", 3000);
             return;
         }
 
-        // Bawas Pera Logic
         const requiredBet = data.betAmount || 0; 
         
         if (playerTotalCurrency < requiredBet) {
@@ -10814,19 +10860,17 @@ async function joinOnlineGame() {
             playerTotalCurrency -= requiredBet;
             saveCurrency(); 
             updateCurrencyDisplay(); 
-            console.log(`Paid ${requiredBet} coins. New Balance: ${playerTotalCurrency}`);
+            console.log(`Paid ${requiredBet} coins.`);
         }
 
-        // 4. Ihanda ang data mo para sa database
         const myCue = equippedItems.cue || 'default';
         const myRank = getPlayerRank(playerLevel).index;
         const startingPlayerUid = Math.random() < 0.5 ? data.players.player1.uid : localPlayerUid;
 
-        // ▼▼▼ DAGDAG MO ITONG LINE NA ITO: ▼▼▼
+        // ▼▼▼ FIX: KUNIN ANG PHOTO MULA SA STORAGE ▼▼▼
         const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
         // ▲▲▲ ▲▲▲
 
-        // 5. I-update ang Database (Pumasok sa room)
         await updateDoc(gameDocRef, {
             'players.player2': {
                 uid: localPlayerUid,
@@ -10834,14 +10878,13 @@ async function joinOnlineGame() {
                 displayName: displayName,
                 equippedCueId: myCue,
                 rankIndex: myRank,
-                photo: myPhoto // <--- Ngayon defined na ito!
+                photo: myPhoto // <--- NGAYON OKAY NA ITO
             },
             'gameState': 'playing',
             'currentTurnUid': startingPlayerUid,
             'turnId': 1
         });
 
-        // 6. Simulan ang laro sa screen mo
         onlineMenu.classList.remove('show');
         gameId = inputId;
         localPlayerId = 'player2';
@@ -10868,36 +10911,12 @@ async function joinOnlineGame() {
                  playerTotalCurrency += requiredBet;
                  saveCurrency();
                  updateCurrencyDisplay();
-                 console.log("Error joining, refunded:", requiredBet);
              }
         }
         
         showMessage("Failed to join: " + error.message, 3000);
     }
 }
-async function cancelOnlineGame() { 
-    if (gameId) { 
-        try { 
-            // Kunin muna ang bet amount bago burahin gamit ang local variable
-            // REFUND HOST
-            if (localPlayerId === 'player1' && selectedBetAmount > 0) {
-                playerTotalCurrency += selectedBetAmount;
-                saveCurrency();
-                updateCurrencyDisplay();
-                showMessage(`Game Cancelled. ${formatCurrencyShort(selectedBetAmount)} refunded.`);
-            } else {
-                showMessage("Game Cancelled.");
-            }
-
-            await deleteDoc(doc(db, "games", gameId)); 
-            gameId = null; 
-        } catch (e) { 
-            console.error("Error cancelling", e); 
-        } 
-    } 
-    resetToMenu(); 
-}
-// ▲▲▲ END PASTE ▲▲▲
 
         
         async function resetOnlineGameForRematch(gameData) { 
@@ -11039,7 +11058,7 @@ function listenToGameUpdates(gameId) {
     setupChatListener(gameId);
     listenToRealtimeAiming(gameId);
     
-    // --- PRESENCE SYSTEM (Online/Offline Status) ---
+    // Presence System
     if (rtdb && localPlayerUid) {
         const connectionRef = ref(rtdb, '.info/connected');
         const playerStatusRef = ref(rtdb, `gameStatus/${gameId}/${localPlayerUid}`);
@@ -11049,7 +11068,6 @@ function listenToGameUpdates(gameId) {
             if (snap.val() === true) {
                 set(playerStatusRef, { online: true, lastSeen: Date.now() });
                 onDisconnect(playerStatusRef).set({ online: false, lastSeen: Date.now() });
-                
                 updateDoc(firestoreGameDocRef, { [`players.${localPlayerId}.status`]: 'online' }).catch(e=>{});
                 onDisconnect(firestoreGameDocRef).update({ [`players.${localPlayerId}.status`]: 'disconnected' }).catch(e=>{});
             }
@@ -11068,7 +11086,17 @@ function listenToGameUpdates(gameId) {
         const gameData = doc.data(); 
         if (!gameData) return; 
 
-        // --- REMATCH FEE DEDUCTION LOGIC ---
+        // ▼▼▼ FIX: FORCE CLOSE WAITING ROOM KAPAG PLAYING NA ▼▼▼
+        // Kung ikaw ang Host, at nag 'playing' na ang status sa DB, pero bukas pa ang modal:
+        const waitingModal = document.getElementById('waiting-room');
+        if (gameData.gameState === 'playing' && waitingModal && waitingModal.classList.contains('show')) {
+            waitingModal.classList.remove('show'); // Sapilitang isara
+            // Ipakita ang message
+            showMessage("Opponent Joined! Game Starting...", 2000);
+        }
+        // ▲▲▲ ▲▲▲
+
+        // Rematch Deduction
         if (previousGameState === 'finished' && gameData.gameState === 'playing') {
             const rawBet = gameData.betAmount || currentMatchBet || 0;
             const betToDeduct = parseInt(rawBet, 10);
@@ -11077,10 +11105,8 @@ function listenToGameUpdates(gameId) {
                 let currentMoney = parseInt(playerTotalCurrency, 10);
                 playerTotalCurrency = currentMoney - betToDeduct;
                 currentMatchBet = betToDeduct;
-                
                 localStorage.setItem('pinoyPoolCurrency', playerTotalCurrency.toString());
                 updateCurrencyDisplay();
-                
                 setTimeout(() => {
                     showRewardPopup(0, `<span style="color:red; font-size: 0.8em;">REMATCH FEE: -${formatCurrencyShort(betToDeduct)}</span>`);
                 }, 1000);
@@ -11089,13 +11115,13 @@ function listenToGameUpdates(gameId) {
         }
         previousGameState = gameData.gameState; 
 
-        // --- SHOT ANIMATION SYNC ---
+        // Shot Animation
         if (gameData.lastShot && gameData.lastShot.timestamp > lastShotTimestamp && !chipsMoving) { 
             lastShotTimestamp = gameData.lastShot.timestamp; 
             animateAndApplyShot(gameData.lastShot); 
         } 
         
-        // --- GAME OVER / REMATCH REQUESTS ---
+        // Game Over / Rematch
         if (gameData.gameState === 'finished' && gameData.rematchRequest) { 
             const players = Object.keys(gameData.players).filter(p => gameData.players[p] !== null); 
             if (players.length === 2) { 
@@ -11122,14 +11148,13 @@ function listenToGameUpdates(gameId) {
             } 
         } 
         
-        // --- MAIN SYNC FUNCTION ---
+        // Sync State
         syncGameState(gameData); 
 
-        // --- TURN CHANGE LOGIC (MANUAL HANDLING) ---
+        // Manual Turn Handling
         if (gameData.turnId > lastProcessedTurnId) {
              lastProcessedTurnId = gameData.turnId;
              
-             // Update chips positions (teleport correction)
              if (gameData.chips && canvas.width > 0) {
                  chips = gameData.chips.map(remoteChip => ({ ...remoteChip,
                      x: remoteChip.x * canvas.width,
@@ -11138,25 +11163,18 @@ function listenToGameUpdates(gameId) {
                  }));
              }
              
-             // Sync variables
              canMoveCueBall = gameData.canMoveCueBall;
              isBreakShot = gameData.isBreakShot;
              
-             // Update UI
              updateCardDisplay();
-             updateInfoBox(); // <-- ITO ANG MAGPAPALIT NG ILAW (GLOW)
+             updateInfoBox();
 
-             // ▼▼▼ DITO KO TINANGGAL ANG MESSAGES ▼▼▼
-             // Dati meron ditong if/else na may showMessage... BINURA KO NA.
-             
-             // Ipakita lang ang Drag Guide kung Ball-in-Hand mo
              if (isMyTurnOnline && canMoveCueBall) {
                  dragGuideText.style.display = 'block';
              } else {
                  dragGuideText.style.display = 'none';
              }
              
-             // Reset Pektus pagkatapos ng tira ng kalaban
              if (isMyTurnOnline && !canMoveCueBall && gameState !== 'aiming') {
                  resetPektus();
              }
