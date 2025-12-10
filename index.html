@@ -7260,67 +7260,6 @@ function drawGuidelines() {
     }
 }
 
-        
-      // START: SPINNING CHIP UPDATE (Nagdagdag ng spin logic sa physics)
-        function updateChipPositions(dt_sec) { // <-- Tumatanggap na ng oras (in seconds)
-            
-            // Gaano kaliit ang bawat substep
-            const subSteps = 20; 
-            const dt_sub = dt_sec / subSteps; // Oras bawat substep
-
-            for (let i = 0; i < subSteps; i++) { 
-                chips.forEach(chip => { 
-                    if (chip.inPlay && !chip.isPocketing) { 
-                        
-                        // Ito ang bagong pag-galaw (Velocity * Time)
-                        chip.x += chip.vx * dt_sub; 
-                        chip.y += chip.vy * dt_sub; 
-                        
-                        // Ito ang bagong pag-ikot (Rotation Speed * Time)
-                        chip.rotation += chip.rotationSpeed * dt_sub;
-                    }
-                }); 
-                
-                // Sa loob ng updateChipPositions loop...
-const spinFactor = WALL_SPIN_FACTOR; 
-
-for (let j = 0; j < chips.length; j++) { 
-    const chip1 = chips[j]; 
-    if (!chip1.inPlay || chip1.isPocketing) continue; 
-    
-    // Siguraduhing may value ang side spin
-    const sideSpin = chip1.currentSideSpin || 0;
-
-    // 1. KANANG PADER (Right Wall)
-    if (chip1.x + chip1.radius > canvas.width) { 
-        playCushionSound(Math.abs(chip1.vx)); 
-        chip1.vx = -Math.abs(chip1.vx); 
-        chip1.x = canvas.width - chip1.radius; 
-        
-        // Dati += ito, ngayon -= na
-        chip1.vy -= sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
-        
-        chip1.rotationSpeed -= chip1.vy * spinFactor; 
-        chip1.currentSideSpin *= 0.8; 
-    } 
-    
-    // 2. KALIWANG PADER (Left Wall)
-    else if (chip1.x - chip1.radius < 0) { 
-        playCushionSound(Math.abs(chip1.vx)); 
-        chip1.vx = Math.abs(chip1.vx); 
-        chip1.x = chip1.radius; 
-        
-        // Dati += ito, ngayon -= na
-        chip1.vy -= sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
-        
-        chip1.rotationSpeed -= chip1.vy * spinFactor; 
-        chip1.currentSideSpin *= 0.8; 
-    } 
-    
-    // 3. BABANG PADER (Bottom Wall)
-    if (chip1.y + chip1.radius > canvas.height) { 
-        playCushionSound(Math.abs(chip1.vy)); 
-}
 // START: SPINNING CHIP UPDATE (Physics with Friction & Wall Spin)
 function updateChipPositions(dt_sec) { 
     const subSteps = 20; 
