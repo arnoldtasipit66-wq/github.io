@@ -8313,10 +8313,10 @@ async function findMatch() {
         return;
     }
     
-    // ... (code kung saan binawas ang pera)
+    // Bawas Pera
     if (selectedBetAmount > 0) {
         playerTotalCurrency -= selectedBetAmount;
-        currentMatchBet = selectedBetAmount; // <--- ISINGIT ITO!
+        currentMatchBet = selectedBetAmount;
         saveCurrency();
         updateCurrencyDisplay();
     }
@@ -8325,23 +8325,18 @@ async function findMatch() {
     matchmakingWaitModal.classList.add('show');
     history.pushState({ modal: 'matchmaking' }, 'Matchmaking', '#matchmaking');
 
-  // --- 🤖 STEP 3: PALITAN ANG TIMEOUT LOGIC DITO 🤖 ---
-    
-    // Timeout Logic (Ginawang 12 seconds lang para mabilis)
+    // ▼▼▼ FIX: KUNIN ANG PHOTO ▼▼▼
+    const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
+    // ▲▲▲ ▲▲▲
+
+    // Timeout Logic (Bot Match)
     if (matchmakingTimeoutId) clearTimeout(matchmakingTimeoutId);
     
     matchmakingTimeoutId = setTimeout(async () => {
-        // Kung may nahanap na totoong gameId bago matapos ang oras, stop.
         if (gameId) return; 
-        
         console.log("Walang tao. Papasukin ang Bot.");
-        
-        // TAWAGIN ANG FUNCTION NA GINAWA NATIN SA STEP 2
         startBotMatch(); 
-
-    }, 12000); // 12 Seconds lang (imbes na 30). Sakto lang pampainip konti.
-    
-    // ----------------------------------------------------
+    }, 12000); 
 
     const queueCollection = collection(db, "matchmakingQueue");
     
@@ -8370,16 +8365,14 @@ async function findMatch() {
 
         if (opponentDoc) {
             // --- FOUND OPPONENT ---
-            // WALA NANG BAWAS DITO KASI NABAWAS NA SA TAAS
-            
             clearTimeout(matchmakingTimeoutId);
             const oppData = opponentDoc.data();
             const oppRef = opponentDoc.ref;
 
-            // Double Check
+            // Double Check Status
             const freshSnap = await getDoc(oppRef);
             if (!freshSnap.exists() || freshSnap.data().status !== 'waiting') {
-                // FAILED TO JOIN -> REFUND
+                // Refund if failed
                 if (selectedBetAmount > 0) {
                     playerTotalCurrency += selectedBetAmount;
                     saveCurrency();
@@ -8389,7 +8382,7 @@ async function findMatch() {
                 return;
             }
 
-            // SETUP GAME...
+            // SETUP GAME
             gameId = Math.random().toString(36).substring(2, 7).toUpperCase();
             localPlayerId = 'player1'; 
             gameMode = `online-${selectedOnlineGameType}`;
@@ -8398,22 +8391,44 @@ async function findMatch() {
             
             const initialChips = chips.map(c => ({...c, x: c.x/canvas.width, y: c.y/canvas.height }));
             const startUid = Math.random() < 0.5 ? localPlayerUid : oppData.uid;
+            
+            // My Data
             const myCue = equippedItems.cue || 'default';
             const myRank = getPlayerRank(playerLevel).index;
+            
+            // Opponent Data (Galing sa Queue)
             const oppRank = oppData.rankIndex !== undefined ? oppData.rankIndex : 0;
             const oppCue = oppData.equippedCueId || 'default';
+            // ▼▼▼ FIX: KUNIN ANG PHOTO NG KALABAN ▼▼▼
+            const oppPhoto = oppData.photo || null;
+            // ▲▲▲ ▲▲▲
 
             const gameData = {
                 gameId, gameType: selectedOnlineGameType, gameState: 'playing', turnId: 1,
                 betAmount: selectedBetAmount,
                 pot: selectedBetAmount * 2,
                 players: {
-                    player1: { uid: localPlayerUid, status: 'online', displayName: displayName, equippedCueId: myCue, rankIndex: myRank },
-                    player2: { uid: oppData.uid, status: 'online', displayName: oppData.displayName, equippedCueId: oppCue, rankIndex: oppRank }
+                    player1: { 
+                        uid: localPlayerUid, 
+                        status: 'online', 
+                        displayName: displayName, 
+                        equippedCueId: myCue, 
+                        rankIndex: myRank,
+                        photo: myPhoto // SAVE MY PHOTO
+                    },
+                    player2: { 
+                        uid: oppData.uid, 
+                        status: 'online', 
+                        displayName: oppData.displayName, 
+                        equippedCueId: oppCue, 
+                        rankIndex: oppRank,
+                        photo: oppPhoto // SAVE OPPONENT PHOTO
+                    }
                 },
                 chips: initialChips, currentTurnUid: startUid, canMoveCueBall: true, isBreakShot: true, winner: null
             };
             
+            // Set Game Modes Logic...
             if (selectedOnlineGameType === 'poker') {
                 createDeck(); dealCards();
                 Object.assign(gameData, { deck, player1Hand: playerHand, player2Hand: opponentHand, originalPlayer1Hand: originalPlayerHand, originalPlayer2Hand: originalOpponentHand });
@@ -8433,8 +8448,6 @@ async function findMatch() {
 
         } else {
             // --- JOIN QUEUE ---
-            // WALA NANG BAWAS DITO KASI NABAWAS NA SA TAAS
-
             if (!unsubscribeFromQueue) {
                 const myRank = getPlayerRank(playerLevel).index;
                 const myCue = equippedItems.cue || 'default';
@@ -8447,7 +8460,8 @@ async function findMatch() {
                     timestamp: serverTimestamp(), 
                     displayName: displayName,
                     rankIndex: myRank, 
-                    equippedCueId: myCue 
+                    equippedCueId: myCue,
+                    photo: myPhoto // ▼▼▼ FIX: I-SAVE ANG PHOTO MO SA QUEUE ▼▼▼
                 });
                 
                 unsubscribeFromQueue = onSnapshot(ref, (doc) => {
@@ -8503,11 +8517,11 @@ async function cancelMatchmaking() {
         function animateAndApplyShot(shotData) { cueStick.angle = shotData.angle; cueStick.visible = true; if (cueStickElement) cueStickElement.style.display = 'block'; gameState = 'shooting_animation'; let startTime = null; const animationDuration = 100; const shotPowerNormalized = (shotData.power - 5) / 40; const startPullback = shotPowerNormalized * (150 * scale); const endPullback = -30 * scale; function animate(timestamp) { if (!startTime) startTime = timestamp; const progress = Math.min((timestamp - startTime) / animationDuration, 1); cueStick.pullback = startPullback + (endPullback - startPullback) * progress; if (progress < 1) { requestAnimationFrame(animate); } else { cueStick.visible = false; cueStick.pullback = 0; if (cueStickElement) cueStickElement.style.display = 'none'; applyShot(shotData); } } requestAnimationFrame(animate); }
         
         function syncGameState(data) {
-    // 1. Safety Checks (Original)
+    // 1. Safety Checks
     if (isSyncing || !data) return;
     isSyncing = true;
 
-    // 2. Identify Opponent Info & Status (Updated with Photo)
+    // 2. Identify Opponent Info & Status
     let opponentId = null;
     let opponentStatus = null;
     
@@ -8522,12 +8536,11 @@ async function cancelMatchmaking() {
             opponentEquippedCueId = oppData.equippedCueId || 'default';
             opponentRankIndex = oppData.rankIndex || 0;
             
-            // ▼▼▼ NEW: SAVE PHOTO PARA SA HUD ▼▼▼
+            // SAVE PHOTO PARA SA HUD
             window.opponentPhotoUrl = oppData.photo || null; 
-            // ▲▲▲ ▲▲▲
         }
     } else {
-        // Fallback defaults (Original)
+        // Fallback defaults
         opponentPlayerName = "Opponent";
         opponentEquippedCueId = 'default';
         opponentRankIndex = 0;
@@ -8543,17 +8556,31 @@ async function cancelMatchmaking() {
         gameMode = `online-${data.gameType}`;
         lastProcessedTurnId = -1;
 
-        // Hide ALL Modals/Menus (Updated List)
+        // ▼▼▼ FIX SA FREEZE & LONG LIST ▼▼▼
+        
+        // 1. I-define muna natin ito para hindi maging "undefined"
+        const inviteModalElement = document.getElementById('invite-popup-modal');
+
+        // 2. Ito ang ORIGINAL LONG LIST mo + yung Invite Modal variable
         const modalsToHide = [
-            winnerModal, waitingRoom, onlineMenu, 
-            onlineGameSelect, invitePopupModal, gameModeSelect
+            winnerModal, aiMenu, onlineMenu, onlineGameSelect, waitingRoom,
+            straightBallInstructions, pokerInstructions, sixtyOneInstructions,
+            confirmExitModal, leaderboardModal, shopModal, dailyRewardModal,
+            matchmakingWaitModal, pokerFoulCardPickModal, tutorialOverlay,
+            inviteModalElement // <--- Gamitin ang variable, wag ang ID string o undefined var
         ];
-        modalsToHide.forEach(m => { if(m) m.classList.remove('show'); });
+
+        // 3. Loop para itago (Safe check)
+        modalsToHide.forEach(m => {
+             if (m && m.classList) m.classList.remove('show');
+        });
+
+        // ▲▲▲ ▲▲▲
 
         history.pushState({ modal: 'game' }, 'Game', '#game');
         if (canvas.width === 0) resizeCanvas();
 
-        // Load Initial Chips (Original)
+        // Load Initial Chips
         if (data.chips) {
             chips = data.chips.map(remoteChip => ({ ...remoteChip,
                 x: remoteChip.x * canvas.width,
@@ -8562,7 +8589,7 @@ async function cancelMatchmaking() {
             }));
         }
 
-        // Sync Specific Game Modes (Original)
+        // Sync Specific Game Modes
         if (data.gameType === 'poker') {
             deck = data.deck || [];
             playerHand = (localPlayerId === 'player1') ? data.player1Hand : data.player2Hand;
@@ -8581,7 +8608,7 @@ async function cancelMatchmaking() {
 
         updateInfoBox(); // Update HUD
 
-        // --- ❗ VS SCREEN DISPLAY (WITH PHOTOS) ❗ ---
+        // --- VS SCREEN DISPLAY ---
         if (!vsScreenShownThisGame) {
             vsScreenShownThisGame = true;
 
@@ -8591,7 +8618,6 @@ async function cancelMatchmaking() {
 
             let player1Data, player2Data;
 
-            // Ayusin kung sino ang nasa kaliwa at kanan
             if (localPlayerId === 'player1') {
                 player1Data = { name: localPlayerName, rankInfo: myRankInfo, photo: myPhoto };
                 player2Data = { name: opponentPlayerName, rankInfo: opponentRankInfo, photo: window.opponentPhotoUrl };
@@ -8605,17 +8631,17 @@ async function cancelMatchmaking() {
         }
     }
 
-    // 4. GAME OVER HANDLING (Original)
+    // 4. GAME OVER HANDLING
     if (data.gameState === 'finished' && gameState !== 'gameover') {
         endGame(data.winner === localPlayerUid ? 'You Win!' : 'You Lose!', data);
         isSyncing = false;
         return;
     }
 
-    // 5. ACTIVE GAMEPLAY UPDATES (Original Logic + AI Takeover)
+    // 5. ACTIVE GAMEPLAY UPDATES
     if (gameState === 'playing') {
         
-        // --- AI TAKEOVER (Disconnect Handling) ---
+        // --- AI TAKEOVER ---
         if (opponentStatus === 'disconnected' && !isAiTakeoverActive) {
             isAiTakeoverActive = true;
             showMessage("Opponent disconnected. AI taking over.", 4000);
@@ -8623,7 +8649,6 @@ async function cancelMatchmaking() {
             updateInfoBox();
         } else if (opponentStatus === 'online' && isAiTakeoverActive) {
             isAiTakeoverActive = false;
-            // Ibalik ang tunay na pangalan galing sa data
             opponentPlayerName = data.players[opponentId]?.displayName || "Opponent";
             updateInfoBox();
             showMessage("Opponent reconnected!", 3000);
@@ -8638,7 +8663,7 @@ async function cancelMatchmaking() {
             lastProcessedTurnId = data.turnId;
             chipsMoving = false;
 
-            // Teleport Correction (Chip Positions)
+            // Teleport Correction
             if (data.chips && canvas.width > 0) {
                 chips = data.chips.map(remoteChip => ({ ...remoteChip,
                     x: remoteChip.x * canvas.width,
@@ -8665,9 +8690,9 @@ async function cancelMatchmaking() {
             isBreakShot = data.isBreakShot;
 
             updateCardDisplay();
-            updateInfoBox(); // Update HUD Glow
+            updateInfoBox(); 
 
-            // Turn Messages & Guides
+            // Turn Messages
             const message = data.isBreakShot ?
                 (isMyTurnOnline ? "You break!" : `${opponentPlayerName}'s break!`) :
                 (isMyTurnOnline ? "Your turn" : `${opponentPlayerName}'s turn`);
@@ -8679,13 +8704,12 @@ async function cancelMatchmaking() {
                 showMessage(message, 2000);
             }
 
-            // Reset Pektus if it's my turn to aim
             if (isMyTurnOnline && !canMoveCueBall && gameState !== 'aiming') {
                 resetPektus();
             }
         }
 
-        // State Management (Aiming vs Moving)
+        // State Management
         if (isMyTurnOnline) {
             gameState = canMoveCueBall ? 'moving' : 'aiming';
             if (gameState === 'aiming') {
@@ -11055,25 +11079,31 @@ function listenToGameUpdates(gameId) {
     let lastShotTimestamp = 0; 
     let previousGameState = null; 
 
+    // 1. Setup listeners para sa Chat at Galaw ng Tako
     setupChatListener(gameId);
     listenToRealtimeAiming(gameId);
     
-    // Presence System
-    if (rtdb && localPlayerUid) {
+    // 2. PRESENCE SYSTEM (Online/Offline Status)
+    // FIX: Nagdagdag ako ng "&& gameId" para siguradong hindi mag-error ang database
+    if (rtdb && localPlayerUid && gameId) {
         const connectionRef = ref(rtdb, '.info/connected');
         const playerStatusRef = ref(rtdb, `gameStatus/${gameId}/${localPlayerUid}`);
         const firestoreGameDocRef = doc(db, "games", gameId);
         
         onValue(connectionRef, (snap) => {
             if (snap.val() === true) {
+                // Set Online sa Realtime DB
                 set(playerStatusRef, { online: true, lastSeen: Date.now() });
                 onDisconnect(playerStatusRef).set({ online: false, lastSeen: Date.now() });
+                
+                // Set Online sa Firestore
                 updateDoc(firestoreGameDocRef, { [`players.${localPlayerId}.status`]: 'online' }).catch(e=>{});
                 onDisconnect(firestoreGameDocRef).update({ [`players.${localPlayerId}.status`]: 'disconnected' }).catch(e=>{});
             }
         }, { onlyOnce: true });
     }
 
+    // 3. GAME UPDATE LISTENER (Main Loop)
     unsubscribeGameListener = onSnapshot(doc(db, "games", gameId), (doc) => { 
         if (!doc.exists()) { 
             if (gameState !== 'menu' && gameState !== 'gameover') { 
@@ -11086,27 +11116,31 @@ function listenToGameUpdates(gameId) {
         const gameData = doc.data(); 
         if (!gameData) return; 
 
-        // ▼▼▼ FIX: FORCE CLOSE WAITING ROOM KAPAG PLAYING NA ▼▼▼
-        // Kung ikaw ang Host, at nag 'playing' na ang status sa DB, pero bukas pa ang modal:
+        // ▼▼▼ FIX: FORCE CLOSE WAITING ROOM ▼▼▼
+        // Kung nag-start na ang laro sa database pero nakabukas pa ang waiting room sa screen mo
         const waitingModal = document.getElementById('waiting-room');
         if (gameData.gameState === 'playing' && waitingModal && waitingModal.classList.contains('show')) {
-            waitingModal.classList.remove('show'); // Sapilitang isara
-            // Ipakita ang message
-            showMessage("Opponent Joined! Game Starting...", 2000);
+            console.log("Force closing Waiting Room...");
+            waitingModal.classList.remove('show'); 
+            showMessage("Game Starting...", 1500);
         }
         // ▲▲▲ ▲▲▲
 
-        // Rematch Deduction
+        // --- REMATCH FEE DEDUCTION LOGIC ---
+        // Kung galing sa "Finished" at naging "Playing" ulit (Rematch)
         if (previousGameState === 'finished' && gameData.gameState === 'playing') {
             const rawBet = gameData.betAmount || currentMatchBet || 0;
             const betToDeduct = parseInt(rawBet, 10);
             
             if (betToDeduct > 0) {
+                // Bawas ulit para sa rematch
                 let currentMoney = parseInt(playerTotalCurrency, 10);
                 playerTotalCurrency = currentMoney - betToDeduct;
                 currentMatchBet = betToDeduct;
+                
                 localStorage.setItem('pinoyPoolCurrency', playerTotalCurrency.toString());
                 updateCurrencyDisplay();
+                
                 setTimeout(() => {
                     showRewardPopup(0, `<span style="color:red; font-size: 0.8em;">REMATCH FEE: -${formatCurrencyShort(betToDeduct)}</span>`);
                 }, 1000);
@@ -11115,13 +11149,14 @@ function listenToGameUpdates(gameId) {
         }
         previousGameState = gameData.gameState; 
 
-        // Shot Animation
+        // --- SHOT ANIMATION SYNC ---
+        // Kung may bagong tira ang kalaban
         if (gameData.lastShot && gameData.lastShot.timestamp > lastShotTimestamp && !chipsMoving) { 
             lastShotTimestamp = gameData.lastShot.timestamp; 
             animateAndApplyShot(gameData.lastShot); 
         } 
         
-        // Game Over / Rematch
+        // --- GAME OVER / REMATCH REQUESTS ---
         if (gameData.gameState === 'finished' && gameData.rematchRequest) { 
             const players = Object.keys(gameData.players).filter(p => gameData.players[p] !== null); 
             if (players.length === 2) { 
@@ -11148,13 +11183,15 @@ function listenToGameUpdates(gameId) {
             } 
         } 
         
-        // Sync State
+        // --- MAIN SYNC FUNCTION ---
         syncGameState(gameData); 
 
-        // Manual Turn Handling
+        // --- MANUAL TURN HANDLING ---
+        // Ito ang nag-aayos ng pwesto ng bola kung sakaling na-late ang sync
         if (gameData.turnId > lastProcessedTurnId) {
              lastProcessedTurnId = gameData.turnId;
              
+             // Update chips positions (teleport correction)
              if (gameData.chips && canvas.width > 0) {
                  chips = gameData.chips.map(remoteChip => ({ ...remoteChip,
                      x: remoteChip.x * canvas.width,
@@ -11163,18 +11200,22 @@ function listenToGameUpdates(gameId) {
                  }));
              }
              
+             // Sync variables
              canMoveCueBall = gameData.canMoveCueBall;
              isBreakShot = gameData.isBreakShot;
              
+             // Update UI
              updateCardDisplay();
-             updateInfoBox();
+             updateInfoBox(); // Update HUD Glow
 
+             // Ipakita ang Drag Guide kung Ball-in-Hand
              if (isMyTurnOnline && canMoveCueBall) {
                  dragGuideText.style.display = 'block';
              } else {
                  dragGuideText.style.display = 'none';
              }
              
+             // Reset Pektus pagkatapos ng tira ng kalaban
              if (isMyTurnOnline && !canMoveCueBall && gameState !== 'aiming') {
                  resetPektus();
              }
