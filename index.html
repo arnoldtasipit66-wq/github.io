@@ -7259,33 +7259,31 @@ function drawGuidelines() {
         }
     }
 }
-function updateChipPositions(dt_sec) { 
-    // Gaano kaliit ang bawat substep para sa physics accuracy
+        function updateChipPositions(dt_sec) { 
+    // PHYSICS SUB-STEPS (Para smooth ang galaw at banggaan)
     const subSteps = 20; 
     const dt_sub = dt_sec / subSteps; 
 
     for (let i = 0; i < subSteps; i++) { 
         chips.forEach(chip => { 
             if (chip.inPlay && !chip.isPocketing) { 
-                // Galawin ang bola (Velocity)
+                // Move Position
                 chip.x += chip.vx * dt_sub; 
                 chip.y += chip.vy * dt_sub; 
-                
-                // Paikutin ang bola (Rotation)
+                // Rotate
                 chip.rotation += chip.rotationSpeed * dt_sub;
             }
         }); 
-        
-        // --- WALL COLLISIONS (BANDA) ---
-        const spinFactor = WALL_SPIN_FACTOR; 
 
+        // --- WALL & CHIP COLLISIONS ---
         for (let j = 0; j < chips.length; j++) { 
             const chip1 = chips[j]; 
             if (!chip1.inPlay || chip1.isPocketing) continue; 
             
             const sideSpin = chip1.currentSideSpin || 0;
+            const spinFactor = WALL_SPIN_FACTOR; 
 
-            // 1. KANANG PADER (Right Wall)
+            // Right Wall
             if (chip1.x + chip1.radius > canvas.width) { 
                 playCushionSound(Math.abs(chip1.vx)); 
                 chip1.vx = -Math.abs(chip1.vx); 
@@ -7294,8 +7292,7 @@ function updateChipPositions(dt_sec) {
                 chip1.rotationSpeed -= chip1.vy * spinFactor; 
                 chip1.currentSideSpin *= 0.8; 
             } 
-            
-            // 2. KALIWANG PADER (Left Wall)
+            // Left Wall
             else if (chip1.x - chip1.radius < 0) { 
                 playCushionSound(Math.abs(chip1.vx)); 
                 chip1.vx = Math.abs(chip1.vx); 
@@ -7304,8 +7301,7 @@ function updateChipPositions(dt_sec) {
                 chip1.rotationSpeed -= chip1.vy * spinFactor; 
                 chip1.currentSideSpin *= 0.8; 
             } 
-            
-            // 3. BABANG PADER (Bottom Wall)
+            // Bottom Wall
             if (chip1.y + chip1.radius > canvas.height) { 
                 playCushionSound(Math.abs(chip1.vy)); 
                 chip1.vy = -Math.abs(chip1.vy); 
@@ -7314,8 +7310,7 @@ function updateChipPositions(dt_sec) {
                 chip1.rotationSpeed += chip1.vx * spinFactor; 
                 chip1.currentSideSpin *= 0.8; 
             } 
-            
-            // 4. TAAS NA PADER (Top Wall)
+            // Top Wall
             else if (chip1.y - chip1.radius < 0) { 
                 playCushionSound(Math.abs(chip1.vy)); 
                 chip1.vy = Math.abs(chip1.vy); 
@@ -7325,24 +7320,27 @@ function updateChipPositions(dt_sec) {
                 chip1.currentSideSpin *= 0.8; 
             }
 
-            // Check Collision sa ibang bola
+            // Chip vs Chip Collision
             for (let k = j + 1; k < chips.length; k++) { 
                 const chip2 = chips[k]; 
-                if (chip2.inPlay && !chip2.isPocketing) handleChipCollision(chip1, chip2); 
+                if (chip2.inPlay && !chip2.isPocketing) {
+                    handleChipCollision(chip1, chip2); 
+                }
             } 
         } 
     } 
-    
+
+    // --- FRICTION & POCKET DETECTION ---
     let stillMoving = false; 
     
-    // Calculate Friction per Frame
+    // Calculate Friction once per frame
     const frictionThisStep = Math.pow(FRICTION_PER_SECOND, dt_sec);
     const spinFrictionThisStep = Math.pow(SPIN_FRICTION_PER_SECOND, dt_sec);
 
     chips.forEach(chip => { 
         if (chip.inPlay) { 
             if (chip.isPocketing) { 
-                // Animation pag nahulog sa butas
+                // Animation pag nahulog
                 chip.pocketingProgress += 0.05; 
                 chip.rotation += chip.rotationSpeed * dt_sec; 
                 chip.x += (chip.pocketingHole.x - chip.x) * 0.1; 
@@ -7352,63 +7350,57 @@ function updateChipPositions(dt_sec) {
                     chip.isPocketing = false; 
                 } 
             } else { 
-                // Apply Friction (Preno)
+                // Apply Friction
                 chip.vx *= frictionThisStep; 
                 chip.vy *= frictionThisStep;
                 chip.rotationSpeed *= spinFrictionThisStep;
 
-                // Apply Spin Decay
+                // Spin Decay
                 if (chip.currentSideSpin) {
                     chip.currentSideSpin *= 0.995; 
-                    if (Math.abs(chip.currentSideSpin) < 0.1) {
-                        chip.currentSideSpin = 0;
-                    }
+                    if (Math.abs(chip.currentSideSpin) < 0.1) chip.currentSideSpin = 0;
                 }
-                
-                // Stop completely kung sobrang bagal na
+
+                // Stop ball if too slow
                 if (Math.abs(chip.vx) < MIN_VELOCITY) chip.vx = 0; 
                 if (Math.abs(chip.vy) < MIN_VELOCITY) chip.vy = 0; 
                 if (Math.abs(chip.rotationSpeed) < MIN_ROTATION_SPEED) chip.rotationSpeed = 0;
-                
-                // --- POCKET DETECTION (BUTAS LOGIC) ---
+
+                // --- POCKET DETECTION ---
                 holes.forEach(hole => { 
                     const distToHole = Math.sqrt((hole.x - chip.x)**2 + (hole.y - chip.y)**2);
-                    
                     let effectiveHoleRadius = hole.radius;
 
-                    // ▼▼▼ AI CHEAT FIX ▼▼▼
-                    // Check kung gumagalaw ang bola (Speed > 1.0)
-                    // Para hindi mahulog ang nakatambay na bola nang kusa.
+                    // AI CHEAT LOGIC (Fixed: Lalaki lang butas kung gumagalaw ang bola)
                     const speed = Math.sqrt(chip.vx * chip.vx + chip.vy * chip.vy);
-                    const isMoving = speed > 1.0; 
-
-                    // Lalaki lang ang butas kung AI ang tumitira AT gumagalaw ang bola
-                    if (!playerTurn && gameMode.startsWith('ai') && isMoving) {
+                    if (!playerTurn && gameMode.startsWith('ai') && speed > 1.0) {
                         effectiveHoleRadius = hole.radius * 1.3; 
                     }
-                    // ▲▲▲ END FIX ▲▲▲
 
                     if (distToHole < effectiveHoleRadius) { 
                         playPocketSound(); 
                         chip.isPocketing = true; 
                         chip.pocketingHole = hole; 
-                        
-                        // Biglang preno para hindi lumusot sa graphics
-                        chip.vx = chip.vx * 0.1; 
-                        chip.vy = chip.vy * 0.1;
-                        chip.rotationSpeed = (Math.random() - 0.5) * 0.2; 
-                        
-                        if (!chipsPocketedInTurn.find(p => p.id === chip.id)) chipsPocketedInTurn.push(chip); 
+                        chip.vx *= 0.1; // Preno
+                        chip.vy *= 0.1;
+                        if (!chipsPocketedInTurn.find(p => p.id === chip.id)) {
+                            chipsPocketedInTurn.push(chip); 
+                        }
                     } 
                 });
             } 
             
-            // Check kung may gumagalaw pa
-            if (chip.vx !== 0 || chip.vy !== 0 || chip.isPocketing) stillMoving = true;
+            // Check if moving
+            if (chip.vx !== 0 || chip.vy !== 0 || chip.isPocketing) {
+                stillMoving = true;
+            }
         } 
     }); 
-    
+
+    // Update Global State
     chipsMoving = stillMoving; 
+    
+    // Kung tumigil na lahat, tapusin ang turn
     if (!chipsMoving) { 
         if (gameState === 'shooting') { 
             gameState = 'evaluating'; 
@@ -7420,7 +7412,8 @@ function updateChipPositions(dt_sec) {
         } 
     } 
 }
-
+        
+                
 // ▼▼▼ COMBO FUNCTION ▼▼▼
 function showComboPopup(count) {
     if (count < 2) return; // 2 pataas lang ang may popup
