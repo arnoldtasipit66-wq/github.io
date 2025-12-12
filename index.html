@@ -7370,38 +7370,38 @@ function updateChipPositions(dt_sec) {
                 if (Math.abs(chip.vy) < MIN_VELOCITY) chip.vy = 0; 
                 if (Math.abs(chip.rotationSpeed) < MIN_ROTATION_SPEED) chip.rotationSpeed = 0;
                 
-                // --- POCKET DETECTION (BUTAS LOGIC) ---
-                holes.forEach(hole => { 
-                    const distToHole = Math.sqrt((hole.x - chip.x)**2 + (hole.y - chip.y)**2);
-                    
-                    let effectiveHoleRadius = hole.radius;
+                // IPALIT ITO (GOD MODE POCKETS):
+                        holes.forEach(hole => { 
+                            const distToHole = Math.sqrt((hole.x - chip.x)**2 + (hole.y - chip.y)**2);
+                            
+                            // Default size ng butas
+                            let effectiveHoleRadius = hole.radius;
 
-                    // ▼▼▼ AI CHEAT FIX ▼▼▼
-                    // Check kung gumagalaw ang bola (Speed > 1.0)
-                    // Para hindi mahulog ang nakatambay na bola nang kusa.
-                    const speed = Math.sqrt(chip.vx * chip.vx + chip.vy * chip.vy);
-                    const isMoving = speed > 1.0; 
+                            // GOD MODE CHEAT (UPDATED FIX):
+                            // Check kung gumagalaw ang bola (speed > 1).
+                            // Kung nakahinto, wag palakihin ang butas para di mahulog mag-isa.
+                            const speed = Math.sqrt(chip.vx * chip.vx + chip.vy * chip.vy);
+                            const isMoving = speed > 1.0; 
 
-                    // Lalaki lang ang butas kung AI ang tumitira AT gumagalaw ang bola
-                    if (!playerTurn && gameMode.startsWith('ai') && isMoving) {
-                        effectiveHoleRadius = hole.radius * 1.3; 
-                    }
-                    // ▲▲▲ END FIX ▲▲▲
+                            if (!playerTurn && gameMode.startsWith('ai') && isMoving) {
+                                effectiveHoleRadius = hole.radius * 1.3; // 30% bigger lang pag gumagalaw
+                            }
 
-                    if (distToHole < effectiveHoleRadius) { 
-                        playPocketSound(); 
-                        chip.isPocketing = true; 
-                        chip.pocketingHole = hole; 
-                        
-                        // Biglang preno para hindi lumusot sa graphics
-                        chip.vx = chip.vx * 0.1; 
-                        chip.vy = chip.vy * 0.1;
-                        chip.rotationSpeed = (Math.random() - 0.5) * 0.2; 
-                        
-                        if (!chipsPocketedInTurn.find(p => p.id === chip.id)) chipsPocketedInTurn.push(chip); 
-                    } 
-                });
-            } 
+                            // Dito na tayo magche-check gamit ang pinalaking butas
+                            if (distToHole < effectiveHoleRadius) { 
+                                playPocketSound(); 
+                                chip.isPocketing = true; 
+                                chip.pocketingHole = hole; 
+                                
+                                // Dagdag effect: Biglang preno para di lumusot sa graphics
+                                chip.vx = chip.vx * 0.1; 
+                                chip.vy = chip.vy * 0.1;
+                                
+                                chip.rotationSpeed = (Math.random() - 0.5) * 0.2; 
+                                
+                                if (!chipsPocketedInTurn.find(p => p.id === chip.id)) chipsPocketedInTurn.push(chip); 
+                            } 
+                        });
             
             // Check kung may gumagalaw pa
             if (chip.vx !== 0 || chip.vy !== 0 || chip.isPocketing) stillMoving = true;
