@@ -7260,188 +7260,166 @@ function drawGuidelines() {
     }
 }
 
-        
-      // START: SPINNING CHIP UPDATE (Nagdagdag ng spin logic sa physics)
-        function updateChipPositions(dt_sec) { // <-- Tumatanggap na ng oras (in seconds)
-            
-            // Gaano kaliit ang bawat substep
-            const subSteps = 20; 
-            const dt_sub = dt_sec / subSteps; // Oras bawat substep
+ // START: SPINNING CHIP UPDATE (With Fixed AI Cheat)
+function updateChipPositions(dt_sec) { 
+    // Gaano kaliit ang bawat substep
+    const subSteps = 20; 
+    const dt_sub = dt_sec / subSteps; // Oras bawat substep
 
-            for (let i = 0; i < subSteps; i++) { 
-                chips.forEach(chip => { 
-                    if (chip.inPlay && !chip.isPocketing) { 
-                        
-                        // Ito ang bagong pag-galaw (Velocity * Time)
-                        chip.x += chip.vx * dt_sub; 
-                        chip.y += chip.vy * dt_sub; 
-                        
-                        // Ito ang bagong pag-ikot (Rotation Speed * Time)
-                        chip.rotation += chip.rotationSpeed * dt_sub;
-                    }
-                }); 
+    for (let i = 0; i < subSteps; i++) { 
+        chips.forEach(chip => { 
+            if (chip.inPlay && !chip.isPocketing) { 
+                // Ito ang bagong pag-galaw (Velocity * Time)
+                chip.x += chip.vx * dt_sub; 
+                chip.y += chip.vy * dt_sub; 
                 
-                // Sa loob ng updateChipPositions loop...
-const spinFactor = WALL_SPIN_FACTOR; 
+                // Ito ang bagong pag-ikot (Rotation Speed * Time)
+                chip.rotation += chip.rotationSpeed * dt_sub;
+            }
+        }); 
+        
+        // --- WALL COLLISIONS ---
+        const spinFactor = WALL_SPIN_FACTOR; 
 
-for (let j = 0; j < chips.length; j++) { 
-    const chip1 = chips[j]; 
-    if (!chip1.inPlay || chip1.isPocketing) continue; 
-    
-    // Siguraduhing may value ang side spin
-    const sideSpin = chip1.currentSideSpin || 0;
+        for (let j = 0; j < chips.length; j++) { 
+            const chip1 = chips[j]; 
+            if (!chip1.inPlay || chip1.isPocketing) continue; 
+            
+            const sideSpin = chip1.currentSideSpin || 0;
 
-    // 1. KANANG PADER (Right Wall)
-    if (chip1.x + chip1.radius > canvas.width) { 
-        playCushionSound(Math.abs(chip1.vx)); 
-        chip1.vx = -Math.abs(chip1.vx); 
-        chip1.x = canvas.width - chip1.radius; 
-        
-        // Dati += ito, ngayon -= na
-        chip1.vy -= sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
-        
-        chip1.rotationSpeed -= chip1.vy * spinFactor; 
-        chip1.currentSideSpin *= 0.8; 
-    } 
-    
-    // 2. KALIWANG PADER (Left Wall)
-    else if (chip1.x - chip1.radius < 0) { 
-        playCushionSound(Math.abs(chip1.vx)); 
-        chip1.vx = Math.abs(chip1.vx); 
-        chip1.x = chip1.radius; 
-        
-        // Dati += ito, ngayon -= na
-        chip1.vy -= sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
-        
-        chip1.rotationSpeed -= chip1.vy * spinFactor; 
-        chip1.currentSideSpin *= 0.8; 
-    } 
-    
-    // 3. BABANG PADER (Bottom Wall)
-    if (chip1.y + chip1.radius > canvas.height) { 
-        playCushionSound(Math.abs(chip1.vy)); 
-        chip1.vy = -Math.abs(chip1.vy); 
-        chip1.y = canvas.height - chip1.radius; 
-        
-        // Dati -= ito, ngayon += na
-        chip1.vx += sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
-        
-        chip1.rotationSpeed += chip1.vx * spinFactor; 
-        chip1.currentSideSpin *= 0.8; 
-    } 
-    
-    // 4. TAAS NA PADER (Top Wall)
-    else if (chip1.y - chip1.radius < 0) { 
-        playCushionSound(Math.abs(chip1.vy)); 
-        chip1.vy = Math.abs(chip1.vy); 
-        chip1.y = chip1.radius; 
-        
-        // Dati -= ito, ngayon += na
-        chip1.vx += sideSpin * RAIL_KICK_FACTOR; // <--- BINAGO
-        
-        chip1.rotationSpeed += chip1.vx * spinFactor; 
-        chip1.currentSideSpin *= 0.8; 
-    }
-                    for (let k = j + 1; k < chips.length; k++) { 
-                        const chip2 = chips[k]; 
-                        if (chip2.inPlay && !chip2.isPocketing) handleChipCollision(chip1, chip2); 
-                    } 
-                } 
+            // 1. KANANG PADER (Right Wall)
+            if (chip1.x + chip1.radius > canvas.width) { 
+                playCushionSound(Math.abs(chip1.vx)); 
+                chip1.vx = -Math.abs(chip1.vx); 
+                chip1.x = canvas.width - chip1.radius; 
+                chip1.vy -= sideSpin * RAIL_KICK_FACTOR; 
+                chip1.rotationSpeed -= chip1.vy * spinFactor; 
+                chip1.currentSideSpin *= 0.8; 
             } 
-            
-            let stillMoving = false; 
-            
-            // Ito ang BAGONG paraan ng pag-apply ng FRICTION
-            // Ito ay ginagawa *pagkatapos* ng lahat ng sub-steps
-            // Gumagamit ito ng Math.pow para maging frame-rate independent
-            // Ito ay ginagawa *pagkatapos* ng lahat ng sub-steps
-            // Gumagamit ito ng Math.pow para maging frame-rate independent
-            const frictionThisStep = Math.pow(FRICTION_PER_SECOND, dt_sec);
-            const spinFrictionThisStep = Math.pow(SPIN_FRICTION_PER_SECOND, dt_sec);
+            // 2. KALIWANG PADER (Left Wall)
+            else if (chip1.x - chip1.radius < 0) { 
+                playCushionSound(Math.abs(chip1.vx)); 
+                chip1.vx = Math.abs(chip1.vx); 
+                chip1.x = chip1.radius; 
+                chip1.vy -= sideSpin * RAIL_KICK_FACTOR; 
+                chip1.rotationSpeed -= chip1.vy * spinFactor; 
+                chip1.currentSideSpin *= 0.8; 
+            } 
+            // 3. BABANG PADER (Bottom Wall)
+            if (chip1.y + chip1.radius > canvas.height) { 
+                playCushionSound(Math.abs(chip1.vy)); 
+                chip1.vy = -Math.abs(chip1.vy); 
+                chip1.y = canvas.height - chip1.radius; 
+                chip1.vx += sideSpin * RAIL_KICK_FACTOR; 
+                chip1.rotationSpeed += chip1.vx * spinFactor; 
+                chip1.currentSideSpin *= 0.8; 
+            } 
+            // 4. TAAS NA PADER (Top Wall)
+            else if (chip1.y - chip1.radius < 0) { 
+                playCushionSound(Math.abs(chip1.vy)); 
+                chip1.vy = Math.abs(chip1.vy); 
+                chip1.y = chip1.radius; 
+                chip1.vx += sideSpin * RAIL_KICK_FACTOR; 
+                chip1.rotationSpeed += chip1.vx * spinFactor; 
+                chip1.currentSideSpin *= 0.8; 
+            }
 
-            chips.forEach(chip => { 
-                if (chip.inPlay) { 
-                    if (chip.isPocketing) { 
-                        // ... (ang code mo para sa pocketing ay ok na)
-                        chip.pocketingProgress += 0.05; // Pwede mong i-adjust 'to
-                        chip.rotation += chip.rotationSpeed * dt_sec; 
-                        chip.x += (chip.pocketingHole.x - chip.x) * 0.1; 
-                        chip.y += (chip.pocketingHole.y - chip.y) * 0.1; 
-                        if (chip.pocketingProgress >= 1) { 
-                            chip.inPlay = false; 
-                            chip.isPocketing = false; 
-                        } 
-                    } else { 
-                        // Ito na ang TAMANG paraan ng pag-apply ng friction
-                        // na independent sa frame rate
-                        const frictionThisStep = Math.pow(FRICTION_PER_SECOND, dt_sec);
-                        const spinFrictionThisStep = Math.pow(SPIN_FRICTION_PER_SECOND, dt_sec);
+            // CHIP COLLISION
+            for (let k = j + 1; k < chips.length; k++) { 
+                const chip2 = chips[k]; 
+                if (chip2.inPlay && !chip2.isPocketing) handleChipCollision(chip1, chip2); 
+            } 
+        } 
+    } 
+    
+    let stillMoving = false; 
+    
+    // FRICTION LOGIC
+    const frictionThisStep = Math.pow(FRICTION_PER_SECOND, dt_sec);
+    const spinFrictionThisStep = Math.pow(SPIN_FRICTION_PER_SECOND, dt_sec);
 
-                        chip.vx *= frictionThisStep; 
-                        chip.vy *= frictionThisStep;
-                        chip.rotationSpeed *= spinFrictionThisStep;
+    chips.forEach(chip => { 
+        if (chip.inPlay) { 
+            if (chip.isPocketing) { 
+                // Animation pag nahulog sa butas
+                chip.pocketingProgress += 0.05; 
+                chip.rotation += chip.rotationSpeed * dt_sec; 
+                chip.x += (chip.pocketingHole.x - chip.x) * 0.1; 
+                chip.y += (chip.pocketingHole.y - chip.y) * 0.1; 
+                if (chip.pocketingProgress >= 1) { 
+                    chip.inPlay = false; 
+                    chip.isPocketing = false; 
+                } 
+            } else { 
+                // Apply Friction
+                chip.vx *= frictionThisStep; 
+                chip.vy *= frictionThisStep;
+                chip.rotationSpeed *= spinFrictionThisStep;
 
-// ▼▼▼ ISINGIT ITO DITO ▼▼▼
-                    if (chip.currentSideSpin) {
-                        chip.currentSideSpin *= 0.995; 
-                        if (Math.abs(chip.currentSideSpin) < 0.1) {
-                            chip.currentSideSpin = 0;
-                        }
+                if (chip.currentSideSpin) {
+                    chip.currentSideSpin *= 0.995; 
+                    if (Math.abs(chip.currentSideSpin) < 0.1) {
+                        chip.currentSideSpin = 0;
                     }
-                    // ▲▲▲ ▲▲▲
-                        
-                        if (Math.abs(chip.vx) < MIN_VELOCITY) chip.vx = 0; 
-                        if (Math.abs(chip.vy) < MIN_VELOCITY) chip.vy = 0; 
-
-                        // Bagong check: ihinto ang spin kung sobrang bagal na
-                        if (Math.abs(chip.rotationSpeed) < MIN_ROTATION_SPEED) chip.rotationSpeed = 0;
-                        // IPALIT ITO (GOD MODE POCKETS):
-holes.forEach(hole => { 
-    const distToHole = Math.sqrt((hole.x - chip.x)**2 + (hole.y - chip.y)**2);
-    
-    // Default size ng butas
-    let effectiveHoleRadius = hole.radius;
-
-    // GOD MODE CHEAT:
-    // Kung AI ang tumitira, lakihan natin ang butas ng 30% (multiplier 1.3)
-    // Para kahit sobrang lakas ng tira, "hihigupin" ng butas at di luluwa.
-    if (!playerTurn && gameMode.startsWith('ai')) {
-        effectiveHoleRadius = hole.radius * 1.3; 
-    }
-
-    // Dito na tayo magche-check gamit ang pinalaking butas
-    if (distToHole < effectiveHoleRadius) { 
-        playPocketSound(); 
-        chip.isPocketing = true; 
-        chip.pocketingHole = hole; 
-        
-        // Dagdag effect: Biglang preno para di lumusot sa graphics
-        chip.vx = chip.vx * 0.1; 
-        chip.vy = chip.vy * 0.1;
-        
-        chip.rotationSpeed = (Math.random() - 0.5) * 0.2; 
-        
-        if (!chipsPocketedInTurn.find(p => p.id === chip.id)) chipsPocketedInTurn.push(chip); 
-    } 
-});
-                    } 
+                }
+                
+                if (Math.abs(chip.vx) < MIN_VELOCITY) chip.vx = 0; 
+                if (Math.abs(chip.vy) < MIN_VELOCITY) chip.vy = 0; 
+                if (Math.abs(chip.rotationSpeed) < MIN_ROTATION_SPEED) chip.rotationSpeed = 0;
+                
+                // --- POCKET DETECTION (DITO YUNG FIX) ---
+                holes.forEach(hole => { 
+                    const distToHole = Math.sqrt((hole.x - chip.x)**2 + (hole.y - chip.y)**2);
                     
-                    if (chip.vx !== 0 || chip.vy !== 0 || chip.isPocketing) stillMoving = true;
-                } 
-            }); 
-            
-            chipsMoving = stillMoving; 
-            if (!chipsMoving) { 
-                if (gameState === 'shooting') { 
-                    gameState = 'evaluating'; 
-                    if (isTutorialActive) { 
-                        setTimeout(nextTutorialStep, 500); 
-                    } else if (!isOnlineGame || localPlayerUid === lastTurnControllerUid) { 
-                        handleTurnEnd(); // <-- PALITAN MO NITO
+                    let effectiveHoleRadius = hole.radius;
+
+                    // ▼▼▼ AI CHEAT FIX ▼▼▼
+                    // 1. Kalkulahin ang bilis ng bola
+                    const speed = Math.sqrt(chip.vx * chip.vx + chip.vy * chip.vy);
+                    
+                    // 2. Check kung gumagalaw ba talaga (speed > 1.0)
+                    const isMoving = speed > 1.0; 
+
+                    // 3. Lalaki lang ang butas KUNG:
+                    //    - Turn ng AI (!playerTurn)
+                    //    - Mode ay AI (gameMode.startsWith('ai'))
+                    //    - AT GUMAGALAW ang bola (isMoving)
+                    if (!playerTurn && gameMode.startsWith('ai') && isMoving) {
+                        effectiveHoleRadius = hole.radius * 1.3; 
+                    }
+                    // ▲▲▲ END FIX ▲▲▲
+
+                    if (distToHole < effectiveHoleRadius) { 
+                        playPocketSound(); 
+                        chip.isPocketing = true; 
+                        chip.pocketingHole = hole; 
+                        
+                        chip.vx = chip.vx * 0.1; 
+                        chip.vy = chip.vy * 0.1;
+                        chip.rotationSpeed = (Math.random() - 0.5) * 0.2; 
+                        
+                        if (!chipsPocketedInTurn.find(p => p.id === chip.id)) chipsPocketedInTurn.push(chip); 
                     } 
-                } 
+                });
             } 
-        }
+            
+            if (chip.vx !== 0 || chip.vy !== 0 || chip.isPocketing) stillMoving = true;
+        } 
+    }); 
+    
+    chipsMoving = stillMoving; 
+    if (!chipsMoving) { 
+        if (gameState === 'shooting') { 
+            gameState = 'evaluating'; 
+            if (isTutorialActive) { 
+                setTimeout(nextTutorialStep, 500); 
+            } else if (!isOnlineGame || localPlayerUid === lastTurnControllerUid) { 
+                handleTurnEnd(); 
+            } 
+        } 
+    } 
+}       
+  
 
 function handleChipCollision(chip1, chip2) { 
     const dx = chip2.x - chip1.x, dy = chip2.y - chip1.y; 
