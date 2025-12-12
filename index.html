@@ -4505,6 +4505,51 @@ div#opponent-info.hud-active {
     box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
     border: 1px solid rgba(255,255,255,0.3) !important;
 }
+
+/* --- RANK UP ANIMATIONS --- */
+
+/* Umiikot na Sinag (Rays) sa Likod */
+.rank-rays {
+    position: absolute;
+    width: 200vmax; /* Sobrang laki para sakop buong screen kahit anong device */
+    height: 200vmax;
+    background: repeating-conic-gradient(
+        from 0deg,
+        rgba(255, 215, 0, 0.15) 0deg 10deg, /* Gold tint */
+        transparent 10deg 20deg
+    );
+    animation: raySpin 20s linear infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes raySpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Icon Pop Animation (Boing effect) */
+.rank-pop-anim {
+    animation: iconPop 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes iconPop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Text Slide In Effect */
+.rank-text-slide {
+    animation: slideUpFade 0.6s ease-out 0.3s forwards; /* Delay para sunod sa icon */
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes slideUpFade {
+    to { opacity: 1; transform: translateY(0); }
+}
         
 </style>
 </head>
@@ -5737,10 +5782,27 @@ async function endGame(winnerTextMessage, finalGameData = null) {
         }
     }
 
-    // --- APPLY STATS ---
+    // --- APPLY STATS (WITH RANK UP CHECK) ---
     if (trophiesChange !== 0) {
+        // 1. Kunin ang lumang Rank Index BAGO magdagdag
+        const oldRankIndex = getPlayerRank(playerTrophies).index;
+
+        // 2. I-apply ang trophy change
         playerTrophies += trophiesChange;
         if (playerTrophies < 0) playerTrophies = 0;
+
+        // 3. Kunin ang bagong Rank Index PAGKATAPOS magdagdag
+        const newRankIndex = getPlayerRank(playerTrophies).index;
+
+        // 4. Check kung tumaas (Promoted!)
+        if (newRankIndex > oldRankIndex) {
+            // Delay konti (2.5s) para pumasok muna ang "You Win" modal, tapos ito papatong
+            setTimeout(() => {
+                showRankUpScreen(newRankIndex);
+            }, 2500); 
+        }
+
+        // Ipakita ang +Trophies toast message
         setTimeout(() => {
             showMessage(`${trophiesChange > 0 ? '+' : ''}${trophiesChange} Trophies`, 2000);
         }, 1500);
@@ -13561,6 +13623,74 @@ function handleProfileUpload(event) {
     reader.readAsDataURL(file);
 }
 
+// --- RANK UP SYSTEM ---
+
+function showRankUpScreen(newRankIndex) {
+    const modal = document.getElementById('rank-up-modal');
+    const iconEl = document.getElementById('rank-up-icon');
+    const nameEl = document.getElementById('rank-up-name');
+    const rewardEl = document.getElementById('rank-up-reward-text');
+    const claimBtn = document.getElementById('rank-up-claim-btn');
+
+    if (!modal) return;
+
+    // 1. Get Rank Data
+    const rankData = RANKS[newRankIndex];
+    
+    // 2. Update Content
+    iconEl.textContent = rankData.icon;
+    nameEl.textContent = rankData.name;
+    nameEl.style.color = rankData.color;
+    nameEl.style.textShadow = `0 5px 0 #000, 0 0 30px ${rankData.color}`;
+    
+    // 3. Reward Logic (Formula: 1000 * Rank Index)
+    // Example: Silver (index 1) = 1000, Gold (index 2) = 2000
+    const rewardAmount = 1000 * newRankIndex; 
+    
+    if(rewardAmount > 0) {
+        rewardEl.style.display = 'block';
+        rewardEl.innerHTML = `Rank Bonus: <span style="color:#FFD700">💰 ${rewardAmount}</span>`;
+        
+        // Add coins automatically
+        playerTotalCurrency += rewardAmount;
+        saveCurrency();
+        updateCurrencyDisplay();
+    } else {
+        rewardEl.style.display = 'none'; // Walang reward pag Bronze (Start)
+    }
+
+    // 4. Reset Animations (Trick para umulit ang animation pag binuksan ulit)
+    iconEl.classList.remove('rank-pop-anim');
+    void iconEl.offsetWidth; // Trigger reflow
+    iconEl.classList.add('rank-pop-anim');
+
+    nameEl.classList.remove('rank-text-slide');
+    void nameEl.offsetWidth;
+    nameEl.classList.add('rank-text-slide');
+
+    // 5. Play Epic Sound (Fanfare using Tone.js)
+    if (typeof Tone !== 'undefined' && audioInitialized && uiSynth) {
+        const now = Tone.now();
+        // Fanfare Sequence: C4 - E4 - G4 - C5 (Fast Arpeggio)
+        try {
+            uiSynth.triggerAttackRelease("C4", "16n", now);
+            uiSynth.triggerAttackRelease("E4", "16n", now + 0.1);
+            uiSynth.triggerAttackRelease("G4", "16n", now + 0.2);
+            uiSynth.triggerAttackRelease("C5", "2n", now + 0.3); // Long last note
+        } catch(e) {}
+    }
+
+    // 6. Show Modal & Fireworks
+    modal.classList.add('show');
+    triggerFireworks(); // Gamitin ang existing fireworks function mo
+    
+    // 7. Close Button Listener
+    claimBtn.onclick = function() {
+        playButtonSound();
+        modal.classList.remove('show');
+    };
+}
+
 // --- FINAL & SAFE GLOBAL IMAGE VIEWER ---
 
 // 1. I-define ang Global Function (Para matawag ng Friends at Leaderboard)
@@ -13616,6 +13746,33 @@ window.viewFullPhoto = function(src) {
     <span class="modal-close-btn" id="full-image-close-btn">&times;</span>
     <div class="full-image-content">
         <img id="full-image-display" src="">
+    </div>
+</div>
+
+<div id="rank-up-modal" class="modal-overlay" style="z-index: 25000; background: rgba(0,0,0,0.95) !important;">
+    <div class="rank-up-content" style="position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; overflow: hidden;">
+        
+        <div class="rank-rays"></div>
+        
+        <div id="rank-up-icon" style="font-size: 8rem; margin-bottom: 20px; z-index: 2; filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));">
+            🏆
+        </div>
+
+        <h1 style="font-family: 'Luckiest Guy', cursive; font-size: 3.5rem; color: #FFF; text-shadow: 0 5px 0 #000; margin: 0; z-index: 2; letter-spacing: 2px;">
+            PROMOTED!
+        </h1>
+
+        <div id="rank-up-name" style="font-family: 'Luckiest Guy', cursive; font-size: 4rem; color: #FFD700; text-shadow: 0 5px 0 #000, 0 0 20px #FFD700; margin: 10px 0 30px 0; z-index: 2; text-transform: uppercase;">
+            GOLD
+        </div>
+
+        <div id="rank-up-reward-text" style="font-family: 'Nunito', sans-serif; font-size: 1.5rem; color: #FFF; margin-bottom: 30px; z-index: 2; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px 30px; border-radius: 50px; border: 2px solid #FFD700;">
+            Rewards: 💰 1000 Coins
+        </div>
+
+        <button id="rank-up-claim-btn" class="menu-button" style="z-index: 2; padding: 15px 60px; font-size: 1.5rem; border: 3px solid #FFF; box-shadow: 0 0 30px rgba(255,215,0,0.6); background: linear-gradient(to bottom, #FFD700, #FFA500); color: #000;">
+            CLAIM!
+        </button>
     </div>
 </div>
 
