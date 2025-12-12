@@ -7389,24 +7389,20 @@ function updateChipPositions(dt_sec) {
 
                             // Dito na tayo magche-check gamit ang pinalaking butas
                             if (distToHole < effectiveHoleRadius) { 
-                                playPocketSound(); 
-                                chip.isPocketing = true; 
-                                chip.pocketingHole = hole; 
-                                
-                                // Dagdag effect: Biglang preno para di lumusot sa graphics
-                                chip.vx = chip.vx * 0.1; 
-                                chip.vy = chip.vy * 0.1;
-                                
-                                chip.rotationSpeed = (Math.random() - 0.5) * 0.2; 
-                                
-                                if (!chipsPocketedInTurn.find(p => p.id === chip.id)) chipsPocketedInTurn.push(chip); 
-                            } 
-                        });
-            
-            // Check kung may gumagalaw pa
-            if (chip.vx !== 0 || chip.vy !== 0 || chip.isPocketing) stillMoving = true;
-        } 
-    }); 
+                        playPocketSound(); 
+                        chip.isPocketing = true; 
+                        chip.pocketingHole = hole; 
+                        
+                        // Biglang preno para hindi lumusot sa graphics
+                        chip.vx = chip.vx * 0.1; 
+                        chip.vy = chip.vy * 0.1;
+                        chip.rotationSpeed = (Math.random() - 0.5) * 0.2; 
+                        
+                        if (!chipsPocketedInTurn.find(p => p.id === chip.id)) chipsPocketedInTurn.push(chip); 
+                    } 
+                });
+            }
+   
     
     chipsMoving = stillMoving; 
     if (!chipsMoving) { 
