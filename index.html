@@ -4692,6 +4692,198 @@ div#opponent-info.hud-active {
     0% { box-shadow: inset 0 0 30px #8b0000; border-color: #FF4500; }
     100% { box-shadow: inset 0 0 100px #FF0000; border-color: #FFD700; }
 }
+
+/* --- FIXED PROFILE MODAL DESIGN --- */
+
+/* Main Modal Content Wrapper */
+#profile-modal .content {
+    background: rgba(20, 20, 25, 0.95) !important;
+    border: 2px solid #FFD700 !important;
+    border-radius: 20px !important;
+    padding: 20px !important;
+    max-width: 400px !important;
+    width: 90% !important;
+    display: flex !important;
+    flex-direction: column !important; /* Default Portrait: Patayo */
+    align-items: center !important;
+    position: relative !important;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8) !important;
+}
+
+/* Close Button */
+#profile-close-btn {
+    position: absolute !important;
+    top: 10px !important;
+    right: 15px !important;
+    font-size: 2em !important;
+    color: white !important;
+    z-index: 50 !important;
+    cursor: pointer;
+}
+
+/* Avatar Styling */
+.avatar-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 10px auto;
+}
+
+#profile-avatar-img, #profile-avatar-default {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    object-fit: cover;
+}
+
+#profile-avatar-default {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4em; background: rgba(255,255,255,0.1);
+}
+
+#profile-upload-btn {
+    position: absolute; bottom: 0; right: 0;
+    width: 30px; height: 30px;
+    background: #00E5FF; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid white; cursor: pointer; z-index: 10;
+}
+
+/* Text Styling */
+#profile-name-display {
+    font-size: 1.8em !important;
+    color: white !important;
+    margin: 5px 0 !important;
+    text-shadow: 2px 2px 0 #000;
+    font-family: 'Luckiest Guy', cursive;
+}
+
+#profile-rank-text-small {
+    color: #FFD700; font-weight: bold; margin-bottom: 10px; font-size: 0.9em;
+    display: none; /* Tago muna, sa trophy natin papakita */
+}
+
+/* TROPHY SHOWCASE (Gitna) */
+.trophy-showcase {
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 15px;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#profile-trophy-icon {
+    font-size: 4.5em !important;
+    filter: drop-shadow(0 0 15px gold);
+    animation: floatTrophy 3s ease-in-out infinite;
+    line-height: 1;
+}
+
+#profile-rank-name {
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 1.5em;
+    color: #FFD700;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 0 #000;
+}
+
+/* STATS GRID */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.stat-box {
+    background: rgba(255,255,255,0.1);
+    padding: 8px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stat-label { font-size: 0.7em; color: #aaa; text-transform: uppercase; display: block; }
+.stat-val { font-size: 1.3em; font-weight: 800; font-family: 'Nunito', sans-serif; }
+.win-color { color: #33FF57; }
+.lvl-color { color: #00E5FF; }
+
+/* CUE PREVIEW */
+.cue-preview-box {
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+#profile-cue-preview {
+    width: 100%; height: 40px;
+    background-size: contain; background-position: center; background-repeat: no-repeat;
+    margin-top: 5px;
+    filter: drop-shadow(0 2px 5px black);
+}
+
+.cue-name-text { color: #FFD700; font-weight: bold; font-size: 0.9em; }
+
+@keyframes floatTrophy {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* ========================================= */
+/* 🔥 LANDSCAPE MODE FIX (THE MAGIC PART) 🔥 */
+/* ========================================= */
+@media (max-height: 500px) {
+    
+    #profile-modal .content {
+        flex-direction: row !important; /* Gawing Magkatabi */
+        width: 90vw !important;
+        height: 90vh !important;
+        max-width: 600px !important;
+        padding: 15px !important;
+        gap: 20px;
+    }
+
+    /* KALIWA: Avatar & Name */
+    .profile-left-col {
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        padding-right: 10px;
+    }
+
+    /* KANAN: Trophy & Stats */
+    .profile-right-col {
+        width: 60%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+    }
+
+    /* Adjust sizes for Landscape */
+    .avatar-container { width: 80px; height: 80px; }
+    #profile-name-display { font-size: 1.3em !important; }
+    
+    .trophy-showcase { 
+        padding: 5px; 
+        margin-bottom: 5px; 
+        background: transparent; /* Remove box bg in landscape to save space */
+        border: none;
+    }
+    #profile-trophy-icon { font-size: 3em !important; }
+    #profile-rank-name { font-size: 1.2em; }
+    
+    .stats-grid { margin-bottom: 5px; }
+    .stat-box { padding: 5px; }
+    .stat-val { font-size: 1.1em; }
+}
         
 </style>
 </head>
@@ -5048,40 +5240,47 @@ div#opponent-info.hud-active {
 </div>
 
 <div id="profile-modal" class="modal-overlay">
-    <div class="content" style="width: 85%; max-width: 350px; text-align: center;">
+    <div class="content">
+        
         <span class="modal-close-btn" id="profile-close-btn">&times;</span>
         
-        <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 10px auto;">
-            <img id="profile-avatar-img" class="viewable-img" src="" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #FFD700; display: none; cursor: pointer;">
+        <div class="profile-left-col">
+            <div class="avatar-container">
+                <img id="profile-avatar-img" class="viewable-img" src="" style="display: none;">
+                <div id="profile-avatar-default">👤</div>
+                <div id="profile-upload-btn">📷</div>
+            </div>
             
-            <div id="profile-avatar-default" style="width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4em; background: rgba(255,255,255,0.1); border: 3px solid #FFD700;">
-                👤
+            <input type="file" id="profile-file-input" accept="image/*" style="display: none;">
+            
+            <h2 id="profile-name-display">Player Name</h2>
+            <div id="profile-rank-text-small">[Rank]</div> </div>
+
+        <div class="profile-right-col">
+            
+            <div class="trophy-showcase">
+                <div id="profile-trophy-icon">🏆</div>
+                <div id="profile-rank-name">RANK NAME</div>
             </div>
 
-            <div id="profile-upload-btn" style="position: absolute; bottom: 0; right: 0; background: #00E5FF; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
-                📷
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-label">WINS</span>
+                    <span id="profile-wins-display" class="stat-val win-color">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">LEVEL</span>
+                    <span id="profile-level-display" class="stat-val lvl-color">1</span>
+                </div>
+            </div>
+
+            <div class="cue-preview-box">
+                <span class="stat-label">Equipped:</span>
+                <span id="profile-cue-name" class="cue-name-text">Default</span>
+                <div id="profile-cue-preview"></div>
             </div>
         </div>
 
-        <input type="file" id="profile-file-input" accept="image/*" style="display: none;">
-
-        <h2 id="profile-name-display" style="margin-bottom: 5px; font-size: 1.8em;">Player Name</h2>
-        <div id="profile-rank-badge" style="color: #FFD700; font-weight: bold; margin-bottom: 20px;">[RANK]</div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-            <div>
-                <div style="font-size: 0.8em; opacity: 0.7;">WINS</div>
-                <div id="profile-wins-display" style="font-size: 1.2em; font-weight: bold; color: #33FF57;">0</div>
-            </div>
-            <div>
-                <div style="font-size: 0.8em; opacity: 0.7;">LEVEL</div>
-                <div id="profile-level-display" style="font-size: 1.2em; font-weight: bold; color: #00E5FF;">1</div>
-            </div>
-        </div>
-
-        <p style="margin-bottom: 5px; opacity: 0.8;">Equipped Cue:</p>
-        <div id="profile-cue-preview" style="width: 100%; height: 60px; background-size: contain; background-position: center; background-repeat: no-repeat; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));"></div>
-        <div id="profile-cue-name" style="font-size: 0.9em; color: #FFD700; margin-top: 5px;">Default</div>
     </div>
 </div>
 
@@ -5290,166 +5489,168 @@ let xpToNextLevel = 100;
 
 const SHOP_ITEMS = {
     cues: [
+        // --- TIER 1: STARTER (Pang-masa) ---
         {
             id: 'default',
             name: 'Kawayan (Default)',
             price: 0,
             imageSrc: 'https://i.imgur.com/dKur0qc.png',
-            displayWidth: 450,
-            displayHeight: 150, 
-            stats: { Power: 2, Aim: 2, Spin: 2 } 
+            displayWidth: 450, displayHeight: 150,
+            stats: { Power: 2, Aim: 2, Spin: 2 },
+            minLevel: 1
         },
         {
             id: 'makabayan',
             name: 'Makabayan',
-            price: 5700,
+            price: 2500, // Madaling mabili
             imageSrc: 'https://i.imgur.com/LylPqwJ.png',
-            displayWidth: 450,
-            displayHeight: 150, 
-            stats: { Power: 4, Aim: 4, Spin: 3 }
+            displayWidth: 450, displayHeight: 150,
+            stats: { Power: 4, Aim: 4, Spin: 3 },
+            minLevel: 3
         },
+
+        // --- TIER 2: MID-GAME (Serious Player) ---
         {
             id: 'watawat_special',
             name: 'Watawat Special',
-            price: 8500,
+            price: 12000, // Need na mag-ipon
             imageSrc: 'https://i.imgur.com/hBVzIDy.png',
-            displayWidth: 450,
-            displayHeight: 150,
-            stats: { Power: 6, Aim: 6, Spin: 5 } 
+            displayWidth: 450, displayHeight: 150,
+            stats: { Power: 6, Aim: 5, Spin: 5 },
+            minLevel: 10
         },
         {
             id: 'mandirigma',
             name: 'Mandirigma',
-            price: 13800,
+            price: 35000,
             imageSrc: 'https://i.imgur.com/syLWSqJ.png',
-            displayWidth: 450,
-            displayHeight: 150,
-            stats: { Power: 7, Aim: 6, Spin: 8 }
+            displayWidth: 450, displayHeight: 150,
+            stats: { Power: 7, Aim: 6, Spin: 8 },
+            minLevel: 18
         },
+
+        // --- TIER 3: HIGH TIER (Veterans) ---
         {
             id: 'datu_tribal',
-            name: 'Datu',
-            price: 21800,
+            name: 'Datu Chieftain',
+            price: 85000, // Mahal na!
             imageSrc: 'https://i.imgur.com/MjILiWq.png',
-            displayWidth: 450,
-            displayHeight: 150,
-            stats: { Power: 8, Aim: 8, Spin: 7 }
+            displayWidth: 450, displayHeight: 150,
+            stats: { Power: 8, Aim: 8, Spin: 7 },
+            minLevel: 28
         },
-                
+
+        // --- TIER 4: LEGENDARY / GOD TIER (Whales/Grinders) ---
         {
             id: 'perlas_legend',
             name: 'Perlas ng Silangan',
-            price: 35500,
+            price: 200000, // Pang-mayaman
             imageSrc: 'https://i.imgur.com/GrDaD6o.png',
-            displayWidth: 450,
-            displayHeight: 150,
-            stats: { Power: 10, Aim: 10, Spin: 10 }
-        }, 
-
-   
+            displayWidth: 450, displayHeight: 150,
+            stats: { Power: 10, Aim: 9, Spin: 10 },
+            minLevel: 45
+        },
         {
             id: 'alien_neon',
             name: 'Galactic Neon',
-            price: 60000, 
+            price: 500000, // Ultimate Goal
             imageSrc: 'https://i.imgur.com/VghHWbE.png',
-            displayWidth: 450,
-            displayHeight: 150, 
-            stats: { Power: 10, Aim: 10, Spin: 9 } 
+            displayWidth: 450, displayHeight: 150,
+            stats: { Power: 10, Aim: 10, Spin: 10 }, // Max Stats
+            minLevel: 60
         }
- 
     ],
-    
-        frames: [
-        
-        {
-            id: 'default',
-            name: 'Honey Wood (Default)',
-            price: 0,
-            imageSrc: 'https://i.imgur.com/T9ft7vz.jpeg', // Wood texture
-            type: 'frame'
+
+    frames: [
+        { 
+            id: 'default', 
+            name: 'Honey Wood (Default)', 
+            price: 0, 
+            imageSrc: 'https://i.imgur.com/T9ft7vz.jpeg', 
+            type: 'frame', 
+            minLevel: 1 
         },
-        
-        {
-            id: 'frame_black_marble',
-            name: 'Black Marble',
-            price: 15000,
-            imageSrc: 'https://i.imgur.com/DvdePuB.jpeg', // <--- ILAGAY ANG LINK DITO
-            type: 'frame'
+        { 
+            id: 'frame_kamagong', 
+            name: 'Kamagong (Ironwood)', 
+            price: 15000, 
+            imageSrc: 'https://i.imgur.com/qmFsG79.jpeg', 
+            type: 'frame', 
+            minLevel: 8 
         },
-       
-        {
-            id: 'frame_chrome',
-            name: 'Cyber Chrome',
-            price: 25000,
-            imageSrc: 'https://i.imgur.com/xHckgRf.jpeg', // <--- ILAGAY ANG LINK DITO
-            type: 'frame'
+        { 
+            id: 'frame_black_marble', 
+            name: 'Black Marble', 
+            price: 40000, 
+            imageSrc: 'https://i.imgur.com/DvdePuB.jpeg', 
+            type: 'frame', 
+            minLevel: 20 
         },
-        // 4. GOLD BULLION (Pang-Mayaman)
-        {
-            id: 'frame_gold',
-            name: 'Solid Gold',
-            price: 50000,
-            imageSrc: 'https://i.imgur.com/tgSGXgj.jpeg', // <--- ILAGAY ANG LINK DITO
-            type: 'frame'
+        { 
+            id: 'frame_chrome', 
+            name: 'Cyber Chrome', 
+            price: 100000, 
+            imageSrc: 'https://i.imgur.com/xHckgRf.jpeg', 
+            type: 'frame', 
+            minLevel: 35 
         },
-{
-            id: 'frame_kamagong',
-            name: 'Kamagong (Ironwood)',
-            price: 12000, 
-            imageSrc: 'https://i.imgur.com/qmFsG79.jpeg', // <--- Ilagay mo dito yung dark wood texture
-            type: 'frame'
+        { 
+            id: 'frame_gold', 
+            name: 'Solid Gold Bullion', 
+            price: 350000, 
+            imageSrc: 'https://i.imgur.com/tgSGXgj.jpeg', 
+            type: 'frame', 
+            minLevel: 55 
         }
     ],
 
     felts: [
-        // 1. DEFAULT (Wood Slab - Ito lang ang may Tint)
-        {
-            id: 'default',
-            name: 'Honey Gold (Default)',
-            price: 0,
-            imageSrc: 'https://i.imgur.com/T9ft7vz.jpeg', // Wood texture
-            tint: 'rgba(200, 150, 70, 0.85)', // <--- MAY TINT (Kasi kukulayan natin yung kahoy)
-            type: 'felt'
+        { 
+            id: 'default', 
+            name: 'Honey Gold (Default)', 
+            price: 0, 
+            imageSrc: 'https://i.imgur.com/T9ft7vz.jpeg', 
+            tint: 'rgba(200, 150, 70, 0.85)', 
+            type: 'felt', 
+            minLevel: 1 
         },
-
-        // 2. ROYAL BLUE (Wala nang Tint)
-        {
-            id: 'felt_royal_blue',
-            name: 'Royal Blue',
-            price: 5000,
-            imageSrc: 'https://i.imgur.com/1gi4wfu.jpeg', // <--- ILAGAY ANG LINK DITO
-            tint: null, // <--- NULL (Kasi Blue na yung picture)
-            type: 'felt'
+        { 
+            id: 'felt_royal_blue', 
+            name: 'Royal Blue', 
+            price: 5000, 
+            imageSrc: 'https://i.imgur.com/1gi4wfu.jpeg', 
+            tint: null, 
+            type: 'felt', 
+            minLevel: 5 
         },
-        // 3. EMERALD GREEN (Wala nang Tint)
-        {
-            id: 'felt_emerald',
-            name: 'Emerald Green',
-            price: 5000,
-            imageSrc: 'https://i.imgur.com/M6uJUgu.jpeg', // <--- ILAGAY ANG LINK DITO
-            tint: null, // <--- NULL (Kasi Green na yung picture)
-            type: 'felt'
+        { 
+            id: 'felt_emerald', 
+            name: 'Emerald Green', 
+            price: 12000, 
+            imageSrc: 'https://i.imgur.com/M6uJUgu.jpeg', 
+            tint: null, 
+            type: 'felt', 
+            minLevel: 12 
         },
-        // 4. CASINO RED (Wala nang Tint)
-        {
-            id: 'felt_casino_red',
-            name: 'Casino Red',
-            price: 8000,
-            imageSrc: 'https://i.imgur.com/QIjNgNP.jpeg', // <--- ILAGAY ANG LINK DITO
-            tint: null, // <--- NULL (Kasi Red na yung picture)
-            type: 'felt'
+        { 
+            id: 'felt_casino_red', 
+            name: 'Casino Red', 
+            price: 25000, 
+            imageSrc: 'https://i.imgur.com/QIjNgNP.jpeg', 
+            tint: null, 
+            type: 'felt', 
+            minLevel: 22 
         },
-{
-            id: 'felt_midnight_black',
-            name: 'Midnight Black',
-            price: 12000,
-            imageSrc: 'https://i.imgur.com/FzM3c96.jpeg', // <--- Ilagay mo dito yung dark fabric texture
-            tint: null, // <--- NULL (Kasi itim na siya)
-            type: 'felt'
+        { 
+            id: 'felt_midnight_black', 
+            name: 'Midnight Black', 
+            price: 60000, 
+            imageSrc: 'https://i.imgur.com/FzM3c96.jpeg', 
+            tint: null, 
+            type: 'felt', 
+            minLevel: 40 
         }
-
     ]
-
 };
 
 
@@ -5817,71 +6018,51 @@ async function endGame(winnerTextMessage, finalGameData = null) {
     const winSound = document.getElementById('win-sfx');
     const loseSound = document.getElementById('lose-sfx');
     
-    // Reset muna para fresh
     if (winSound) { winSound.pause(); winSound.currentTime = 0; }
     if (loseSound) { loseSound.pause(); loseSound.currentTime = 0; }
 
-    // WIN CONDITION
     if (winnerTextMessage.includes("You Win")) {
-        if (winSound) {
-            winSound.volume = 0.8; 
-            // Tandaan: Kailangan ng user interaction bago tumunog ang audio sa browser
-            winSound.play().catch(e => console.log("Win Sound Error:", e));
-        }
-    } 
-    // LOSE / FORFEIT CONDITION
-    else if (winnerTextMessage.includes("You Lose") || 
-             winnerTextMessage.includes("Forfeited") || 
-             winnerTextMessage.includes("Opponent Wins")) {
-        
-        if (loseSound) {
-            loseSound.volume = 0.8;
-            loseSound.play().catch(e => console.log("Lose Sound Error:", e));
-        }
+        if (winSound) { winSound.volume = 0.8; winSound.play().catch(e => console.log("Win Sound Error:", e)); }
+    } else if (winnerTextMessage.includes("You Lose") || winnerTextMessage.includes("Forfeited") || winnerTextMessage.includes("Opponent Wins")) {
+        if (loseSound) { loseSound.volume = 0.8; loseSound.play().catch(e => console.log("Lose Sound Error:", e)); }
     }
-    // ---------------------------
 
     let bonus = 0;
     let xpBonus = 0;
     let trophiesChange = 0;
     let reason = "";
     
-    // --- DETERMINE BET AMOUNT ---
     let bet = 0;
     if (isOnlineGame) {
         const gameData = finalGameData || (gameId ? (await getDoc(doc(db, "games", gameId))).data() : null);
-        if (gameData && gameData.betAmount) {
-            bet = gameData.betAmount;
-        } else {
-            bet = currentMatchBet; 
-        }
+        if (gameData && gameData.betAmount) { bet = gameData.betAmount; } else { bet = currentMatchBet; }
     }
 
-    // --- REWARDS LOGIC ---
+    // --- REWARDS LOGIC (UPDATED) ---
     if (!isOnlineGame) { // AI GAME
         if (winnerTextMessage.includes("You Win")) {
             bonus = REWARD_WIN_BONUS;
             xpBonus = XP_WIN_BONUS;
-            trophiesChange = 20;
-            reason = "You Win!";
+            
+            // ❌ FIX: Wala dapat trophy sa AI para iwas "Farming"
+            trophiesChange = 0; 
+            
+            reason = "Practice Win!";
             triggerFireworks(); 
         } else if (winnerTextMessage.includes("You Lose")) {
             bonus = REWARD_LOSE_CONSOLATION;
             xpBonus = XP_LOSE_CONSOLATION;
-            trophiesChange = -10;
+            trophiesChange = 0; // Wala ring bawas sa AI
             reason = "Good Game!";
         }
-        
         if(bonus > 0) {
             playerTotalCurrency += bonus;
             localStorage.setItem('pinoyPoolCurrency', playerTotalCurrency.toString()); 
             updateCurrencyDisplay();
         }
-        
     } else { // ONLINE GAME
-        
         if (winnerTextMessage.includes("You Win")) {
-            trophiesChange = 20;
+            trophiesChange = 25; // RANKED WIN
             xpBonus = XP_WIN_BONUS;
             triggerFireworks(); 
 
@@ -5889,17 +6070,11 @@ async function endGame(winnerTextMessage, finalGameData = null) {
                 const totalPot = bet * 2;
                 const houseCut = Math.floor(totalPot * 0.10); 
                 const netWin = totalPot - houseCut;
-                
                 playerTotalCurrency += netWin;
-                
                 localStorage.setItem('pinoyPoolCurrency', playerTotalCurrency.toString());
                 updateCurrencyDisplay(); 
-                
-                setTimeout(() => {
-                    showRewardPopup(netWin, `POT WON!<br><small>(Tong: ${houseCut})</small>`);
-                }, 1000);
+                setTimeout(() => { showRewardPopup(netWin, `POT WON!<br><small>(Tong: ${houseCut})</small>`); }, 1000);
                 reason = "Pustahan King!";
-                
             } else {
                 bonus = REWARD_WIN_BONUS;
                 playerTotalCurrency += bonus;
@@ -5908,92 +6083,52 @@ async function endGame(winnerTextMessage, finalGameData = null) {
                 reason = "Online Win!";
                 showRewardPopup(bonus, reason);
             }
-            
         } else {
-            trophiesChange = -15; 
-            if (bet > 0) {
-                setTimeout(() => {
-                    showRewardPopup(0, `<span style="color:red">BET LOST: -${bet}</span>`);
-                }, 1000);
-            } else {
-                setTimeout(() => {
-                    showRewardPopup(0, "Safe Match (No Bet)");
-                }, 1000);
-            }
+            trophiesChange = -20; // RANKED LOSS
+            if (bet > 0) { setTimeout(() => { showRewardPopup(0, `<span style="color:red">BET LOST: -${bet}</span>`); }, 1000); }
+            else { setTimeout(() => { showRewardPopup(0, "Safe Match (No Bet)"); }, 1000); }
         }
     }
 
-    // --- APPLY STATS (WITH RANK UP CHECK) ---
+    // --- APPLY STATS ---
     if (trophiesChange !== 0) {
-        // 1. Kunin ang lumang Rank Index BAGO magdagdag
         const oldRankIndex = getPlayerRank(playerTrophies).index;
-
-        // 2. I-apply ang trophy change
         playerTrophies += trophiesChange;
         if (playerTrophies < 0) playerTrophies = 0;
-
-        // 3. Kunin ang bagong Rank Index PAGKATAPOS magdagdag
         const newRankIndex = getPlayerRank(playerTrophies).index;
 
-        // 4. Check kung tumaas (Promoted!)
-        if (newRankIndex > oldRankIndex) {
-            // Delay konti (2.5s) para pumasok muna ang "You Win" modal, tapos ito papatong
-            setTimeout(() => {
-                showRankUpScreen(newRankIndex);
-            }, 2500); 
-        }
-
-        // Ipakita ang +Trophies toast message
-        setTimeout(() => {
-            showMessage(`${trophiesChange > 0 ? '+' : ''}${trophiesChange} Trophies`, 2000);
-        }, 1500);
+        if (newRankIndex > oldRankIndex) { setTimeout(() => { showRankUpScreen(newRankIndex); }, 2500); }
+        setTimeout(() => { showMessage(`${trophiesChange > 0 ? '+' : ''}${trophiesChange} Trophies`, 2000); }, 1500);
     }
 
     if (xpBonus > 0) gainXP(xpBonus);
     savePlayerStats();
     currentMatchBet = 0; 
-
     gameState = 'gameover'; 
     updateCurrencyDisplay();
     updateLegalTargetChips();
 
-    // --- VISUALS (Updated Logic) ---
+    // --- VISUALS ---
     let finalWinnerText = winnerTextMessage;
-    
-    // Default Color
     winnerText.style.color = "#FFFFFF"; 
     winnerText.style.textShadow = "4px 4px 0 #000";
 
-    // 1. WIN CONDITION
     if (winnerTextMessage.includes("You Win") || winnerTextMessage.includes("Opponent Forfeited")) {
-        winnerText.style.color = "#FFD700"; // Gold
+        winnerText.style.color = "#FFD700"; 
         winnerText.style.textShadow = "4px 4px 0 #000, 0 0 20px gold";
-        // Kung forfeit ng kalaban, linawin natin ang message
-        if (winnerTextMessage.includes("Opponent Forfeited")) {
-            finalWinnerText = "OPPONENT<br>FORFEITED";
-        }
-    } 
-    // 2. LOSE / SURRENDER CONDITION
-    else if (winnerTextMessage.includes("You Lose") || winnerTextMessage.includes("You Forfeited")) {
-        winnerText.style.color = "#FF4444"; // Red
+        if (winnerTextMessage.includes("Opponent Forfeited")) { finalWinnerText = "OPPONENT<br>FORFEITED"; }
+    } else if (winnerTextMessage.includes("You Lose") || winnerTextMessage.includes("You Forfeited")) {
+        winnerText.style.color = "#FF4444"; 
         winnerText.style.textShadow = "4px 4px 0 #000, 0 0 20px red";
-        
-        if (winnerTextMessage.includes("You Forfeited")) {
-            finalWinnerText = "YOU<br>FORFEITED";
-        }
-    } 
-    // 3. DRAW
-    else if (winnerTextMessage.includes("Draw")) {
-        winnerText.style.color = "#AAAAAA"; // Gray/Silver
+        if (winnerTextMessage.includes("You Forfeited")) { finalWinnerText = "YOU<br>FORFEITED"; }
+    } else if (winnerTextMessage.includes("Draw")) {
+        winnerText.style.color = "#AAAAAA"; 
         finalWinnerText = "DRAW GAME";
     }
 
-    // Special Display para sa 61-Ball Score
     if (gameMode.includes('61-ball')) {
-        // Panatilihin ang Title (Win/Lose) pero dagdagan ng score sa ilalim
         winnerText.innerHTML = `${finalWinnerText}<br><div style="font-size: 0.4em; margin-top: 10px; color: #eee; font-weight: normal;">${player61Score} - ${opponent61Score}</div>`;
     } else {
-        // Gamitin ang HTML para gumana ang <br> breaks
         winnerText.innerHTML = finalWinnerText;
     }
     
@@ -6020,65 +6155,40 @@ async function endGame(winnerTextMessage, finalGameData = null) {
             if (gameData) {
                 opponentsOriginalHand = localPlayerId === 'player1' ? gameData.originalPlayer2Hand : gameData.originalPlayer1Hand;
                 opponentsFinalHand = localPlayerId === 'player1' ? gameData.player2Hand : gameData.player1Hand;
-            } else {
-                opponentsOriginalHand = []; opponentsFinalHand = [];
-            }
+            } else { opponentsOriginalHand = []; opponentsFinalHand = []; }
         } else {
             opponentsOriginalHand = originalOpponentHand; opponentsFinalHand = opponentHand;
         }
 
         if(opponentsOriginalHand && opponentsFinalHand) {
-            const pocketedCards = opponentsOriginalHand.filter(originalCard => 
-                !opponentsFinalHand.some(finalCard => 
-                    finalCard.rank === originalCard.rank && finalCard.suit === originalCard.suit
-                )
-            );
+            const pocketedCards = opponentsOriginalHand.filter(originalCard => !opponentsFinalHand.some(finalCard => finalCard.rank === originalCard.rank && finalCard.suit === originalCard.suit));
             const createCardElement = (card) => {
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'card';
+                const cardDiv = document.createElement('div'); cardDiv.className = 'card';
                 const color = (card.suit === '♥' || card.suit === '♦') ? '#D32F2F' : '#212121';
                 cardDiv.innerHTML = `<span class="card-rank" style="color: ${color};">${card.rank}</span><span class="card-suit" style="color: ${color};">${card.suit}</span>`;
                 return cardDiv;
             };
             if (pocketedCards.length > 0) {
-                const pocketedContainer = document.createElement('div');
-                pocketedContainer.innerHTML = '<p style="margin: 10px 0 5px 0;">Pocketed:</p>';
-                const pocketedCardsDiv = document.createElement('div');
-                pocketedCardsDiv.style.cssText = 'display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;';
+                const pocketedContainer = document.createElement('div'); pocketedContainer.innerHTML = '<p style="margin: 10px 0 5px 0;">Pocketed:</p>';
+                const pocketedCardsDiv = document.createElement('div'); pocketedCardsDiv.style.cssText = 'display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;';
                 pocketedCards.forEach(card => pocketedCardsDiv.appendChild(createCardElement(card)));
-                pocketedContainer.appendChild(pocketedCardsDiv);
-                opponentHandReveal.appendChild(pocketedContainer);
+                pocketedContainer.appendChild(pocketedCardsDiv); opponentHandReveal.appendChild(pocketedContainer);
             }
             if (opponentsFinalHand.length > 0) {
-                const remainingContainer = document.createElement('div');
-                remainingContainer.innerHTML = '<p style="margin: 10px 0 5px 0;">Remaining:</p>';
-                const remainingCardsDiv = document.createElement('div');
-                remainingCardsDiv.style.cssText = 'display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;';
+                const remainingContainer = document.createElement('div'); remainingContainer.innerHTML = '<p style="margin: 10px 0 5px 0;">Remaining:</p>';
+                const remainingCardsDiv = document.createElement('div'); remainingCardsDiv.style.cssText = 'display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;';
                 opponentsFinalHand.forEach(card => remainingCardsDiv.appendChild(createCardElement(card)));
-                remainingContainer.appendChild(remainingCardsDiv);
-                opponentHandReveal.appendChild(remainingContainer);
+                remainingContainer.appendChild(remainingCardsDiv); opponentHandReveal.appendChild(remainingContainer);
             }
             opponentHandReveal.style.display = 'flex';
         }
     } else if (gameMode.includes('61-ball')) {
-        opponentHandReveal.innerHTML = `
-            <div style="text-align: center;">
-                <h4>Final Score</h4>
-                <p style="font-size: 1.4em; margin: 10px 0; color: white;">${localPlayerName}: <span style="font-weight: bold; color: var(--gold-accent);">${player61Score}</span></p>
-                <p style="font-size: 1.4em; margin: 10px 0; color: white;">${opponentPlayerName}: <span style="font-weight: bold; color: var(--gold-accent);">${opponent61Score}</span></p>
-            </div>
-        `;
+        opponentHandReveal.innerHTML = `<div style="text-align: center;"><h4>Final Score</h4><p style="font-size: 1.4em; margin: 10px 0; color: white;">${localPlayerName}: <span style="font-weight: bold; color: var(--gold-accent);">${player61Score}</span></p><p style="font-size: 1.4em; margin: 10px 0; color: white;">${opponentPlayerName}: <span style="font-weight: bold; color: var(--gold-accent);">${opponent61Score}</span></p></div>`;
         opponentHandReveal.style.display = 'flex';
     } else {
-        opponentHandReveal.innerHTML = '';
-        opponentHandReveal.style.display = 'none';
+        opponentHandReveal.innerHTML = ''; opponentHandReveal.style.display = 'none';
     }
-    
-    // Show Modal
-    setTimeout(() => {
-        winnerModal.classList.add('show');
-        history.pushState({ modal: 'winner' }, 'Winner', '#winner');
-    }, 1000);
+    setTimeout(() => { winnerModal.classList.add('show'); history.pushState({ modal: 'winner' }, 'Winner', '#winner'); }, 1000);
 }
 async function resetToMenu() {
     playButtonSound();
@@ -10231,51 +10341,53 @@ function renderShopItems() {
             isEquipped = (equippedItems.felt === item.id);
         }
 
+        // ✨ BAGONG DAGDAG: Level Lock Check ✨
+        // Kung walang nakalagay na minLevel sa item, default ay Level 1 (Open for all)
+        let requiredLevel = item.minLevel || 1; 
+        let isLevelLocked = playerLevel < requiredLevel;
+
         const itemDiv = document.createElement('div');
         itemDiv.className = 'shop-item';
 
-        // ▼▼▼ DITO ANG FIX SA STATS (IBINALIK KO NA) ▼▼▼
+        // ▼▼▼ FIX SA STATS (Kopya mula sa code mo) ▼▼▼
         let statsHtml = '';
-        
-        // Ipakita lang ang stats kung "Cues" ang tab
         if (currentShopTab === 'cues' && item.stats) {
             statsHtml = `
                 <div class="shop-item-stats">
                     <div class="stat-entry">
                         <span class="stat-label">POW</span>
-                        <div class="stat-bar-background">
-                            <div class="stat-bar-fill power" style="width: ${item.stats.Power * 10}%"></div>
-                        </div>
+                        <div class="stat-bar-background"><div class="stat-bar-fill power" style="width: ${item.stats.Power * 10}%"></div></div>
                     </div>
                     <div class="stat-entry">
                         <span class="stat-label">AIM</span>
-                        <div class="stat-bar-background">
-                            <div class="stat-bar-fill aim" style="width: ${item.stats.Aim * 10}%"></div>
-                        </div>
+                        <div class="stat-bar-background"><div class="stat-bar-fill aim" style="width: ${item.stats.Aim * 10}%"></div></div>
                     </div>
                     <div class="stat-entry">
                         <span class="stat-label">SPIN</span>
-                        <div class="stat-bar-background">
-                            <div class="stat-bar-fill spin" style="width: ${item.stats.Spin * 10}%"></div>
-                        </div>
+                        <div class="stat-bar-background"><div class="stat-bar-fill spin" style="width: ${item.stats.Spin * 10}%"></div></div>
                     </div>
                 </div>
             `;
         }
-        // ▲▲▲ TAPOS NG STATS FIX ▲▲▲
 
-        // Button Logic (Buy / Equip / Equipped)
+        // ▼▼▼ DITO ANG PAGBABAGO SA BUTTONS ▼▼▼
         let buttonHtml = '';
+        
         if (isEquipped) {
             buttonHtml = `<button class="shop-buy-button equipped" disabled>Equipped</button>`;
         } else if (isOwned) {
             buttonHtml = `<button class="shop-buy-button equip" data-item-id="${item.id}" data-category="${currentShopTab}">Equip</button>`;
-        } else {
-            // Check kung may pera pambili
+        } 
+        // 🔒 LOCK LOGIC: Kung mababa pa ang level, ipakita ang Lock button
+        else if (isLevelLocked) {
+            buttonHtml = `<button class="shop-buy-button disabled" disabled>🔒 Unlocks at Lv. ${requiredLevel}</button>`;
+        } 
+        else {
+            // Normal Buy Logic (Kung may pera o wala)
             if (playerTotalCurrency >= item.price) {
-                buttonHtml = `<button class="shop-buy-button buy" data-item-id="${item.id}" data-category="${currentShopTab}">Buy (${item.price})</button>`;
+                buttonHtml = `<button class="shop-buy-button buy" data-item-id="${item.id}" data-category="${currentShopTab}">Buy (${formatCurrencyShort(item.price)})</button>`;
             } else {
-                buttonHtml = `<button class="shop-buy-button disabled" disabled>Buy (${item.price})</button>`;
+                buttonHtml = `<button class="shop-buy-button disabled" disabled>Buy (${formatCurrencyShort(item.price)})</button>`;
             }
         }
 
@@ -12928,14 +13040,19 @@ async function showProfile(target) {
     gameState = 'modal_open'; 
     
     const modal = document.getElementById('profile-modal');
+    
+    // Elements to update
     const nameEl = document.getElementById('profile-name-display');
-    const rankEl = document.getElementById('profile-rank-badge');
     const winsEl = document.getElementById('profile-wins-display');
     const levelEl = document.getElementById('profile-level-display');
     const cueImgEl = document.getElementById('profile-cue-preview');
     const cueNameEl = document.getElementById('profile-cue-name');
     
-    // IMAGE ELEMENTS
+    // NEW: Trophy Elements
+    const trophyIconEl = document.getElementById('profile-trophy-icon');
+    const rankNameEl = document.getElementById('profile-rank-name');
+    
+    // Image Elements
     const avatarImg = document.getElementById('profile-avatar-img');
     const defaultAvatar = document.getElementById('profile-avatar-default');
     const uploadBtn = document.getElementById('profile-upload-btn');
@@ -12946,12 +13063,8 @@ async function showProfile(target) {
         // --- SARILI MONG PROFILE ---
         const rankInfo = getPlayerRank(playerTrophies);
         
-        // IPALITAW ANG UPLOAD BUTTON (CAMERA ICON)
-        if(uploadBtn) {
-            uploadBtn.style.display = 'flex';
-            // Siguraduhing nasa ibabaw ang camera button
-            uploadBtn.style.zIndex = '200'; 
-        }
+        // Show Upload Button
+        if(uploadBtn) uploadBtn.style.display = 'flex';
 
         let myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
 
@@ -12960,12 +13073,13 @@ async function showProfile(target) {
             photo: myPhoto, 
             rankName: rankInfo.name,
             rankColor: rankInfo.color,
-            wins: "My Stats", 
+            rankIcon: rankInfo.icon, // Kukunin ang icon (e.g., 👑)
+            wins: "My Stats", // Note: Fetch real wins if available globally
             level: playerLevel,
             cueId: equippedItems.cue
         };
 
-        // Fetch real data from DB
+        // Fetch real wins from DB
         if (localPlayerUid && db) {
              getDoc(doc(db, "players", localPlayerUid)).then(snap => {
                  if(snap.exists()) {
@@ -12975,7 +13089,6 @@ async function showProfile(target) {
                          if(avatarImg) {
                              avatarImg.src = data.photo;
                              avatarImg.style.display = 'block';
-                             // Dito natin ilalagay ang Zoom sa loob ng Profile Modal
                              avatarImg.onclick = () => window.viewFullPhoto(data.photo);
                          }
                          if(defaultAvatar) defaultAvatar.style.display = 'none';
@@ -12987,7 +13100,7 @@ async function showProfile(target) {
 
     } else {
         // --- PROFILE NG KALABAN ---
-        if(uploadBtn) uploadBtn.style.display = 'none'; // Tago upload button
+        if(uploadBtn) uploadBtn.style.display = 'none'; // Hide upload button
 
         if (!isOnlineGame) {
             // AI
@@ -12997,6 +13110,7 @@ async function showProfile(target) {
                 photo: null,
                 rankName: "Computer",
                 rankColor: "#aaa",
+                rankIcon: "🤖",
                 wins: "∞",
                 level: 99,
                 cueId: 'default'
@@ -13009,6 +13123,7 @@ async function showProfile(target) {
                 photo: window.opponentPhotoUrl || null, 
                 rankName: oppRankInfo.name,
                 rankColor: oppRankInfo.color,
+                rankIcon: oppRankInfo.icon,
                 wins: "?", 
                 level: "?",
                 cueId: opponentEquippedCueId || 'default'
@@ -13016,21 +13131,29 @@ async function showProfile(target) {
         }
     }
 
-    // --- RENDER TEXT ---
+    // --- APPLY DATA TO UI ---
     if(nameEl) nameEl.textContent = playerData.name;
-    if(rankEl) {
-        rankEl.textContent = `[${playerData.rankName}]`;
-        rankEl.style.color = playerData.rankColor;
+    
+    // Update Trophy Section
+    if(trophyIconEl) {
+        trophyIconEl.textContent = playerData.rankIcon; // Ilagay ang malaking emoji
+        // Optional: Lagyan ng glow color base sa rank
+        trophyIconEl.style.filter = `drop-shadow(0 0 15px ${playerData.rankColor})`;
     }
-    if(winsEl) winsEl.textContent = playerData.wins;
+    
+    if(rankNameEl) {
+        rankNameEl.textContent = playerData.rankName;
+        rankNameEl.style.color = playerData.rankColor;
+    }
+
+    if(winsEl && target !== 'player') winsEl.textContent = playerData.wins;
     if(levelEl) levelEl.textContent = playerData.level;
 
-    // --- RENDER PHOTO ---
+    // Render Avatar
     if (playerData.photo) {
         if(avatarImg) {
             avatarImg.src = playerData.photo;
             avatarImg.style.display = 'block';
-            // Enable Zoom pag pinindot ang picture mismo
             avatarImg.onclick = () => window.viewFullPhoto(playerData.photo);
         }
         if(defaultAvatar) defaultAvatar.style.display = 'none';
@@ -13042,7 +13165,7 @@ async function showProfile(target) {
         }
     }
 
-    // --- RENDER CUE ---
+    // Render Cue
     const cueItem = SHOP_ITEMS.cues.find(c => c.id === playerData.cueId) || SHOP_ITEMS.cues[0];
     if(cueImgEl) cueImgEl.style.backgroundImage = `url('${cueItem.imageSrc}')`;
     if(cueNameEl) cueNameEl.textContent = cueItem.name;
@@ -13141,6 +13264,23 @@ function renderBetButtons() {
 
         btn.onclick = () => {
             playButtonSound();
+
+            // ▼▼▼ DITO ANG BAGONG ANTI-SMURF CHECK ▼▼▼
+            // Sinisigurado nito na hindi makakapasok ang High Rank sa Low Bet
+
+            // Rule 1: Gold Rank+ (1500 Trophies) bawal na sa Free Play (Tambay Lane)
+            if (tier.amount === 0 && playerTrophies >= 1500) {
+                showMessage("🚫 Gold Rank+ cannot play in Free/Tambay Lane!", 2500);
+                return; // Stop! Wag ituloy ang pag-select
+            }
+
+            // Rule 2: Mythical Rank (20000 Trophies) bawal sa 100 Coins (Barangay Cup)
+            if (tier.amount === 100 && playerTrophies >= 20000) {
+                showMessage("🚫 Mythical players must bet high!", 2500);
+                return; // Stop!
+            }
+            // ▲▲▲ ▲▲▲
+
             selectedBetAmount = tier.amount;
             
             // Update Status Text
@@ -13156,7 +13296,7 @@ function renderBetButtons() {
                 }
             }
 
-            // ▼▼▼ UPDATE BUTTON TEXTS (PARA ALAM MO AGAD) ▼▼▼
+            // Update Button Texts
             const createBtn = document.getElementById('create-game-button');
             const findBtn = document.getElementById('find-match-button');
             
@@ -13168,7 +13308,6 @@ function renderBetButtons() {
                 if(createBtn) createBtn.textContent = "Create Private";
                 if(findBtn) findBtn.textContent = "FIND MATCH";
             }
-            // ▲▲▲ ▲▲▲
 
             renderBetButtons(); 
         };
@@ -13176,8 +13315,6 @@ function renderBetButtons() {
         container.appendChild(btn);
     });
 }
-
-// Ilagay ito malapit sa ibang UI functions
 function renderInviteBetButtons() {
     const container = document.getElementById('invite-bet-container');
     if (!container) return;
@@ -13203,6 +13340,21 @@ function renderInviteBetButtons() {
 
         btn.onclick = () => {
             playButtonSound();
+
+            // ▼▼▼ ANTI-SMURF CHECK FOR INVITES ▼▼▼
+            // Rule 1: Gold Rank+ (1500+) bawal mag-invite sa Free Play
+            if (tier.amount === 0 && playerTrophies >= 1500) {
+                showMessage("🚫 Gold Rank+ cannot invite to Free Match!", 2500);
+                return;
+            }
+
+            // Rule 2: Mythical Rank (20000+) bawal mag-invite sa 100 Coins
+            if (tier.amount === 100 && playerTrophies >= 20000) {
+                showMessage("🚫 Mythical players must invite with high bets!", 2500);
+                return;
+            }
+            // ▲▲▲ ▲▲▲
+
             selectedBetAmount = tier.amount; // Update global bet variable
             
             // Update text
@@ -13215,7 +13367,6 @@ function renderInviteBetButtons() {
         container.appendChild(btn);
     });
 }
-
 let currentChatUnsubscribe = null;
 let currentChatFriendUid = null;
 
