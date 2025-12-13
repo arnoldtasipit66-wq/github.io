@@ -4550,6 +4550,77 @@ div#opponent-info.hud-active {
 @keyframes slideUpFade {
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* --- RANK EXCLUSIVE BORDERS --- */
+
+/* Override default avatar styles para sumunod sa borders */
+.avatar-circle, .hud-avatar, #profile-avatar-img, .friend-info img, .vs-player-box img {
+    box-sizing: border-box !important;
+    transition: all 0.3s ease;
+    position: relative;
+    background-clip: padding-box; /* Fix para di matakpan ang border */
+}
+
+/* 1. BRONZE */
+.rank-border-bronze {
+    border: 3px solid #CD7F32 !important;
+}
+
+/* 2. SILVER */
+.rank-border-silver {
+    border: 3px solid #C0C0C0 !important;
+    box-shadow: 0 0 5px rgba(192, 192, 192, 0.5);
+}
+
+/* 3. GOLD (Pulse Effect) */
+.rank-border-gold {
+    border: 3px solid #FFD700 !important;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    animation: goldPulse 2s infinite;
+}
+
+/* 4. PLATINUM (Cyan Glow) */
+.rank-border-platinum {
+    border: 3px solid #00CED1 !important;
+    box-shadow: 0 0 15px #00CED1;
+}
+
+/* 5. DIAMOND (Blue Sparkle) */
+.rank-border-diamond {
+    border: 3px solid #B9F2FF !important;
+    box-shadow: 0 0 20px #B9F2FF, inset 0 0 10px #B9F2FF;
+}
+
+/* 6. LEGENDARY (Red Aura Breathing) */
+.rank-border-legendary {
+    border: 4px solid #FF4500 !important;
+    animation: legendaryBreath 1.5s infinite alternate;
+}
+
+/* 7. MYTHICAL (RGB Fire Effect) */
+.rank-border-mythical {
+    border: 4px solid transparent !important;
+    background-image: linear-gradient(#141423, #141423), linear-gradient(to right, #FF00FF, #00FFFF, #FF00FF) !important;
+    background-origin: border-box !important;
+    background-clip: content-box, border-box !important;
+    box-shadow: 0 0 30px #FF00FF;
+    animation: mythicalSpin 3s linear infinite;
+}
+
+/* Animations */
+@keyframes goldPulse {
+    0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.4); border-color: #DAA520; }
+    50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.9); border-color: #FFD700; }
+    100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.4); border-color: #DAA520; }
+}
+@keyframes legendaryBreath {
+    from { box-shadow: 0 0 10px #FF4500; transform: scale(1); }
+    to { box-shadow: 0 0 25px #FF4500; transform: scale(1.02); }
+}
+@keyframes mythicalSpin {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
         
 </style>
 </head>
@@ -5130,15 +5201,14 @@ const XP_LOSE_CONSOLATION = 15;
 const LEVEL_UP_COIN_REWARD = 250; 
 
 const RANKS = [
-    { name: "Bronze",       minTrophies: 0,      color: "#CD7F32", icon: "🥉" },
-    { name: "Silver",       minTrophies: 500,    color: "#C0C0C0", icon: "🥈" }, 
-    { name: "Gold",         minTrophies: 1500,   color: "#FFD700", icon: "🥇" }, 
-    { name: "Platinum",     minTrophies: 3000,   color: "#00CED1", icon: "💠" }, 
-    { name: "Diamond",      minTrophies: 6000,   color: "#B9F2FF", icon: "💎" }, 
-    { name: "Legendary",    minTrophies: 10000,  color: "#FF4500", icon: "👑" }, 
-    { name: "Mythical",     minTrophies: 20000,  color: "#FF00FF", icon: "🔥" }  
+    { name: "Bronze",       minTrophies: 0,      color: "#CD7F32", icon: "🥉", cssClass: "rank-border-bronze" },
+    { name: "Silver",       minTrophies: 500,    color: "#C0C0C0", icon: "🥈", cssClass: "rank-border-silver" }, 
+    { name: "Gold",         minTrophies: 1500,   color: "#FFD700", icon: "🥇", cssClass: "rank-border-gold" }, 
+    { name: "Platinum",     minTrophies: 3000,   color: "#00CED1", icon: "💠", cssClass: "rank-border-platinum" }, 
+    { name: "Diamond",      minTrophies: 6000,   color: "#B9F2FF", icon: "💎", cssClass: "rank-border-diamond" }, 
+    { name: "Legendary",    minTrophies: 10000,  color: "#FF4500", icon: "👑", cssClass: "rank-border-legendary" }, 
+    { name: "Mythical",     minTrophies: 20000,  color: "#FF00FF", icon: "🔥", cssClass: "rank-border-mythical" }  
 ];
-
 
 let playerLevel = 1;
 let currentCombo = 0;  
@@ -9089,27 +9159,28 @@ function updateInfoBox() {
     const player1Name = localPlayerName || 'You'; 
     let player2Name = opponentPlayerName || 'Opponent'; 
     
-    // --- SETUP AVATARS (MERGED LOGIC) ---
+    // --- BAGO: Kunin ang CSS Class para sa Border (Bronze, Gold, Mythical, etc.) ---
+    // Kung walang cssClass, mag-default sa Bronze
+    const myBorderClass = myRank.cssClass || 'rank-border-bronze';
+    
+    // Check kung Online o AI para sa border ng kalaban
+    const oppBorderClass = (isOnlineGame ? opponentRank.cssClass : 'rank-border-bronze') || 'rank-border-bronze';
 
-    // A. My Avatar (Check Photo -> Fallback to Rank Icon)
+    // A. My Avatar HTML
     const myLocalPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
     let myAvatarHTML = myRank.icon; 
     
     if (myLocalPhoto && myLocalPhoto !== 'null' && myLocalPhoto !== 'undefined') {
-        // May Picture: Ipakita na may click-to-zoom
         myAvatarHTML = `<img src="${myLocalPhoto}" onclick="event.stopPropagation(); window.viewFullPhoto('${myLocalPhoto}')" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; cursor: pointer;">`;
     }
 
-    // B. Opponent Avatar (Check Online Photo -> Fallback to AI Robot/Rank Icon)
+    // B. Opponent Avatar HTML
     let opponentAvatarHTML = opponentRank.icon;
-    
     if (isOnlineGame) {
-        // ONLINE: Check kung may photo ang kalaban (naka-save sa global variable galing syncGameState)
         if (window.opponentPhotoUrl && window.opponentPhotoUrl !== 'null') {
             opponentAvatarHTML = `<img src="${window.opponentPhotoUrl}" onclick="event.stopPropagation(); window.viewFullPhoto('${window.opponentPhotoUrl}')" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; cursor: pointer;">`;
         }
     } else {
-        // AI / OFFLINE MODE
         opponentAvatarHTML = "🤖";
         if (opponentPlayerName && opponentPlayerName !== "Opponent") {
             player2Name = opponentPlayerName; 
@@ -9133,8 +9204,6 @@ function updateInfoBox() {
     } else if (gameMode.includes('61-ball')) { 
         p1Sub = `<span style="color:#FFD700">${player61Score} Pts</span>`;
         p2Sub = `<span style="color:#FFD700">${opponent61Score} Pts</span>`;
-        
-        // Guide text para sa 61-ball
         if(lowestChipNumber > 0 && gameState === 'aiming') { 
             cueBallGuide.innerHTML = `Target: Chip #${lowestChipNumber}`; 
             cueBallGuide.style.display = 'block'; 
@@ -9143,10 +9212,10 @@ function updateInfoBox() {
         } 
     }
 
-    // --- RENDER HTML (UPDATED CSS FOR IMAGES) ---
-    // Naglagay ako ng 'overflow: hidden' at border color base sa Rank
+    // --- RENDER HTML (ETO ANG IMPORTANTE: GINAMIT ANG CLASSES) ---
+    
     playerInfo.innerHTML = `
-        <div class="hud-avatar" style="overflow: hidden; padding: 0; border: 2px solid ${myRank.color};">${myAvatarHTML}</div>
+        <div class="hud-avatar ${myBorderClass}" style="overflow: hidden; padding: 0;">${myAvatarHTML}</div>
         <div class="hud-details">
             <div class="hud-name">${player1Name}</div>
             <div class="hud-sub">${p1Sub}</div>
@@ -9160,7 +9229,7 @@ function updateInfoBox() {
             <div class="hud-name">${player2Name}</div>
             <div class="hud-sub">${p2Sub}</div>
         </div>
-        <div class="hud-avatar" style="overflow: hidden; padding: 0; border: 2px solid ${isOnlineGame ? opponentRank.color : '#aaa'};">${opponentAvatarHTML}</div>
+        <div class="hud-avatar ${oppBorderClass}" style="overflow: hidden; padding: 0;">${opponentAvatarHTML}</div>
     `;
     opponentInfo.style.cursor = 'pointer';
     opponentInfo.onclick = () => showProfile('opponent');
@@ -9175,11 +9244,8 @@ function updateInfoBox() {
         opponentInfo.classList.add('hud-active'); 
     }
     
-    // ▼▼▼ CRITICAL FIX: RING LIGHT UPDATE ▼▼▼
-    // Ito ang nawawala sa ibang version kaya nawawala ang highlight ng target
     updateLegalTargetChips(); 
 }
-// ▲▲▲ DULO NG KUMPLETONG CODE BLOCK (STEP 3) ▲▲▲
         function initializeFirebase() { 
     try { 
         // onlineButton.textContent = "Connecting..."; // <--- BINURA KO NA ITO (Commented out)
@@ -12642,48 +12708,52 @@ function showLobbyUI() {
     const nameEl = document.getElementById('lobby-player-name');
     const levelEl = document.getElementById('lobby-level-badge');
     
-    // --- AVATAR UPDATE (TARGET: OPEN PROFILE MODAL) ---
+    // --- AVATAR UPDATE (WITH RANK BORDERS) ---
     const avatarContainer = document.querySelector('.avatar-circle'); 
     const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
     
+    // 1. Kunin ang Rank para alam ang border
+    const rankInfo = getPlayerRank(playerTrophies); 
+
     if (avatarContainer) {
-        // 1. Gawing laging clickable (may picture man o wala)
         avatarContainer.style.pointerEvents = 'auto'; 
         avatarContainer.style.zIndex = '100'; 
-        avatarContainer.style.cursor = 'pointer'; // Hand cursor
+        avatarContainer.style.cursor = 'pointer';
 
-        // 2. I-set ang itsura (Picture o Emoji)
+        // --- BAGO: RESET AT APPLY RANK CLASS ---
+        // I-reset muna sa default class
+        avatarContainer.className = 'avatar-circle'; 
+        
+        // I-add ang Rank Class (e.g. rank-border-mythical)
+        if (rankInfo.cssClass) {
+            avatarContainer.classList.add(rankInfo.cssClass);
+        } else {
+            avatarContainer.classList.add('rank-border-bronze');
+        }
+
+        // TANGGALIN ang manual border style para CSS ang masunod
+        avatarContainer.style.border = ''; 
+        // ---------------------------------------
+
         if (myPhoto && myPhoto !== 'null' && myPhoto !== 'undefined') {
-            // MAY PICTURE
             avatarContainer.style.backgroundImage = `url('${myPhoto}')`;
             avatarContainer.style.backgroundSize = 'cover';
             avatarContainer.style.backgroundPosition = 'center';
-            avatarContainer.innerHTML = ''; // Tanggalin ang emoji
-            avatarContainer.style.border = '2px solid #FFD700'; // Gold border
+            avatarContainer.innerHTML = ''; 
         } else {
-            // WALANG PICTURE (Default)
             avatarContainer.style.backgroundImage = 'none';
             avatarContainer.innerHTML = '👤';
-            avatarContainer.style.border = '2px solid #fff';
         }
 
-        // 3. ONCLICK EVENT: BUKSAN ANG PROFILE SETTINGS
-        // Dito mo makikita ang Camera/Upload button
         avatarContainer.onclick = function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
             if (typeof playButtonSound === 'function') playButtonSound();
-            
-            // Tawagin ang function na nagbubukas ng Profile Modal
             if (typeof showProfile === 'function') {
                 showProfile('player'); 
-            } else {
-                console.error("Error: showProfile function is missing!");
             }
         };
     }
-    // ---------------------------------------------
 
     // Update Name & Level Text
     if (nameEl) nameEl.textContent = localPlayerName || "Guest";
