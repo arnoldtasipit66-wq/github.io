@@ -4621,6 +4621,53 @@ div#opponent-info.hud-active {
     0% { filter: hue-rotate(0deg); }
     100% { filter: hue-rotate(360deg); }
 }
+
+/* --- LOBBY RANK BACKGROUNDS (Override) --- */
+
+/* Base setting para smooth ang pagpalit */
+#lobby-screen {
+    transition: background 0.5s ease-in-out, border 0.3s ease;
+    background-size: cover !important;
+    background-position: center !important;
+    background-blend-mode: overlay;
+}
+
+/* 1. BRONZE & SILVER: Classic Wood (Simple) */
+#lobby-screen.theme-classic {
+    /* Madilim na Wood Texture */
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://i.imgur.com/T9ft7vz.jpeg') !important;
+    background-size: cover !important;
+    border: none !important; 
+}
+
+/* 2. GOLD & PLATINUM: Golden Luxury (Kislap) */
+#lobby-screen.theme-gold {
+    /* Gold Gradient + Inner Glow */
+    background: radial-gradient(circle at center, #5e4b1f 0%, #1a1a1a 100%) !important;
+    box-shadow: inset 0 0 100px rgba(255, 215, 0, 0.3) !important;
+    border: 4px solid #FFD700 !important; /* Gold Frame */
+}
+
+/* 3. DIAMOND: Icy Blue (Crystal) */
+#lobby-screen.theme-diamond {
+    /* Blue/Cyan Gradient */
+    background: radial-gradient(circle at center, #003366 0%, #000428 100%) !important;
+    box-shadow: inset 0 0 100px rgba(0, 255, 255, 0.4) !important;
+    border: 4px solid #00E5FF !important; /* Neon Blue Frame */
+}
+
+/* 4. LEGENDARY & MYTHICAL: Dark Fire (Astig) */
+#lobby-screen.theme-mythical {
+    /* Red/Black Gradient + Animation */
+    background: radial-gradient(circle at center, #4a0000 0%, #000000 100%) !important;
+    border: 4px solid #FF4500 !important; /* Red Frame */
+    animation: lobbyPulse 4s infinite alternate;
+}
+
+@keyframes lobbyPulse {
+    0% { box-shadow: inset 0 0 50px #4b0000; }
+    100% { box-shadow: inset 0 0 200px #ff0000; }
+}
         
 </style>
 </head>
@@ -12702,39 +12749,74 @@ function updateLobbyRankDisplay() {
 
 function showLobbyUI() {
     const lobbyScreen = document.getElementById('lobby-screen');
-    if (lobbyScreen) lobbyScreen.style.display = 'flex';
+    
+    // 1. Ipakita ang Lobby at I-set ang Theme (Background)
+    if (lobbyScreen) {
+        lobbyScreen.style.display = 'flex';
 
-    // Update Profile Info sa Top Bar
+        // --- NEW: DYNAMIC LOBBY THEME ---
+        // Kunin ang Rank Name
+        const currentRankInfo = getPlayerRank(playerTrophies);
+        const rName = currentRankInfo.name;
+
+        // Reset: Tanggalin ang lumang themes
+        lobbyScreen.classList.remove('theme-classic', 'theme-gold', 'theme-diamond', 'theme-mythical');
+
+        // Apply: Ilagay ang bagong theme base sa Rank
+        if (rName === 'Gold' || rName === 'Platinum') {
+            lobbyScreen.classList.add('theme-gold');
+        } 
+        else if (rName === 'Diamond') {
+            lobbyScreen.classList.add('theme-diamond');
+        } 
+        else if (rName === 'Legendary' || rName === 'Mythical') {
+            lobbyScreen.classList.add('theme-mythical');
+        } 
+        else {
+            // Default (Bronze/Silver)
+            lobbyScreen.classList.add('theme-classic');
+        }
+    }
+
+    // 2. Update Profile Info sa Top Bar (Name & Level)
     const nameEl = document.getElementById('lobby-player-name');
     const levelEl = document.getElementById('lobby-level-badge');
     
-    // --- AVATAR UPDATE (WITH RANK BORDERS) ---
+    // Kunin ulit ang Rank Info para sa texts at borders
+    const rankInfo = getPlayerRank(playerTrophies); 
+
+    if (nameEl) nameEl.textContent = localPlayerName || "Guest";
+    if (levelEl) {
+        levelEl.innerHTML = `${rankInfo.icon} Lv. ${playerLevel}`;
+        levelEl.style.color = rankInfo.color;
+    }
+
+    // 3. Avatar Update (With Rank Borders)
     const avatarContainer = document.querySelector('.avatar-circle'); 
     const myPhoto = localStorage.getItem('pinoyPoolPlayerPhoto');
     
-    // 1. Kunin ang Rank para alam ang border
-    const rankInfo = getPlayerRank(playerTrophies); 
-
     if (avatarContainer) {
         avatarContainer.style.pointerEvents = 'auto'; 
         avatarContainer.style.zIndex = '100'; 
         avatarContainer.style.cursor = 'pointer';
 
-        // --- BAGO: RESET AT APPLY RANK CLASS ---
+        // --- BAGO: RESET AT APPLY RANK CLASS (BORDER) ---
         // I-reset muna sa default class
         avatarContainer.className = 'avatar-circle'; 
         
         // I-add ang Rank Class (e.g. rank-border-mythical)
+        // Siguraduhing na-update mo na ang RANKS constant sa Step 2
         if (rankInfo.cssClass) {
             avatarContainer.classList.add(rankInfo.cssClass);
         } else {
-            avatarContainer.classList.add('rank-border-bronze');
+            avatarContainer.classList.add('rank-border-bronze'); // Fallback
         }
 
         // TANGGALIN ang manual border style para CSS ang masunod
         avatarContainer.style.border = ''; 
         // ---------------------------------------
 
+        // Load Photo or Default Icon
         if (myPhoto && myPhoto !== 'null' && myPhoto !== 'undefined') {
             avatarContainer.style.backgroundImage = `url('${myPhoto}')`;
             avatarContainer.style.backgroundSize = 'cover';
@@ -12745,6 +12827,7 @@ function showLobbyUI() {
             avatarContainer.innerHTML = '👤';
         }
 
+        // Onclick Event (Open Profile)
         avatarContainer.onclick = function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -12755,20 +12838,11 @@ function showLobbyUI() {
         };
     }
 
-    // Update Name & Level Text
-    if (nameEl) nameEl.textContent = localPlayerName || "Guest";
-    if (levelEl) {
-        const rankInfo = getPlayerRank(playerTrophies);
-        levelEl.innerHTML = `${rankInfo.icon} Lv. ${playerLevel}`;
-        levelEl.style.color = rankInfo.color;
-    }
-
-    // Update Buttons & Currency
+    // 4. Update Buttons & Currency & Rank Card
     updateDailyRewardButtonState(); 
     setCueForCurrentTurn(); 
     updateCurrencyDisplay();
     
-    // Update Rank Card kung meron
     if (typeof updateLobbyRankDisplay === 'function') {
         updateLobbyRankDisplay();
     }
