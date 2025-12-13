@@ -4622,11 +4622,14 @@ div#opponent-info.hud-active {
     100% { filter: hue-rotate(360deg); }
 }
 
-/* --- LOBBY RANK BACKGROUNDS (IMAGE TEXTURES VERSION) --- */
+/* --- LOBBY RANK BACKGROUNDS (FIXED / FIT TO SCREEN) --- */
 
 #lobby-screen {
     transition: background-image 0.5s ease-in-out, border 0.3s ease;
-    background-size: cover !important;
+    
+    /* ITO ANG BINAGO: Mula 'cover' ginawang '100% 100%' */
+    background-size: 100% 100% !important; 
+    
     background-position: center !important;
     background-repeat: no-repeat !important;
     background-attachment: fixed !important;
@@ -4634,46 +4637,38 @@ div#opponent-info.hud-active {
 
 /* 1. BRONZE & SILVER: Default Wood (Classic) */
 #lobby-screen.theme-classic {
-    /* Wood Texture */
     background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), 
                 url('https://i.imgur.com/T9ft7vz.jpeg') !important;
     border: none !important; 
 }
 
-/* 2. GOLD & PLATINUM: Black Marble (Sosyal) */
+/* 2. GOLD & PLATINUM: Black Marble */
 #lobby-screen.theme-gold {
-    /* Black Marble Texture */
     background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.9)), 
                 url('https://i.imgur.com/DvdePuB.jpeg') !important;
     
-    /* Gold Inner Glow & Border */
     box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.3) !important; 
     border: 4px solid #FFD700 !important;
 }
 
-/* 3. DIAMOND: Cyber Chrome (Modern) */
+/* 3. DIAMOND: Cyber Chrome */
 #lobby-screen.theme-diamond {
-    /* Cyber Chrome Texture */
     background: linear-gradient(rgba(0, 50, 100, 0.4), rgba(0,0,20,0.9)), 
                 url('https://i.imgur.com/xHckgRf.jpeg') !important;
 
-    /* Cyan/Neon Glow & Border */
     box-shadow: inset 0 0 50px rgba(0, 229, 255, 0.3) !important;
     border: 4px solid #00E5FF !important;
 }
 
-/* 4. LEGENDARY & MYTHICAL: Solid Gold (Pinakamalakas) */
+/* 4. LEGENDARY & MYTHICAL: Solid Gold */
 #lobby-screen.theme-mythical {
-    /* Solid Gold Texture (nilagyan ko ng Red tint para sa 'Fire' effect) */
     background: linear-gradient(rgba(50, 0, 0, 0.5), rgba(0,0,0,0.9)), 
                 url('https://i.imgur.com/tgSGXgj.jpeg') !important;
 
-    /* Animated Red/Fire Border */
     border: 4px solid #FF4500 !important;
     animation: framePulse 3s infinite alternate;
 }
 
-/* Animation para sa Mythical Frame */
 @keyframes framePulse {
     0% { box-shadow: inset 0 0 30px #8b0000; border-color: #FF4500; }
     100% { box-shadow: inset 0 0 100px #FF0000; border-color: #FFD700; }
