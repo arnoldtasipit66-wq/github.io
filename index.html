@@ -15103,35 +15103,40 @@ function claimAdReward() {
     });
 } 
 
-// --- 💰 PROCESS BET (FINAL SAFE VERSION) 💰 ---
-async function processBet(amount) {
-    // 1. Kung Free (0), lusot agad
+// --- 💰 FINAL WORKING PROCESS BET 💰 ---
+window.processBet = async function(amount) {
+    // 1. Kung Free Play (0), lusot agad
     if (amount <= 0) return true; 
 
-    // 🛑 SAFETY CHECK 1: KILALA NA BA ANG PLAYER?
-    // Dito nag-eerror kanina kaya nagka-crash
-    if (typeof localPlayerUid === 'undefined' || localPlayerUid === null) {
-        alert("TEKA LANG! ✋\nHindi pa tapos mag-load ang account mo.\nHintayin lumabas ang Pangalan at Level mo bago pumindot.");
+    // 2. CHECK PLAYER ID (Gamit ang Global Variable)
+    // Kukunin natin ang ID galing sa Step 2
+    const uid = window.localPlayerUid || localPlayerUid;
+
+    if (!uid) {
+        alert("TEKA LANG! ✋\nLoading pa ang account mo.\nIntayin lumabas ang iyong Pangalan at Level bago tumaya.");
         return false;
     }
 
-    // 🛑 SAFETY CHECK 2: MAY SERVER URL BA?
-    const MY_SERVER_URL = "https://b896d275-697c-4062-b661-fd8a8bc57373-00-1gbm6uwc56d17.sisko.replit.dev";
+    // 3. CHECK SERVER URL
+    if (!window.SERVER_URL) {
+        alert("ERROR: Nawawala ang SERVER_URL. Check Step 1.");
+        return false;
+    }
 
     try {
-        console.log(`🚀 TRYING TO BET: ${amount} for User: ${localPlayerUid}`);
+        console.log(`🚀 Betting: ${amount} | User: ${uid}`);
 
-        // 2. TAWAG SA SERVER
-        const response = await fetch(`${MY_SERVER_URL}/api/place-bet`, {
+        // 4. TAWAG SA SERVER (Replit)
+        const response = await fetch(`${window.SERVER_URL}/api/place-bet`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                uid: localPlayerUid, // Siguradong may laman na to dahil sa check sa taas
+                uid: uid,
                 amount: amount
             })
         });
 
-        // 3. CHECK ERROR
+        // 5. CHECK KUNG MAY ERROR ANG SERVER
         if (!response.ok) {
             const text = await response.text();
             alert(`SERVER ERROR: ${response.status}\n${text}`);
@@ -15141,22 +15146,26 @@ async function processBet(amount) {
         const data = await response.json();
         
         if (data.success) {
-            // ✅ SUCCESS: OK NA ANG PUSTA!
-            playerTotalCurrency = data.newBalance; 
-            updateCurrencyDisplay();
-            return true; 
+            // ✅ SUCCESS: NABAWASAN NA ANG PERA
+            console.log("Bet Accepted!");
+            
+            // Update Visuals
+            if(typeof playerTotalCurrency !== 'undefined') playerTotalCurrency = data.newBalance;
+            if(typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+            
+            return true; // TULOY ANG LARO!
         } else {
-            // ❌ FAIL: KULANG PERA
+            // ❌ FAIL: KULANG PERA O ERROR
             alert(`FAILED: ${data.error}`);
             return false;
         }
     } catch (err) {
         // ❌ NETWORK ERROR
-        console.error("BET ERROR:", err);
-        alert(`NETWORK ERROR:\n${err.message}\n\n1. Check mo kung may internet ka.\n2. Check mo kung 'Running' ang Replit.\n3. Check kung tama ang URL.`);
+        console.error(err);
+        alert(`NETWORK ERROR:\n${err.message}\n\nCheck mo kung naka-RUN ang Replit mo!`);
         return false;
     }
-}
+};
 
 </script>
 
