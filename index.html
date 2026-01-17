@@ -9702,10 +9702,26 @@ function loadPlayerStats() {
 /**
  * 2. Save Stats: Sine-save ang progress.
  */
-function savePlayerStats() {
-    localStorage.setItem('pinoyPoolPlayerLevel', playerLevel.toString());
-    localStorage.setItem('pinoyPoolPlayerXP', playerXP.toString());
-    localStorage.setItem('pinoyPoolPlayerTrophies', playerTrophies.toString());
+// --- UPDATED SAVE STATS (Safe sa New Rules) ---
+async function savePlayerStats() {
+    if (!localPlayerUid) return;
+    
+    // Tandaan: Huwag isama ang 'balance' dito kasi Server na ang bahala dun.
+    const statsToSave = {
+        xp: playerXP,
+        trophies: playerTrophies,
+        playerName: localPlayerName,
+        // balance: playerTotalCurrency  <-- ❌ TINANGGAL KO NA TO (Ito ang salarin!)
+        // level: playerLevel 
+    };
+
+    try {
+        await setDoc(doc(db, "players", localPlayerUid), statsToSave, { merge: true });
+        console.log("Stats saved (XP/Trophies only).");
+    } catch (error) {
+        console.error("Error saving stats:", error);
+        // Kahit mag-error, okay lang, hindi titigil ang laro
+    }
 }
 
 /**
