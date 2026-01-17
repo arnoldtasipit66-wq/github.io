@@ -8975,26 +8975,26 @@ async function handleRematchRequest() {
 
 async function updatePlayerData(uid, didWin = false) {
     if (!uid || !db) return;
-   
+    
     const playerDocRef = doc(db, "players", uid);
-   
+    
     try {
         const playerDoc = await getDoc(playerDocRef);
         const displayName = localStorage.getItem('pinoyPoolPlayerName') || "Anonymous";
-        
-        // Kunin ang data mula sa Telegram
         const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        const currentWalletAddress = tonConnectUI?.account?.address || null;
         
-        // Kunin ang Wallet Address mula sa TON Connect UI
-        const currentWalletAddress = tonConnectUI.account?.address || null;
-       
         const dataToSave = {
             displayName: displayName,
             searchableName: displayName.toLowerCase(),
             trophies: playerTrophies,
             level: playerLevel,
             xp: playerXP,
-            balance: playerTotalCurrency, // <--- Ngayon nase-save na rin ang Coins dito
+            
+            // ❌ TINANGGAL KO NA ANG BALANCE DITO! ❌
+            // balance: playerTotalCurrency, <--- ITO ANG NAGPAPACRASH!
+            // Hayaan na natin si Replit Server ang mag-update ng pera.
+            
             tgId: tgUser ? tgUser.id.toString() : (playerDoc.exists() ? (playerDoc.data().tgId || null) : null),
             walletAddress: currentWalletAddress || (playerDoc.exists() ? (playerDoc.data().walletAddress || null) : null),
             lastPlayed: serverTimestamp()
@@ -9003,15 +9003,16 @@ async function updatePlayerData(uid, didWin = false) {
         if (didWin) {
             dataToSave.wins = increment(1);
         }
-       
-        // Gamitin ang setDoc na may { merge: true } para hindi mabura ang ibang fields
+        
+        // Save (XP, Trophies, Name lang ang ise-save ng Client)
         await setDoc(playerDocRef, dataToSave, { merge: true });
-       
-        console.log("✅ All stats synced to Firestore (Coins, Trophies, Wallet, etc.)");
-        updateCurrencyDisplay(); // I-refresh ang UI
-       
+        
+        console.log("✅ Stats synced (XP/Trophies only). Balance handled by Server.");
+        updateCurrencyDisplay(); 
+        
     } catch (error) {
         console.error("❌ Error updating player data:", error);
+        // Kahit mag-error, hindi na ito mag-ca-crash ng malala
     }
 }
 // ▲▲▲ DULO NG STEP 5 ▲▲▲
