@@ -15087,6 +15087,55 @@ function claimAdReward() {
     });
 } 
 
+  // --- 💰 PROCESS BET (DEBUG MODE) ---
+async function processBet(amount) {
+    if (amount <= 0) return true; 
+
+    // Safety Check: URL
+    if (typeof SERVER_URL === 'undefined') {
+        alert("ERROR: Nawawala ang SERVER_URL sa taas!");
+        return false;
+    }
+
+    try {
+        // Ipakita na nagloloading
+        showMessage("Connecting to Server...", 1000);
+
+        const response = await fetch(`${SERVER_URL}/api/place-bet`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                uid: localPlayerUid,
+                amount: amount
+            })
+        });
+
+        // KUNG MAY ERROR ANG SERVER (Example: 404 or 500)
+        if (!response.ok) {
+            const text = await response.text();
+            alert(`SERVER ERROR: ${response.status}\n${text}`);
+            return false;
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // ✅ SUCCESS
+            playerTotalCurrency = data.newBalance; 
+            updateCurrencyDisplay();
+            return true; 
+        } else {
+            // ❌ FAIL (Kulang pera, etc)
+            alert(`BET FAILED: ${data.error}`);
+            return false;
+        }
+    } catch (err) {
+        // ❌ NETWORK ERROR (Dito malalaman kung tulog ang Replit)
+        alert(`NETWORK ERROR:\n${err.message}\n\nCheck mo kung naka-RUN ang Replit!`);
+        return false;
+    }
+}  
+
 </script>
 
 </body>
