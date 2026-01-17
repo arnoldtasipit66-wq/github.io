@@ -14994,23 +14994,26 @@ async function saveWalletToFirestore(uid, address) {
     }
 
 
-// --- 💰 SERVER PAYOUT FUNCTION (AI WIN) 💰 ---
-function claimAiWinnings() {
-    // 1. SAFETY CHECK: Kung Free Play (0 bet), wag na istorbohin ang server
-    if (selectedBetAmount <= 0) {
-        showMessage("You Won! (Practice Mode)", 3000);
+// --- 💰 FINAL FIX: SERVER PAYOUT (AI WIN) 💰 ---
+// Ito ang tatawagin pag nanalo ka sa Bot para makuha ang pera
+window.claimAiWinnings = function() {
+    // 1. SAFETY CHECK
+    // Kung 0 ang taya (Free Play), wag na istorbohin ang server
+    if (!selectedBetAmount || selectedBetAmount <= 0) {
+        if(typeof showMessage === 'function') showMessage("You Won! (Practice Mode)", 3000);
         return; 
     }
 
     console.log("Contacting Server for Payout...");
-    showMessage("Claiming Prize...", 1500);
+    if(typeof showMessage === 'function') showMessage("Claiming Prize...", 1500);
 
-    // 2. TAWAG SA SERVER (REPLIT)
-    fetch(`${SERVER_URL}/api/match-payout`, {
+    // 2. TAWAG SA SERVER (Gamit ang window.SERVER_URL)
+    // Dito nag-eerror dati kasi 'SERVER_URL' lang ang gamit
+    fetch(`${window.SERVER_URL}/api/match-payout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            uid: localPlayerUid,
+            uid: window.localPlayerUid || localPlayerUid,
             betAmount: selectedBetAmount
         })
     })
@@ -15020,32 +15023,62 @@ function claimAiWinnings() {
     })
     .then(data => {
         if (data.success) {
-            // ✅ SUCCESS!
-            // I-update ang pera base sa sinabi ng Server (Source of Truth)
+            // ✅ SUCCESS! Pumasok na ang pera
             playerTotalCurrency = data.newBalance; 
-            updateCurrencyDisplay();
+            if(typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
             
             // Visual feedback
             const totalPot = selectedBetAmount * 2;
             const tong = Math.floor(totalPot * 0.10);
             const netWin = totalPot - tong;
             
-            showMessage(`WINNER! +${formatCurrencyShort(netWin)} Coins!`, 4000);
-            playCoinSound(); // Tunog ng pera!
+            if(typeof showMessage === 'function') showMessage(`WINNER! +${formatCurrencyShort(netWin)} Coins!`, 4000);
+            if(typeof playCoinSound === 'function') playCoinSound(); 
         } else {
             console.error("Payout Failed:", data.error);
-            showMessage("Server Error: Payout Failed", 3000);
+            if(typeof showMessage === 'function') showMessage("Server Error: Payout Failed", 3000);
         }
     })
     .catch(err => {
         console.error("Network Error:", err);
-        // RETRY OPTION (Para safe kung nag-lag ang internet)
+        // RETRY OPTION
         let retry = confirm("⚠️ NETWORK ERROR: Hindi pumasok ang panalo mo. Gusto mo bang i-try ulit?");
         if (retry) {
-            setTimeout(claimAiWinnings, 1000);
+            setTimeout(window.claimAiWinnings, 1000);
         }
     });
-}
+};
+
+// --- 📺 FINAL FIX: AD REWARD 📺 ---
+// Ito naman para sa Ads (kung meron)
+window.claimAdReward = function() {
+    const REWARD_AMOUNT = 500; 
+
+    if(typeof showMessage === 'function') showMessage("Verifying Reward...", 1500);
+
+    fetch(`${window.SERVER_URL}/api/ad-reward`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            uid: window.localPlayerUid || localPlayerUid,
+            amount: REWARD_AMOUNT
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            playerTotalCurrency = data.newBalance;
+            if(typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+            
+            if(typeof showMessage === 'function') showMessage(`+${REWARD_AMOUNT} Coins Received! 💰`, 3000);
+            if(typeof playCoinSound === 'function') playCoinSound();
+            if(typeof triggerFireworks === 'function') triggerFireworks();
+        } else {
+            if(typeof showMessage === 'function') showMessage("Error claiming reward.", 2000);
+        }
+    })
+    .catch(err => console.error("Ad Reward Error:", err));
+};
  
   // --- 📺 ADGRAM CONFIGURATION ---
 // Palitan mo ito ng BLOCK ID galing sa Adgram dashboard mo
@@ -15081,33 +15114,7 @@ function watchAdForCoins() {
         });
 }
 
-// Function na tatawag sa Server para ibigay ang reward
-function claimAdReward() {
-    const REWARD_AMOUNT = 500; // 500 Coins per Ad
 
-    showMessage("Verifying Reward...", 1500);
-
-    fetch(`${SERVER_URL}/api/ad-reward`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            uid: localPlayerUid,
-            amount: REWARD_AMOUNT
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            playerTotalCurrency = data.newBalance;
-            updateCurrencyDisplay();
-            showMessage(`+${REWARD_AMOUNT} Coins Received! 💰`, 3000);
-            playCoinSound();
-            triggerFireworks();
-        } else {
-            showMessage("Error claiming reward.", 2000);
-        }
-    });
-} 
 
 // --- 💰 FINAL WORKING PROCESS BET 💰 ---
 window.processBet = async function(amount) {
