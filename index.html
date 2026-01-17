@@ -15103,21 +15103,19 @@ function claimAdReward() {
     });
 } 
 
-  // --- 💰 PROCESS BET (DEBUG MODE) ---
+// --- 💰 PROCESS BET (DIRECT URL VERSION) 💰 ---
 async function processBet(amount) {
+    // 1. Kung Free (0), lusot agad
     if (amount <= 0) return true; 
 
-    // Safety Check: URL
-    if (typeof SERVER_URL === 'undefined') {
-        alert("ERROR: Nawawala ang SERVER_URL sa taas!");
-        return false;
-    }
+    // 👇 DITO NATIN I-HARDCODE ANG URL (Wala nang kawala to)
+    const MY_SERVER_URL = "https://b896d275-697c-4062-b661-fd8a8bc57373-00-1gbm6uwc56d17.sisko.replit.dev";
 
     try {
-        // Ipakita na nagloloading
-        showMessage("Connecting to Server...", 1000);
+        console.log(`🚀 TRYING TO CONNECT: ${MY_SERVER_URL}/api/place-bet`);
 
-        const response = await fetch(`${SERVER_URL}/api/place-bet`, {
+        // 2. TAWAG SA SERVER
+        const response = await fetch(`${MY_SERVER_URL}/api/place-bet`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -15126,7 +15124,7 @@ async function processBet(amount) {
             })
         });
 
-        // KUNG MAY ERROR ANG SERVER (Example: 404 or 500)
+        // 3. CHECK ERROR
         if (!response.ok) {
             const text = await response.text();
             alert(`SERVER ERROR: ${response.status}\n${text}`);
@@ -15136,21 +15134,22 @@ async function processBet(amount) {
         const data = await response.json();
         
         if (data.success) {
-            // ✅ SUCCESS
+            // ✅ SUCCESS: OK NA ANG PUSTA!
             playerTotalCurrency = data.newBalance; 
             updateCurrencyDisplay();
             return true; 
         } else {
-            // ❌ FAIL (Kulang pera, etc)
-            alert(`BET FAILED: ${data.error}`);
+            // ❌ FAIL: KULANG PERA
+            alert(`FAILED: ${data.error}`);
             return false;
         }
     } catch (err) {
-        // ❌ NETWORK ERROR (Dito malalaman kung tulog ang Replit)
-        alert(`NETWORK ERROR:\n${err.message}\n\nCheck mo kung naka-RUN ang Replit!`);
+        // ❌ NETWORK ERROR
+        alert(`NETWORK ERROR:\n${err.message}\n\nCheck mo kung Running ang Replit!`);
+        console.error(err);
         return false;
     }
-}  
+}
 
 </script>
 
