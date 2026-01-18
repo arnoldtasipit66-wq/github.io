@@ -15307,4 +15307,150 @@ function showPotAnimation(betAmount) {
         }, delay);
     }
 }
+// ======================================================
+// 🛡️ FINAL ANTI-FREEZE & TIMER PATCH (NO MORE ERRORS) 🛡️
+// ======================================================
 
+console.log("🚀 System: Anti-Freeze Patch Loaded!");
+
+// 1. SAFEGUARD: Fallback para sa AI Chat (Para di mag-crash pag walang function)
+if (typeof window.aiDisplayMessage !== 'function') {
+    window.aiDisplayMessage = function(msg) { console.log("AI says:", msg); };
+}
+if (typeof window.getAiChatMessage !== 'function') {
+    window.getAiChatMessage = function() { return ""; };
+}
+
+// 2. SAFEGUARD: Play Error Sound (Para di mag-crash pag walang audio)
+window.playErrorSound = function() {
+    // Check kung defined ang Tone.js variables
+    if (typeof uiSynth !== 'undefined' && typeof audioInitialized !== 'undefined' && audioInitialized) {
+        try { uiSynth.triggerAttackRelease("G2", "8n"); } catch(e){}
+    } else {
+        // Fallback sa HTML Audio Element
+        const sfx = document.getElementById('lose-sfx');
+        if (sfx) { 
+            const clone = sfx.cloneNode(); 
+            clone.volume = 0.3; 
+            clone.play().catch(e => {}); 
+        }
+    }
+};
+
+// 3. GLOBAL TIMER VARIABLE (Para hindi maging "undefined")
+// Dito natin ilalagay sa window para siguradong nakikita ng lahat
+if (typeof window.turnTimerInterval === 'undefined') {
+    window.turnTimerInterval = null;
+}
+
+// 4. FIXED STOP TIMER
+window.stopTurnTimer = function() {
+    if (window.turnTimerInterval) {
+        clearInterval(window.turnTimerInterval);
+        window.turnTimerInterval = null;
+    }
+};
+
+// 5. FIXED START TIMER
+window.startTurnTimer = function() {
+    window.stopTurnTimer(); // Reset muna
+
+    // Check kung valid ang game state (Iwas error pag nasa menu pa lang)
+    if (typeof gameState === 'undefined' || gameState === 'gameover' || gameState === 'menu' || gameState === 'lobby' || 
+       (typeof isTutorialActive !== 'undefined' && isTutorialActive)) return;
+
+    // Default Time Limit
+    if (typeof window.TURN_TIME_LIMIT === 'undefined') window.TURN_TIME_LIMIT = 30;
+    currentTurnTime = window.TURN_TIME_LIMIT;
+    
+    // Update visual agad
+    if(typeof updateTimerVisuals === 'function') setTimeout(updateTimerVisuals, 0); 
+
+    // Start Loop (Attached to Window)
+    window.turnTimerInterval = setInterval(() => {
+        // PAUSE CONDITIONS (Wag bumawas pag gumagalaw ang bola o nag-iisip ang AI)
+        // Gumamit ng typeof para hindi mag-error kung undefined ang variable
+        if ((typeof chipsMoving !== 'undefined' && chipsMoving) || 
+            gameState === 'shooting' || 
+            gameState === 'shooting_animation' || 
+            gameState === 'ai_placing') {
+            return;
+        }
+
+        currentTurnTime--;
+        
+        // Update Visuals
+        if(typeof updateTimerVisuals === 'function') updateTimerVisuals();
+
+        // 🚨 TIME'S UP!
+        if (currentTurnTime <= 0) {
+            if(typeof handleTimeout === 'function') handleTimeout();
+            else window.stopTurnTimer(); // Stop na lang kung walang handler
+        }
+    }, 1000); 
+};
+
+// 6. FIXED VISUALS (Gold Ring Logic)
+window.updateTimerVisuals = function() {
+    // Check variables first
+    if (typeof isOnlineGame === 'undefined' || typeof playerTurn === 'undefined') return;
+
+    const isMyTurn = (isOnlineGame) ? (typeof isMyTurnOnline !== 'undefined' ? isMyTurnOnline : false) : playerTurn;
+    const activeSelector = isMyTurn ? '#player-info .hud-avatar' : '#opponent-info .hud-avatar';
+    const activeAvatar = document.querySelector(activeSelector);
+    
+    if (!activeAvatar) return;
+
+    const limit = (typeof window.TURN_TIME_LIMIT !== 'undefined') ? window.TURN_TIME_LIMIT : 30;
+    const percentage = Math.max(0, currentTurnTime / limit);
+    const degrees = percentage * 360;
+
+    activeAvatar.style.setProperty('--timer-deg', `${degrees}deg`);
+
+    if (currentTurnTime <= 5) activeAvatar.classList.add('timer-warning');
+    else activeAvatar.classList.remove('timer-warning');
+};
+
+// 7. FIXED TIMEOUT HANDLER
+window.handleTimeout = async function() {
+    window.stopTurnTimer();
+    window.playErrorSound(); 
+
+    // Safety checks
+    if (typeof isOnlineGame === 'undefined') return;
+
+    const isMyTurn = (isOnlineGame) ? (typeof isMyTurnOnline !== 'undefined' ? isMyTurnOnline : false) : playerTurn;
+    
+    if (isMyTurn) {
+        if (typeof myTimeouts !== 'undefined') myTimeouts++;
+        if (typeof showMessage === 'function') showMessage(`TIMEOUT! Strike ${myTimeouts}/${MAX_TIMEOUTS}`, 3000);
+    } else {
+        if (typeof oppTimeouts !== 'undefined') oppTimeouts++;
+        if (typeof showMessage === 'function') showMessage(`OPPONENT TIMEOUT! Strike ${oppTimeouts}/${MAX_TIMEOUTS}`, 3000);
+    }
+
+    if (typeof myTimeouts !== 'undefined' && myTimeouts >= MAX_TIMEOUTS) {
+        if (isOnlineGame) {
+             if(typeof forfeitOnlineGame === 'function') await forfeitOnlineGame();
+        } else {
+             if(typeof endGame === 'function') await endGame("You Forfeited (3 Timeouts). Opponent Wins!");
+        }
+        return;
+    } 
+    
+    if (typeof oppTimeouts !== 'undefined' && oppTimeouts >= MAX_TIMEOUTS) {
+        if(typeof endGame === 'function') await endGame("Opponent Forfeited (3 Timeouts). You Win!");
+        return;
+    }
+
+    // Switch Turn Logic (Penalty)
+    if(typeof canMoveCueBall !== 'undefined') canMoveCueBall = true; 
+    
+    if (isOnlineGame) {
+        // Online logic handled by server listeners usually
+    } else {
+        // Local AI Game Force Switch
+        if(typeof updateLocalGameState === 'function') updateLocalGameState(true); 
+    }
+};
+// ======================================================
