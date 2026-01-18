@@ -15364,14 +15364,38 @@ window.startTurnTimer = function() {
     // Default Time Limit
     if (typeof window.TURN_TIME_LIMIT === 'undefined') window.TURN_TIME_LIMIT = 30;
     currentTurnTime = window.TURN_TIME_LIMIT;
-    
-    // Update visual agad
-    if(typeof updateTimerVisuals === 'function') setTimeout(updateTimerVisuals, 0); 
+// ==========================================
+// 🛡️ FINAL TIMER LOGIC (DEGREE FIX) 🛡️
+// ==========================================
 
-    // Start Loop (Attached to Window)
+// 1. SAFEGUARD SOUND
+window.playErrorSound = function() {
+    if (typeof uiSynth !== 'undefined' && typeof audioInitialized !== 'undefined' && audioInitialized) {
+        try { uiSynth.triggerAttackRelease("G2", "8n"); } catch(e){}
+    } else {
+        const sfx = document.getElementById('lose-sfx');
+        if (sfx) { const clone = sfx.cloneNode(); clone.volume = 0.3; clone.play().catch(e => {}); }
+    }
+};
+
+// 2. GLOBAL VARIABLES
+if (typeof window.turnTimerInterval === 'undefined') window.turnTimerInterval = null;
+if (typeof window.TURN_TIME_LIMIT === 'undefined') window.TURN_TIME_LIMIT = 30;
+
+// 3. START TIMER
+window.startTurnTimer = function() {
+    window.stopTurnTimer();
+
+    if (typeof gameState === 'undefined' || gameState === 'gameover' || 
+       (typeof isTutorialActive !== 'undefined' && isTutorialActive)) return;
+
+    currentTurnTime = window.TURN_TIME_LIMIT;
+    
+    // Force Update Agad
+    if(typeof updateTimerVisuals === 'function') updateTimerVisuals();
+
     window.turnTimerInterval = setInterval(() => {
-        // PAUSE CONDITIONS (Wag bumawas pag gumagalaw ang bola o nag-iisip ang AI)
-        // Gumamit ng typeof para hindi mag-error kung undefined ang variable
+        // Pause Check
         if ((typeof chipsMoving !== 'undefined' && chipsMoving) || 
             gameState === 'shooting' || 
             gameState === 'shooting_animation' || 
@@ -15381,82 +15405,83 @@ window.startTurnTimer = function() {
 
         currentTurnTime--;
         
-        // Update Visuals
         if(typeof updateTimerVisuals === 'function') updateTimerVisuals();
 
-        // 🚨 TIME'S UP!
         if (currentTurnTime <= 0) {
             if(typeof handleTimeout === 'function') handleTimeout();
-            else window.stopTurnTimer(); // Stop na lang kung walang handler
+            else window.stopTurnTimer(); 
         }
     }, 1000); 
 };
 
-// 6. FIXED VISUALS (Gold Ring Logic)
-window.updateTimerVisuals = function() {
-    // Check variables first
-    if (typeof isOnlineGame === 'undefined' || typeof playerTurn === 'undefined') return;
+// 4. STOP TIMER
+window.stopTurnTimer = function() {
+    if (window.turnTimerInterval) {
+        clearInterval(window.turnTimerInterval);
+        window.turnTimerInterval = null;
+    }
+};
 
-    const isMyTurn = (isOnlineGame) ? (typeof isMyTurnOnline !== 'undefined' ? isMyTurnOnline : false) : playerTurn;
+// 5. VISUALS (DITO YUNG FIX SA DEGREE CALCULATION)
+window.updateTimerVisuals = function() {
+    const isMyTurn = (typeof isOnlineGame !== 'undefined' && isOnlineGame) ? isMyTurnOnline : playerTurn;
     const activeSelector = isMyTurn ? '#player-info .hud-avatar' : '#opponent-info .hud-avatar';
     const activeAvatar = document.querySelector(activeSelector);
     
+    // Reset borders ng inactive player
+    const inactiveSelector = isMyTurn ? '#opponent-info .hud-avatar' : '#player-info .hud-avatar';
+    const inactiveAvatar = document.querySelector(inactiveSelector);
+    if (inactiveAvatar) {
+        inactiveAvatar.style.removeProperty('--timer-deg');
+        inactiveAvatar.style.background = ''; // Reset background
+    }
+    
     if (!activeAvatar) return;
 
-    const limit = (typeof window.TURN_TIME_LIMIT !== 'undefined') ? window.TURN_TIME_LIMIT : 30;
-    const percentage = Math.max(0, currentTurnTime / limit);
+    // Kalkulahin ang Degrees (360 pababa sa 0)
+    const percentage = Math.max(0, currentTurnTime / window.TURN_TIME_LIMIT);
     const degrees = percentage * 360;
 
+    // I-log sa console para makita mo kung gumagalaw (Press F12 or check logs)
+    // console.log("Timer:", currentTurnTime, "Deg:", degrees);
+
+    // I-apply ang variable
     activeAvatar.style.setProperty('--timer-deg', `${degrees}deg`);
 
+    // Warning Class
     if (currentTurnTime <= 5) activeAvatar.classList.add('timer-warning');
     else activeAvatar.classList.remove('timer-warning');
 };
 
-// 7. FIXED TIMEOUT HANDLER
+// 6. TIMEOUT HANDLER
 window.handleTimeout = async function() {
     window.stopTurnTimer();
     window.playErrorSound(); 
 
-    // Safety checks
-    if (typeof isOnlineGame === 'undefined') return;
-
-    const isMyTurn = (isOnlineGame) ? (typeof isMyTurnOnline !== 'undefined' ? isMyTurnOnline : false) : playerTurn;
+    const isMyTurn = (typeof isOnlineGame !== 'undefined' && isOnlineGame) ? isMyTurnOnline : playerTurn;
     
     if (isMyTurn) {
-        if (typeof myTimeouts !== 'undefined') myTimeouts++;
-        if (typeof showMessage === 'function') showMessage(`TIMEOUT! Strike ${myTimeouts}/${MAX_TIMEOUTS}`, 3000);
+        if(typeof myTimeouts !== 'undefined') myTimeouts++;
+        if(typeof showMessage === 'function') showMessage(`TIMEOUT! Strike ${myTimeouts}/${MAX_TIMEOUTS}`, 3000);
     } else {
-        if (typeof oppTimeouts !== 'undefined') oppTimeouts++;
-        if (typeof showMessage === 'function') showMessage(`OPPONENT TIMEOUT! Strike ${oppTimeouts}/${MAX_TIMEOUTS}`, 3000);
+        if(typeof oppTimeouts !== 'undefined') oppTimeouts++;
+        if(typeof showMessage === 'function') showMessage(`OPPONENT TIMEOUT! Strike ${oppTimeouts}/${MAX_TIMEOUTS}`, 3000);
     }
 
-    if (typeof myTimeouts !== 'undefined' && myTimeouts >= MAX_TIMEOUTS) {
-        if (isOnlineGame) {
-             if(typeof forfeitOnlineGame === 'function') await forfeitOnlineGame();
-        } else {
-             if(typeof endGame === 'function') await endGame("You Forfeited (3 Timeouts). Opponent Wins!");
-        }
+    if ((typeof myTimeouts !== 'undefined' && myTimeouts >= MAX_TIMEOUTS) || 
+        (typeof oppTimeouts !== 'undefined' && oppTimeouts >= MAX_TIMEOUTS)) {
+        if(typeof endGame === 'function') await endGame("Timeout Forfeit!");
         return;
     } 
-    
-    if (typeof oppTimeouts !== 'undefined' && oppTimeouts >= MAX_TIMEOUTS) {
-        if(typeof endGame === 'function') await endGame("Opponent Forfeited (3 Timeouts). You Win!");
-        return;
-    }
 
-    // Switch Turn Logic (Penalty)
     if(typeof canMoveCueBall !== 'undefined') canMoveCueBall = true; 
     
-    if (isOnlineGame) {
-        // Online logic handled by server listeners usually
+    if (typeof isOnlineGame !== 'undefined' && isOnlineGame) {
+        // Online Logic
     } else {
-        // Local AI Game Force Switch
         if(typeof updateLocalGameState === 'function') updateLocalGameState(true); 
     }
-};
-// ======================================================
-</script>
+};</script>
 
 </body>
     </html>
