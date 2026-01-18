@@ -1851,57 +1851,64 @@ background-image: url('https://i.imgur.com/Wg3y3Zn.jpeg');
 #opponent-info .hud-details { align-items: flex-end !important; text-align: right !important; }
 
 
-/* --- ⏱️ TIMER GLOW CSS (IPALIT MO ITO SA PART NA YUN) ⏱️ --- */
+/* --- ⏱️ ULTIMATE TIMER RING FIX ⏱️ --- */
 
-/* --- ⏱️ FIXED TIMER GLOW CSS ⏱️ --- */
-
-/* 1. Base Avatar Style */
+/* 1. Base Avatar Setup */
 .hud-avatar {
-    width: 45px !important; 
-    height: 45px !important;
+    width: 50px !important; /* Fixed size */
+    height: 50px !important;
     border-radius: 50%;
-    background: #333; 
-    /* Importante: Transparent border para makita ang gradient sa likod o padding area */
-    border: 2px solid rgba(255,255,255,0.1); 
-    padding: 3px !important; /* Space para sa timer ring */
-    display: flex; justify-content: center; align-items: center;
-    flex-shrink: 0;
     position: relative;
-    transition: all 0.3s ease;
+    z-index: 1;
     box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
 }
 
-/* 2. Image sa loob */
+/* 2. Image sa Loob */
 .hud-avatar img, .hud-avatar div {
     width: 100% !important;
     height: 100% !important;
     border-radius: 50%;
     object-fit: cover;
-    z-index: 2; 
-    background-color: #000;
+    z-index: 5; /* Nasa ibabaw ng timer */
     position: relative;
-    /* Siguraduhing natatakpan ang gitna para magmukhang ring ang timer */
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    border: 2px solid rgba(255,255,255,0.1); /* Inner border para malinis */
 }
 
-/* 3. ACTIVE TIMER (Dito ang Fix!) */
-/* Targetin ang .hud-avatar na NASA LOOB ng .hud-active */
-.hud-active .hud-avatar {
-    /* Umiikot na Kulay: Gold (Oras) -> Red (Ubos na) */
+/* 3. TIMER RING (Kapag Turn Mo) */
+/* Gumagamit tayo ng ::before pseudo-element para maging background ring */
+.hud-active .hud-avatar::before {
+    content: '';
+    position: absolute;
+    top: -4px; left: -4px; right: -4px; bottom: -4px; /* Kapal ng Timer */
+    border-radius: 50%;
+    z-index: -1; /* Nasa likod ng picture */
+    
+    /* ANG MAGIC GRADIENT */
     background: conic-gradient(
         #FFD700 var(--timer-deg, 360deg), 
         #FF0000 0deg
-    ) !important;
+    );
     
-    border: none !important; /* Alisin ang border para lumabas ang gradient */
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); /* Strong Gold Glow */
-    transform: scale(1.1);
-    z-index: 10;
+    /* Animation para smooth ang ikot */
+    transition: --timer-deg 1s linear; 
 }
 
-/* 4. WARNING MODE (Pag < 5 seconds) */
+/* 4. TANGGALIN ANG RANK BORDER KAPAG ACTIVE (Para di matakpan ang Timer) */
+.hud-active .hud-avatar {
+    border: none !important; 
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important; /* Gold Glow */
+    transform: scale(1.1); /* Lumaki konti */
+}
+
+/* 5. WARNING MODE (Pulse Red pag paubos na) */
+.hud-active .hud-avatar.timer-warning::before {
+    box-shadow: 0 0 20px #FF0000;
+}
 .hud-active .hud-avatar.timer-warning {
-    box-shadow: 0 0 20px #FF0000 !important; /* Red Glow Alert */
     animation: panicPulse 0.5s infinite alternate;
 }
 
