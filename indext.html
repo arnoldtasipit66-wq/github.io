@@ -12131,33 +12131,12 @@ function listenToRealtimeAiming(gameId) {
             showMessage("Game Starting...", 1500);
         }
 
-        // --- REMATCH TRANSITION (FIXED: WALANG DOBLE BAWAS) ---
-        // Kung galing sa "Finished" at naging "Playing" ulit
-        if (previousGameState === 'finished' && gameData.gameState === 'playing') {
-            console.log("Rematch Started! UI Reset only.");
-            
-            // UI Update lang, wag na magbawas ng pera dito dahil bayad na sa button click
-            winnerModal.classList.remove('show');
-            
-            // Optional: Sound effect for new game
-            playButtonSound();
-        }
-        previousGameState = gameData.gameState; 
-
-        // --- SHOT ANIMATION SYNC ---
-        if (gameData.lastShot && gameData.lastShot.timestamp > lastShotTimestamp && !chipsMoving) { 
-            lastShotTimestamp = gameData.lastShot.timestamp; 
-            animateAndApplyShot(gameData.lastShot); 
-        } 
-        
         // --- GAME OVER / REMATCH REQUESTS LOGIC ---
         if (gameData.gameState === 'finished' && gameData.rematchRequest) { 
             const players = Object.keys(gameData.players || {}); 
             
             // Siguraduhing may 2 players data
             if (players.length >= 2) { 
-                // Hanapin ang UID ng Player 1 at Player 2
-                // (Medyo flexible logic para kahit magulo ang order ng keys)
                 const p1Key = players.find(key => key.includes('player1')) || players[0];
                 const p2Key = players.find(key => key.includes('player2')) || players[1];
 
@@ -12172,15 +12151,10 @@ function listenToRealtimeAiming(gameId) {
                     const rematchButton = document.getElementById('rematch-button'); 
                     
                     if (iWantRematch && opponentWantsRematch) { 
-                        // KUNG PAREHONG NAG-YES: 
-                        // Si Player 1 (Host) ang mag-uutos na i-reset ang laro
                         if (localPlayerId === 'player1') { 
                             resetOnlineGameForRematch(gameData); 
                         } 
                     } else if (opponentWantsRematch && !iWantRematch) { 
-                        // KUNG NAG-REQUEST ANG KALABAN:
-                        // Baguhin ang itsura ng button ko para alam kong may bayad pag nag-accept
-                        
                         rematchButton.disabled = false;
                         if (gameData.betAmount > 0) {
                              rematchButton.innerHTML = `Accept Rematch <br><small style="color:#FFD700">(-${formatCurrencyShort(gameData.betAmount)})</small>`;
@@ -12190,15 +12164,15 @@ function listenToRealtimeAiming(gameId) {
                     } 
                 }
             } 
-        }
-    });
-}
+        } 
+        // ❌ DITO MO TINANGGAL ANG "});" at "}" DAHIL TULOY PA ANG CODE!
+
         
         // --- MAIN SYNC FUNCTION ---
+        // Dapat nasa loob pa rin ito ng onSnapshot para makuha ang gameData
         syncGameState(gameData); 
 
         // --- MANUAL TURN HANDLING ---
-        // Ito ang nag-aayos ng pwesto ng bola kung sakaling na-late ang sync
         if (gameData.turnId > lastProcessedTurnId) {
              lastProcessedTurnId = gameData.turnId;
              
@@ -12217,7 +12191,7 @@ function listenToRealtimeAiming(gameId) {
              
              // Update UI
              updateCardDisplay();
-             updateInfoBox(); // Update HUD Glow
+             updateInfoBox();
 
              // Ipakita ang Drag Guide kung Ball-in-Hand
              if (isMyTurnOnline && canMoveCueBall) {
@@ -12231,8 +12205,9 @@ function listenToRealtimeAiming(gameId) {
                  resetPektus();
              }
         }
-    }); 
-}
+
+    }); // <--- ✅ DITO ANG TAMANG PAG-SARADO NG onSnapshot
+} // <--- ✅ DITO ANG TAMANG PAG-SARADO NG function listenToGameUpdates
         async function leaveOnlineGame(isForfeit) { if (!isOnlineGame || !gameId || !localPlayerId) return; const gameDocRef = doc(db, "games", gameId); try { const docSnap = await getDoc(gameDocRef); if (docSnap.exists() && docSnap.data().gameState !== 'finished') { const opponentId = localPlayerId === 'player1' ? 'player2' : 'player1'; const winnerUid = docSnap.data().players[opponentId]?.uid; if (isForfeit && winnerUid) { await updateDoc(gameDocRef, { gameState: 'finished', winner: winnerUid, [`players.${localPlayerId}.status`]: 'disconnected' }); } else { await updateDoc(gameDocRef, { [`players.${localPlayerId}.status`]: 'disconnected' }); } } } catch (error) { console.error("Error leaving/forfeiting game:", error); } }
         function isPathObstructed(startObj, endObj, ignoreChipIds = []) { const allObstacles = chips.filter(c => c.inPlay && !ignoreChipIds.includes(c.id)); for (const obstacle of allObstacles) { const dist = Math.abs((endObj.y - startObj.y) * obstacle.x - (endObj.x - startObj.x) * obstacle.y + endObj.x * startObj.y - endObj.y * startObj.x) / Math.hypot(endObj.y - startObj.y, endObj.x - startObj.x); const safetyMargin = 4 * scale; const effectiveRadius = obstacle.radius + (startObj.radius || 0) + safetyMargin; if (dist < effectiveRadius) { const dotProduct = (obstacle.x - startObj.x) * (endObj.x - startObj.x) + (obstacle.y - startObj.y) * (endObj.y - startObj.y); const squaredLength = Math.pow(Math.hypot(endObj.x - startObj.x, endObj.y - startObj.y), 2); if (dotProduct > 0 && dotProduct < squaredLength) { return true; } } } return false; }
         function isAnyDirectPathClear(cueChip, legalTargets) { if (!legalTargets || legalTargets.length === 0) return false; for (const target of legalTargets) { if (!isPathObstructed(cueChip, target, [])) return true; } return false; }
